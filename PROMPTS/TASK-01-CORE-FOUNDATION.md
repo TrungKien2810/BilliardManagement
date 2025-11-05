@@ -59,3 +59,41 @@
     * Nếu `account == null`:
         * Hiển thị `MessageBox.Show("Sai thông tin đăng nhập!");`
 
+**6. Quản lý Session & Authorization (`Billiards.BLL`):**
+
+* Tạo `SessionManager.cs` (Singleton pattern):
+    * `public static SessionManager Instance { get; }`
+    * `public Account? CurrentAccount { get; set; }`
+    * `public Employee? CurrentEmployee { get; set; }`
+    * `public bool IsLoggedIn { get; }`
+    * `public void SetSession(Account account, Employee? employee)`
+    * `public void Logout()`
+* Tạo `AuthorizationHelper.cs`:
+    * `public static bool IsAdmin()`
+    * `public static bool IsCashier()`
+    * `public static bool HasPermission(string role)`
+* Cập nhật `AuthService.cs`:
+    * Sửa `Login()` để load `Employee` kèm theo `Account` (Include Employee).
+
+**7. Cập nhật LoginWindow (`Billiards.UI`):**
+
+* Sau khi login thành công:
+    * Load `Employee` từ `Account.EmployeeID`.
+    * Gọi `SessionManager.Instance.SetSession(account, employee)`.
+    * Mở `MainWindow`.
+    * Đóng `LoginWindow`.
+
+**8. Cập nhật MainWindow (`Billiards.UI`):**
+
+* Thêm Menu bar ở trên cùng:
+    * Menu "Hệ thống" với MenuItem "Đăng xuất".
+    * Hiển thị thông tin người dùng: "Xin chào, [Tên nhân viên] - [Role]".
+* Sự kiện `MenuItem_Logout_Click`:
+    * Xác nhận đăng xuất.
+    * Gọi `SessionManager.Instance.Logout()`.
+    * Đóng `MainWindow`, mở lại `LoginWindow`.
+* Kiểm tra session khi MainWindow mở:
+    * Nếu chưa login → quay về `LoginWindow`.
+* Phân quyền theo Role:
+    * Chỉ hiển thị các menu Admin nếu `Role == "Admin"` (sẽ dùng cho Task 05).
+
