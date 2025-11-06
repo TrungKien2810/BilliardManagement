@@ -57,5 +57,13 @@ public class InvoiceRepository
         _context.Invoices.Update(invoice);
         _context.SaveChanges();
     }
+
+    public List<InvoiceDetail> GetInvoiceDetails(int invoiceId)
+    {
+        return _context.InvoiceDetails
+            .Include(id => id.Product)
+            .Where(id => id.InvoiceID == invoiceId)
+            .ToList();
+    }
 }
 

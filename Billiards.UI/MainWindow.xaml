@@ -80,30 +80,37 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Width="100" 
-                                Height="80" 
-                                Margin="5"
-                                Click="Table_Click"
-                                Cursor="Hand">
-                            <Button.Background>
-                                <Binding Path="Status" 
-                                         Converter="{StaticResource StatusToBrushConverter}"/>
-                            </Button.Background>
-                            <StackPanel>
-                                <TextBlock Text="{Binding TableName}" 
-                                           FontSize="14" 
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           Foreground="White"/>
-                                <TextBlock Text="{Binding Status}" 
-                                           FontSize="10"
-                                           HorizontalAlignment="Center"
-                                           Foreground="White"
-                                           Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Button>
-                    </DataTemplate>
+                     <DataTemplate>
+                         <Button Width="100" 
+                                 Height="80" 
+                                 Margin="5"
+                                 Click="Table_Click"
+                                 ContextMenuOpening="Table_ContextMenuOpening"
+                                 Cursor="Hand">
+                             <Button.Background>
+                                 <Binding Path="Status" 
+                                          Converter="{StaticResource StatusToBrushConverter}"/>
+                             </Button.Background>
+                             <Button.ContextMenu>
+                                 <ContextMenu x:Name="cmTableMenu">
+                                     <MenuItem Header="Order thêm" Click="MenuItem_Order_Click" Tag="{Binding}"/>
+                                     <MenuItem Header="Thanh toán" Click="MenuItem_Checkout_Click" Tag="{Binding}"/>
+                                 </ContextMenu>
+                             </Button.ContextMenu>
+                             <StackPanel>
+                                 <TextBlock Text="{Binding TableName}" 
+                                            FontSize="14" 
+                                            FontWeight="Bold"
+                                            HorizontalAlignment="Center"
+                                            Foreground="White"/>
+                                 <TextBlock Text="{Binding Status}" 
+                                            FontSize="10"
+                                            HorizontalAlignment="Center"
+                                            Foreground="White"
+                                            Margin="0,5,0,0"/>
+                             </StackPanel>
+                         </Button>
+                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
