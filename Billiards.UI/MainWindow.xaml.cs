@@ -1,7 +1,10 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using Billiards.BLL.Services;
 using Billiards.DAL.Models;
+using Billiards.DAL.Repositories;
+using Billiards.UI.Windows;
 
 namespace Billiards.UI;
 
@@ -126,29 +129,64 @@ public partial class MainWindow : Window
 
             if (result == MessageBoxResult.Yes)
             {
-                // (Sẽ gọi Module 3 - Order)
-                // Tạm thời: Cập nhật trạng thái bàn
                 try
                 {
-                    _tableService.UpdateTableStatus(table.ID, "InUse");
+                    // Lấy employee ID từ session
+                    var session = SessionManager.Instance;
+                    if (session.CurrentEmployee == null || session.CurrentEmployee.ID == 0)
+                    {
+                        MessageBox.Show("Không thể xác định nhân viên. Vui lòng đăng nhập lại.", 
+                            "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    // Start session và tạo invoice mới
+                    var invoice = _tableService.StartSession(table.ID, session.CurrentEmployee.ID);
                     LoadTableMap(); // Tải lại sơ đồ bàn
-                    MessageBox.Show($"Đã mở Bàn {table.TableName}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                    // Mở OrderWindow
+                    var orderWindow = new OrderWindow(invoice);
+                    orderWindow.ShowDialog();
+                    
+                    // Reload table map sau khi đóng order window
+                    LoadTableMap();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Lỗi khi cập nhật trạng thái bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Lỗi khi mở bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
         else if (table.Status == "InUse")
         {
-            // Hiển thị thông tin chi tiết (sẽ gọi Module 3 và 4)
-            // Tạm thời: Hiển thị thông báo
-            MessageBox.Show(
-                $"Bàn {table.TableName} đang được sử dụng.\n\n(Sẽ hiển thị chi tiết Order và Thanh toán)",
-                "Thông tin",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            try
+            {
+                // Lấy invoice đang active của bàn này
+                var invoiceRepository = new InvoiceRepository();
+                var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
+                
+                if (activeInvoice != null)
+                {
+                    // Mở OrderWindow với invoice hiện tại
+                    var orderWindow = new OrderWindow(activeInvoice);
+                    orderWindow.ShowDialog();
+                    
+                    // Reload table map sau khi đóng order window
+                    LoadTableMap();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
+                        "Thông báo",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         else if (table.Status == "Reserved")
         {
