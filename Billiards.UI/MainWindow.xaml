@@ -26,7 +26,13 @@
                 <MenuItem Header="Thoát" Click="MenuItem_Exit_Click"/>
             </MenuItem>
             <MenuItem Header="Quản lý" x:Name="mnuAdmin" Visibility="Collapsed">
-                <!-- Sẽ thêm các menu quản lý ở Task 05 -->
+                <MenuItem Header="Quản lý Sản phẩm" Click="MenuItem_ProductManagement_Click"/>
+                <MenuItem Header="Quản lý Bàn" Click="MenuItem_TableManagement_Click"/>
+                <MenuItem Header="Quản lý Nhân viên" Click="MenuItem_EmployeeManagement_Click"/>
+                <MenuItem Header="Quản lý Khách hàng" Click="MenuItem_CustomerManagement_Click"/>
+                <MenuItem Header="Quản lý Giá giờ" Click="MenuItem_PricingManagement_Click"/>
+                <Separator/>
+                <MenuItem Header="Về trang chủ" Click="MenuItem_Home_Click"/>
             </MenuItem>
             <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed">
                 <!-- Sẽ thêm menu báo cáo ở Task 06 -->
@@ -40,73 +46,80 @@
             </StatusBarItem>
         </StatusBar>
 
+        <!-- Main Content Area -->
         <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+            <!-- Default View: Table Map -->
+            <Grid x:Name="gridTableMap">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Sidebar: Danh sách Areas -->
-        <Border Grid.Column="0" 
-                Background="#F0F0F0" 
-                BorderBrush="#CCCCCC" 
-                BorderThickness="0,0,1,0">
-            <StackPanel Margin="10">
-                <TextBlock Text="Khu vực" 
-                           FontSize="16" 
-                           FontWeight="Bold" 
-                           Margin="0,0,0,10"/>
-                <ListBox x:Name="lbAreas" 
-                         SelectionChanged="lbAreas_SelectionChanged">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding AreaName}" 
-                                       Padding="5"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </Border>
+                <!-- Sidebar: Danh sách Areas -->
+                <Border Grid.Column="0" 
+                        Background="#F0F0F0" 
+                        BorderBrush="#CCCCCC" 
+                        BorderThickness="0,0,1,0">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="Khu vực" 
+                                   FontSize="16" 
+                                   FontWeight="Bold" 
+                                   Margin="0,0,0,10"/>
+                        <ListBox x:Name="lbAreas" 
+                                 SelectionChanged="lbAreas_SelectionChanged">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding AreaName}" 
+                                               Padding="5"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
 
-        <!-- Main Content: Sơ đồ bàn -->
-        <ScrollViewer Grid.Column="1" 
-                      VerticalScrollBarVisibility="Auto" 
-                      HorizontalScrollBarVisibility="Auto">
-            <ItemsControl x:Name="icTableMap" 
-                          Margin="10">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Width="100" 
-                                Height="80" 
-                                Margin="5"
-                                Click="Table_Click"
-                                Cursor="Hand">
-                            <Button.Background>
-                                <Binding Path="Status" 
-                                         Converter="{StaticResource StatusToBrushConverter}"/>
-                            </Button.Background>
-                            <StackPanel>
-                                <TextBlock Text="{Binding TableName}" 
-                                           FontSize="14" 
-                                           FontWeight="Bold"
-                                           HorizontalAlignment="Center"
-                                           Foreground="White"/>
-                                <TextBlock Text="{Binding Status}" 
-                                           FontSize="10"
-                                           HorizontalAlignment="Center"
-                                           Foreground="White"
-                                           Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                <!-- Main Content: Sơ đồ bàn -->
+                <ScrollViewer Grid.Column="1" 
+                              VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="icTableMap" 
+                                  Margin="10">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Width="100" 
+                                        Height="80" 
+                                        Margin="5"
+                                        Click="Table_Click"
+                                        Cursor="Hand">
+                                    <Button.Background>
+                                        <Binding Path="Status" 
+                                                 Converter="{StaticResource StatusToBrushConverter}"/>
+                                    </Button.Background>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TableName}" 
+                                                   FontSize="14" 
+                                                   FontWeight="Bold"
+                                                   HorizontalAlignment="Center"
+                                                   Foreground="White"/>
+                                        <TextBlock Text="{Binding Status}" 
+                                                   FontSize="10"
+                                                   HorizontalAlignment="Center"
+                                                   Foreground="White"
+                                                   Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Admin Views Container -->
+            <ContentControl x:Name="contentAdminViews" Visibility="Collapsed"/>
         </Grid>
     </Grid>
 </Window>

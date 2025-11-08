@@ -5,6 +5,7 @@ using Billiards.BLL.Services;
 using Billiards.DAL.Models;
 using Billiards.DAL.Repositories;
 using Billiards.UI.Windows;
+using Billiards.UI.Views;
 
 namespace Billiards.UI;
 
@@ -240,5 +241,75 @@ public partial class MainWindow : Window
         var loginWindow = new LoginWindow();
         loginWindow.Show();
         this.Close();
+    }
+
+    private void ShowAdminView(UserControl view)
+    {
+        gridTableMap.Visibility = Visibility.Collapsed;
+        contentAdminViews.Visibility = Visibility.Visible;
+        contentAdminViews.Content = view;
+    }
+
+    private void ShowTableMap()
+    {
+        gridTableMap.Visibility = Visibility.Visible;
+        contentAdminViews.Visibility = Visibility.Collapsed;
+        contentAdminViews.Content = null;
+        LoadTableMap(); // Reload table map when returning
+    }
+
+    private void MenuItem_ProductManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new ProductManagementView());
+    }
+
+    private void MenuItem_TableManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new TableManagementView());
+    }
+
+    private void MenuItem_EmployeeManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new EmployeeManagementView());
+    }
+
+    private void MenuItem_CustomerManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new CustomerManagementView());
+    }
+
+    private void MenuItem_PricingManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new PricingManagementView());
+    }
+
+    private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
+    {
+        ShowTableMap();
     }
 }

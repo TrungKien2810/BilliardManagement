@@ -34,5 +34,44 @@ public class TableRepository
             _context.SaveChanges();
         }
     }
+
+    public List<Table> GetAll()
+    {
+        return _context.Tables
+            .Include(t => t.Area)
+            .Include(t => t.TableType)
+            .OrderBy(t => t.TableName)
+            .ToList();
+    }
+
+    public Table? GetById(int tableId)
+    {
+        return _context.Tables
+            .Include(t => t.Area)
+            .Include(t => t.TableType)
+            .FirstOrDefault(t => t.ID == tableId);
+    }
+
+    public void Add(Table table)
+    {
+        _context.Tables.Add(table);
+        _context.SaveChanges();
+    }
+
+    public void Update(Table table)
+    {
+        _context.Tables.Update(table);
+        _context.SaveChanges();
+    }
+
+    public void Delete(int tableId)
+    {
+        var table = _context.Tables.FirstOrDefault(t => t.ID == tableId);
+        if (table != null)
+        {
+            _context.Tables.Remove(table);
+            _context.SaveChanges();
+        }
+    }
 }
 
