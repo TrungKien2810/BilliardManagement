@@ -19,6 +19,7 @@ public class TableRepository
 
     public List<Table> GetAllTables()
     {
+        // Dùng AsNoTracking để đảm bảo lấy dữ liệu mới nhất từ DB, không dùng cache
         return _context.Tables
             .AsNoTracking() // Disable tracking to ensure fresh data
             .Include(t => t.Area)

@@ -154,6 +154,9 @@ public partial class MainWindow : Window
             // Clear and set ItemsSource to force UI refresh
             icTableMap.ItemsSource = null;
             icTableMap.ItemsSource = tables;
+            
+            // Force refresh UI
+            icTableMap.UpdateLayout();
         }
         catch (Exception ex)
         {
@@ -229,19 +232,20 @@ public partial class MainWindow : Window
         }
         else if (table.Status == "InUse")
         {
+            // Hiển thị ContextMenu với 2 lựa chọn: Order thêm và Thanh toán
+            // ContextMenu sẽ được hiển thị tự động khi right-click
+            // Left-click sẽ mặc định mở OrderWindow
             try
             {
-                // Lấy invoice đang active của bàn này
                 var invoiceRepository = new InvoiceRepository();
                 var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
                 
                 if (activeInvoice != null)
                 {
-                    // Mở OrderWindow với invoice hiện tại
+                    // Mặc định mở OrderWindow khi left-click
                     var orderWindow = new OrderWindow(activeInvoice);
                     orderWindow.ShowDialog();
                     
-                    // Reload table map sau khi đóng order window
                     LoadTableMap();
                 }
                 else
