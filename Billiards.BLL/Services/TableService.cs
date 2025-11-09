@@ -25,6 +25,11 @@ public class TableService
         return _tableRepository.GetAllTables();
     }
 
+    public List<Table> GetTableMapByArea(int areaId)
+    {
+        return _tableRepository.GetTablesByArea(areaId);
+    }
+
     public void UpdateTableStatus(int tableId, string newStatus)
     {
         _tableRepository.UpdateTableStatus(tableId, newStatus);

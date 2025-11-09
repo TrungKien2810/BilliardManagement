@@ -21,5 +21,37 @@ public class AreaRepository
     {
         return _context.Areas.OrderBy(a => a.ID).ToList();
     }
+
+    public List<Area> GetAll()
+    {
+        return _context.Areas.OrderBy(a => a.AreaName).ToList();
+    }
+
+    public Area? GetById(int areaId)
+    {
+        return _context.Areas.FirstOrDefault(a => a.ID == areaId);
+    }
+
+    public void Add(Area area)
+    {
+        _context.Areas.Add(area);
+        _context.SaveChanges();
+    }
+
+    public void Update(Area area)
+    {
+        _context.Areas.Update(area);
+        _context.SaveChanges();
+    }
+
+    public void Delete(int areaId)
+    {
+        var area = _context.Areas.FirstOrDefault(a => a.ID == areaId);
+        if (area != null)
+        {
+            _context.Areas.Remove(area);
+            _context.SaveChanges();
+        }
+    }
 }
 

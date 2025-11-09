@@ -1,12 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Billiards.BLL.Services;
 using Billiards.DAL.Models;
 using Billiards.DAL.Repositories;
 using Billiards.UI.Windows;
+using Billiards.UI.Views;
 
 namespace Billiards.UI;
+
+// Helper class for "All Areas" option
+public class AreaFilterItem
+{
+    public int ID { get; set; }
+    public string AreaName { get; set; } = string.Empty;
+    public bool IsAll { get; set; }
+}
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -82,8 +93,31 @@ public partial class MainWindow : Window
     {
         try
         {
-            var areas = _areaService.GetAllAreas();
-            lbAreas.ItemsSource = areas;
+            // Create a new service instance to ensure fresh data from database
+            var areaService = new AreaService();
+            var areas = areaService.GetAllAreas();
+            
+            // Create a list with "Tất cả" option at the beginning
+            var areaList = new List<AreaFilterItem>
+            {
+                new AreaFilterItem { ID = 0, AreaName = "Tất cả", IsAll = true }
+            };
+            
+            // Add real areas
+            foreach (var area in areas)
+            {
+                areaList.Add(new AreaFilterItem { ID = area.ID, AreaName = area.AreaName, IsAll = false });
+            }
+            
+            // Clear and set ItemsSource to force UI refresh
+            lbAreas.ItemsSource = null;
+            lbAreas.ItemsSource = areaList;
+            
+            // Select "Tất cả" by default
+            if (areaList.Count > 0)
+            {
+                lbAreas.SelectedIndex = 0;
+            }
         }
         catch (Exception ex)
         {
@@ -95,10 +129,30 @@ public partial class MainWindow : Window
     {
         try
         {
-            // Clear ItemsSource trước để force reload
-            icTableMap.ItemsSource = null;
+            // Create a new service instance to ensure fresh data from database
+            var tableService = new TableService();
+            var tables = tableService.GetTableMap();
             
-            var tables = _tableService.GetTableMap();
+            // Clear and set ItemsSource to force UI refresh
+            icTableMap.ItemsSource = null;
+            icTableMap.ItemsSource = tables;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi tải sơ đồ bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void LoadTableMapByArea(int areaId)
+    {
+        try
+        {
+            // Create a new service instance to ensure fresh data from database
+            var tableService = new TableService();
+            var tables = tableService.GetTableMapByArea(areaId);
+            
+            // Clear and set ItemsSource to force UI refresh
+            icTableMap.ItemsSource = null;
             icTableMap.ItemsSource = tables;
             
             // Force refresh UI
@@ -112,9 +166,22 @@ public partial class MainWindow : Window
 
     private void lbAreas_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Chức năng lọc theo Area sẽ được thực hiện sau
-        // Tạm thời load lại toàn bộ bàn
-        LoadTableMap();
+        var selectedItem = lbAreas.SelectedItem as AreaFilterItem;
+        if (selectedItem == null)
+        {
+            return;
+        }
+
+        if (selectedItem.IsAll)
+        {
+            // Show all tables
+            LoadTableMap();
+        }
+        else
+        {
+            // Filter by area
+            LoadTableMapByArea(selectedItem.ID);
+        }
     }
 
     private void Table_Click(object sender, RoutedEventArgs e)
@@ -249,65 +316,119 @@ public partial class MainWindow : Window
         this.Close();
     }
 
-    private void Table_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    private void ShowAdminView(UserControl view)
     {
-        // ContextMenu sẽ tự động hiển thị khi right-click
+        gridTableMap.Visibility = Visibility.Collapsed;
+        contentAdminViews.Visibility = Visibility.Visible;
+        contentAdminViews.Content = view;
     }
 
-    private void MenuItem_Order_Click(object sender, RoutedEventArgs e)
+    private void ShowTableMap()
     {
-        if (sender is System.Windows.Controls.MenuItem menuItem && menuItem.Tag is Table table)
+        gridTableMap.Visibility = Visibility.Visible;
+        contentAdminViews.Visibility = Visibility.Collapsed;
+        contentAdminViews.Content = null;
+        
+        // Force reload data from database when returning to home
+        RefreshTableMapData();
+    }
+
+    private void RefreshTableMapData()
+    {
+        // Save current area selection
+        var currentSelection = lbAreas.SelectedItem as AreaFilterItem;
+        int? selectedAreaId = currentSelection?.IsAll == false ? currentSelection.ID : null;
+        bool wasAllSelected = currentSelection?.IsAll == true;
+        
+        // Clear existing data to force refresh
+        icTableMap.ItemsSource = null;
+        
+        // Reload areas from database (we're already on UI thread)
+        LoadAreas();
+        
+        // Restore selection or default to "Tất cả"
+        if (wasAllSelected || selectedAreaId == null)
         {
-            try
+            // Select "Tất cả" (first item)
+            if (lbAreas.Items.Count > 0)
             {
-                var invoiceRepository = new InvoiceRepository();
-                var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
-                
-                if (activeInvoice != null)
+                lbAreas.SelectedIndex = 0;
+            }
+            LoadTableMap();
+        }
+        else
+        {
+            // Find and select the previously selected area
+            var areaList = lbAreas.ItemsSource as List<AreaFilterItem>;
+            if (areaList != null)
+            {
+                var areaToSelect = areaList.FirstOrDefault(a => a.ID == selectedAreaId && !a.IsAll);
+                if (areaToSelect != null)
                 {
-                    var orderWindow = new OrderWindow(activeInvoice);
-                    orderWindow.ShowDialog();
-                    LoadTableMap();
+                    lbAreas.SelectedItem = areaToSelect;
                 }
                 else
                 {
-                    MessageBox.Show(
-                        $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
-                        "Thông báo",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
+                    // If area not found, select "Tất cả"
+                    lbAreas.SelectedIndex = 0;
+                    LoadTableMap();
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
 
-    private void MenuItem_Checkout_Click(object sender, RoutedEventArgs e)
+    private void MenuItem_ProductManagement_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.MenuItem menuItem && menuItem.Tag is Table table)
+        if (!AuthorizationHelper.IsAdmin())
         {
-            try
-            {
-                var checkoutWindow = new CheckoutWindow(table.ID);
-                var result = checkoutWindow.ShowDialog();
-                
-                if (result == true)
-                {
-                    // Thanh toán thành công, reload table map
-                    // Đợi một chút để đảm bảo DB đã commit
-                    System.Threading.Thread.Sleep(100);
-                    LoadTableMap();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi thanh toán: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                // Reload lại table map ngay cả khi có lỗi
-                LoadTableMap();
-            }
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
         }
+        ShowAdminView(new ProductManagementView());
+    }
+
+    private void MenuItem_TableManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new TableManagementView());
+    }
+
+    private void MenuItem_EmployeeManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new EmployeeManagementView());
+    }
+
+    private void MenuItem_CustomerManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new CustomerManagementView());
+    }
+
+    private void MenuItem_PricingManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new PricingManagementView());
+    }
+
+    private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
+    {
+        ShowTableMap();
     }
 }

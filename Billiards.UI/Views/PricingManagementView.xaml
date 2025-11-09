@@ -1,0 +1,80 @@
+<UserControl x:Class="Billiards.UI.Views.PricingManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Column: DataGrid -->
+        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+            <TextBlock Text="Danh sách Quy tắc Giá theo Giờ" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <DataGrid x:Name="dgPricingRules" 
+                      AutoGenerateColumns="False"
+                      SelectionChanged="dgPricingRules_SelectionChanged"
+                      IsReadOnly="True"
+                      Height="500">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
+                    <DataGridTextColumn Header="Loại bàn" Binding="{Binding TableType.TypeName}" Width="*"/>
+                    <DataGridTextColumn Header="Giờ bắt đầu" Binding="{Binding StartTimeSlot, StringFormat='{}{0:hh\\:mm}'}" Width="120"/>
+                    <DataGridTextColumn Header="Giờ kết thúc" Binding="{Binding EndTimeSlot, StringFormat='{}{0:hh\\:mm}'}" Width="120"/>
+                    <DataGridTextColumn Header="Giá/giờ" Binding="{Binding PricePerHour, StringFormat='{}{0:N0} VNĐ'}" Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+
+        <!-- Right Column: Form -->
+        <StackPanel Grid.Column="1">
+            <TextBlock Text="Thông tin Quy tắc Giá" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                    <TextBlock Text="Loại bàn:" Margin="0,0,0,5"/>
+                    <ComboBox x:Name="cmbTableType" 
+                              DisplayMemberPath="TypeName" 
+                              SelectedValuePath="ID"
+                              Height="30"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                    <TextBlock Text="Giờ bắt đầu (HH:mm):" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtStartTime" Height="30" Text="08:00"/>
+                    <TextBlock Text="Ví dụ: 08:00, 22:00" FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                    <TextBlock Text="Giờ kết thúc (HH:mm):" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtEndTime" Height="30" Text="22:00"/>
+                    <TextBlock Text="Ví dụ: 22:00, 24:00" FontSize="10" Foreground="Gray" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                    <TextBlock Text="Giá mỗi giờ (VNĐ):" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtPricePerHour" Height="30"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
+                    <Button x:Name="btnSave" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
+                    <Button x:Name="btnDelete" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDelete_Click"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>
+
+
+

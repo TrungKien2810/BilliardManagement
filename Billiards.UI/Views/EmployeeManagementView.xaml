@@ -1,0 +1,176 @@
+<UserControl x:Class="Billiards.UI.Views.EmployeeManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1200">
+    <Grid Margin="10">
+        <TabControl>
+            <!-- Tab 1: Employees -->
+            <TabItem Header="Quản lý Nhân viên">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="350"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Danh sách Nhân viên" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <DataGrid x:Name="dgEmployees" 
+                                  AutoGenerateColumns="False"
+                                  SelectionChanged="dgEmployees_SelectionChanged"
+                                  IsReadOnly="True"
+                                  Height="550">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
+                                <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="*"/>
+                                <DataGridTextColumn Header="SĐT" Binding="{Binding PhoneNumber}" Width="120"/>
+                                <DataGridTextColumn Header="Địa chỉ" Binding="{Binding Address}" Width="200"/>
+                                <DataGridTextColumn Header="Tài khoản" Binding="{Binding Account.Username}" Width="120"/>
+                                <DataGridTextColumn Header="Vai trò" Binding="{Binding Account.Role}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Thông tin Nhân viên" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                                <TextBlock Text="Họ tên:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtFullName" Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                <TextBlock Text="Số điện thoại:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtPhoneNumber" Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                                <TextBlock Text="Địa chỉ:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAddress" Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                                <CheckBox x:Name="chkHasAccount" Content="Có tài khoản đăng nhập" 
+                                          Checked="chkHasAccount_Checked"
+                                          Unchecked="chkHasAccount_Unchecked"/>
+                                <Grid x:Name="gridAccount" IsEnabled="False" Margin="0,10,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                                        <TextBlock Text="Tên đăng nhập:" Margin="0,0,0,5"/>
+                                        <TextBox x:Name="txtUsername" Height="30"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                        <TextBlock Text="Mật khẩu:" Margin="0,0,0,5"/>
+                                        <PasswordBox x:Name="txtPassword" Height="30"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                                        <TextBlock Text="Vai trò:" Margin="0,0,0,5"/>
+                                        <ComboBox x:Name="cmbRole" Height="30">
+                                            <ComboBoxItem Content="Admin" Tag="Admin"/>
+                                            <ComboBoxItem Content="Cashier" Tag="Cashier"/>
+                                            <ComboBoxItem Content="Staff" Tag="Staff"/>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="btnAddNewEmployee" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewEmployee_Click"/>
+                                <Button x:Name="btnSaveEmployee" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveEmployee_Click"/>
+                                <Button x:Name="btnDeleteEmployee" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteEmployee_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab 2: Accounts -->
+            <TabItem Header="Quản lý Tài khoản">
+                <Grid Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="350"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Danh sách Tài khoản" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <DataGrid x:Name="dgAccounts" 
+                                  AutoGenerateColumns="False"
+                                  SelectionChanged="dgAccounts_SelectionChanged"
+                                  IsReadOnly="True"
+                                  Height="550">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
+                                <DataGridTextColumn Header="Nhân viên" Binding="{Binding Employee.FullName}" Width="200"/>
+                                <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="150"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Thông tin Tài khoản" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                                <TextBlock Text="Nhân viên:" Margin="0,0,0,5"/>
+                                <ComboBox x:Name="cmbEmployeeForAccount" 
+                                          DisplayMemberPath="FullName" 
+                                          SelectedValuePath="ID"
+                                          Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1" Margin="0,0,0,10">
+                                <TextBlock Text="Tên đăng nhập:" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAccountUsername" Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                                <TextBlock Text="Mật khẩu:" Margin="0,0,0,5"/>
+                                <PasswordBox x:Name="txtAccountPassword" Height="30"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                                <TextBlock Text="Vai trò:" Margin="0,0,0,5"/>
+                                <ComboBox x:Name="cmbAccountRole" Height="30">
+                                    <ComboBoxItem Content="Admin" Tag="Admin"/>
+                                    <ComboBoxItem Content="Cashier" Tag="Cashier"/>
+                                    <ComboBoxItem Content="Staff" Tag="Staff"/>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button x:Name="btnAddNewAccount" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewAccount_Click"/>
+                                <Button x:Name="btnSaveAccount" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveAccount_Click"/>
+                                <Button x:Name="btnDeleteAccount" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteAccount_Click"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
+
+
+
