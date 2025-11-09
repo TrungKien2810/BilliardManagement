@@ -98,11 +98,18 @@
                                         Height="80" 
                                         Margin="5"
                                         Click="Table_Click"
+                                        ContextMenuOpening="Table_ContextMenuOpening"
                                         Cursor="Hand">
                                     <Button.Background>
                                         <Binding Path="Status" 
                                                  Converter="{StaticResource StatusToBrushConverter}"/>
                                     </Button.Background>
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Order thêm" Click="MenuItem_OrderMore_Click"/>
+                                            <MenuItem Header="Thanh toán" Click="MenuItem_Checkout_Click"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
                                     <StackPanel>
                                         <TextBlock Text="{Binding TableName}" 
                                                    FontSize="14" 
