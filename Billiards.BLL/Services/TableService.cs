@@ -37,6 +37,24 @@ public class TableService
 
     public Invoice StartSession(int tableId, int employeeId)
     {
+        // Kiểm tra tình trạng hiện tại từ DB
+        var table = _tableRepository.GetById(tableId);
+        var existingActive = _invoiceRepository.GetActiveInvoiceByTable(tableId);
+
+        // Nếu có hóa đơn Active nhưng bàn lại đang Free (trạng thái lệch), đóng hóa đơn cũ an toàn rồi mở phiên mới
+        if (existingActive != null && table != null && table.Status == "Free")
+        {
+            _invoiceRepository.CloseActiveInvoiceForTable(tableId);
+            existingActive = null;
+        }
+
+        // Nếu sau khi kiểm tra vẫn còn Active invoice -> tiếp tục phiên cũ
+        if (existingActive != null)
+        {
+            _tableRepository.UpdateTableStatus(tableId, "InUse");
+            return existingActive;
+        }
+
         // Update table status to InUse
         _tableRepository.UpdateTableStatus(tableId, "InUse");
 

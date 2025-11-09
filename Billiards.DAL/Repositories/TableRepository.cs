@@ -59,7 +59,11 @@ public class TableRepository
 
     public Table? GetById(int tableId)
     {
+        // Ensure fresh read from DB
+        _context.ChangeTracker.Clear();
+
         return _context.Tables
+            .AsNoTracking()
             .Include(t => t.Area)
             .Include(t => t.TableType)
             .FirstOrDefault(t => t.ID == tableId);

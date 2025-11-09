@@ -37,7 +37,7 @@ public class BillingService
         var startTime = invoice.StartTime;
         var totalTime = endTime - startTime;
 
-        if (totalTime.TotalHours <= 0)
+        if (totalTime.TotalMinutes <= 0)
         {
             return 0;
         }
@@ -49,35 +49,77 @@ public class BillingService
             return 0;
         }
 
-        // Tính tiền đơn giản: tính từng giờ và áp dụng giá theo khung giờ
+        // Tính tiền theo thời gian thực tế (tính theo phút, không làm tròn lên)
+        // Ví dụ: 30 phút với giá 50k/giờ = (30/60) * 50000 = 25000 VNĐ
         decimal totalFee = 0;
-        var totalHours = (int)Math.Ceiling(totalTime.TotalHours); // Làm tròn lên
-        
-        // Lấy giá trung bình hoặc giá đầu tiên nếu không có rule phù hợp
-        var defaultPrice = rules.First().PricePerHour;
-        
-        // Tính tiền theo từng giờ
-        for (int hour = 0; hour < totalHours; hour++)
+        var totalMinutes = totalTime.TotalMinutes;
+
+        if (totalMinutes <= 0)
         {
-            var hourTime = startTime.AddHours(hour);
-            var hourTimeOfDay = hourTime.TimeOfDay;
+            return 0;
+        }
+
+        // Tính tiền: lặp qua từng phút và tính theo giá tương ứng
+        // Cách này đảm bảo tính chính xác theo từng khung giờ
+        var totalMinutesInt = (int)Math.Floor(totalMinutes);
+        var remainingSeconds = (totalMinutes - totalMinutesInt) * 60; // Phần giây còn lại
+        
+        for (int minute = 0; minute < totalMinutesInt; minute++)
+        {
+            var checkTime = startTime.AddMinutes(minute);
+            var timeOfDay = checkTime.TimeOfDay;
             
-            // Tìm rule phù hợp với giờ này
-            var applicableRule = rules.FirstOrDefault(r => 
-                hourTimeOfDay >= r.StartTimeSlot && hourTimeOfDay < r.EndTimeSlot);
+            // Tìm rule phù hợp với thời điểm này
+            HourlyPricingRule? applicableRule = GetApplicableRule(rules, timeOfDay);
             
-            if (applicableRule == null)
+            decimal pricePerHour = applicableRule?.PricePerHour ?? rules.First().PricePerHour;
+            // Tính tiền cho 1 phút = giá/giờ / 60
+            totalFee += pricePerHour / 60m;
+        }
+        
+        // Tính phần thời gian còn lại (giây) nếu có
+        if (remainingSeconds > 0)
+        {
+            var lastMinuteTime = startTime.AddMinutes(totalMinutesInt);
+            var timeOfDay = lastMinuteTime.TimeOfDay;
+            HourlyPricingRule? applicableRule = GetApplicableRule(rules, timeOfDay);
+            
+            decimal pricePerHour = applicableRule?.PricePerHour ?? rules.First().PricePerHour;
+            // Tính tiền cho phần giây còn lại: (số giây / 3600) * giá/giờ
+            totalFee += (pricePerHour / 3600m) * (decimal)remainingSeconds;
+        }
+
+        // Làm tròn đến số nguyên (đồng)
+        return Math.Round(totalFee, 0);
+    }
+
+    private HourlyPricingRule? GetApplicableRule(List<HourlyPricingRule> rules, TimeSpan timeOfDay)
+    {
+        foreach (var rule in rules)
+        {
+            // Xử lý rule trong cùng một ngày (ví dụ: 08:00 - 22:00)
+            if (rule.StartTimeSlot <= rule.EndTimeSlot)
             {
-                // Nếu không có rule phù hợp, dùng giá mặc định
-                totalFee += defaultPrice;
+                // Rule bình thường: StartTimeSlot < EndTimeSlot
+                if (timeOfDay >= rule.StartTimeSlot && timeOfDay < rule.EndTimeSlot)
+                {
+                    return rule;
+                }
             }
             else
             {
-                totalFee += applicableRule.PricePerHour;
+                // Xử lý rule vượt qua nửa đêm (ví dụ: 22:00 - 08:00 ngày hôm sau)
+                // Trong SQL Server, TIME type không thể lưu 24:00:00, nên nếu StartTimeSlot > EndTimeSlot
+                // thì có nghĩa là rule vượt qua nửa đêm
+                // Ví dụ: StartTimeSlot = 22:00:00, EndTimeSlot = 00:00:00 (thực tế là 24:00:00)
+                if (timeOfDay >= rule.StartTimeSlot || timeOfDay < rule.EndTimeSlot)
+                {
+                    return rule;
+                }
             }
         }
-
-        return totalFee;
+        
+        return null;
     }
 
     public Invoice GetInvoiceForCheckout(int tableId)

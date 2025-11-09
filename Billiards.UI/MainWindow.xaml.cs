@@ -215,14 +215,12 @@ public partial class MainWindow : Window
 
                     // Start session và tạo invoice mới
                     var invoice = _tableService.StartSession(table.ID, session.CurrentEmployee.ID);
-                    LoadTableMap(); // Tải lại sơ đồ bàn
-                    
-                    // Mở OrderWindow
-                    var orderWindow = new OrderWindow(invoice);
-                    orderWindow.ShowDialog();
-                    
-                    // Reload table map sau khi đóng order window
-                    LoadTableMap();
+
+                    // Reload table map để cập nhật trạng thái bàn
+                    RefreshCurrentTableMap();
+
+                    // Không tự động mở OrderWindow khi mở bàn
+                    MessageBox.Show($"Đã mở {table.TableName}.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
@@ -232,35 +230,9 @@ public partial class MainWindow : Window
         }
         else if (table.Status == "InUse")
         {
-            // Hiển thị ContextMenu với 2 lựa chọn: Order thêm và Thanh toán
-            // ContextMenu sẽ được hiển thị tự động khi right-click
-            // Left-click sẽ mặc định mở OrderWindow
-            try
-            {
-                var invoiceRepository = new InvoiceRepository();
-                var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
-                
-                if (activeInvoice != null)
-                {
-                    // Mặc định mở OrderWindow khi left-click
-                    var orderWindow = new OrderWindow(activeInvoice);
-                    orderWindow.ShowDialog();
-                    
-                    LoadTableMap();
-                }
-                else
-                {
-                    MessageBox.Show(
-                        $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
-                        "Thông báo",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            // Mặc định mở OrderWindow khi left-click
+            // Right-click sẽ hiển thị ContextMenu với các tùy chọn
+            OpenOrderWindow(table);
         }
         else if (table.Status == "Reserved")
         {
@@ -430,5 +402,196 @@ public partial class MainWindow : Window
     private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
     {
         ShowTableMap();
+    }
+
+    private void MenuItem_RevenueReport_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new ReportsView());
+    }
+
+    private Table? _currentContextTable;
+
+    private void Table_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        // Kiểm tra status của bàn, chỉ hiển thị context menu khi status là "InUse"
+        var button = sender as Button;
+        if (button != null)
+        {
+            var table = button.DataContext as Table;
+            if (table == null || table.Status != "InUse")
+            {
+                e.Handled = true; // Ẩn context menu
+                _currentContextTable = null;
+            }
+            else
+            {
+                // Lưu table hiện tại để sử dụng trong menu items
+                _currentContextTable = table;
+            }
+        }
+    }
+
+    private Table? GetTableFromMenuItem(object sender)
+    {
+        // Lấy Table từ ContextMenu -> PlacementTarget (Button) -> DataContext
+        try
+        {
+            if (sender is MenuItem menuItem)
+            {
+                // Cách 1: Từ PlacementTarget của ContextMenu
+                var contextMenu = menuItem.Parent as ContextMenu;
+                if (contextMenu?.PlacementTarget is FrameworkElement fe)
+                {
+                    // Tìm Button trong visual tree
+                    var button = fe as Button ?? FindVisualParent<Button>(fe);
+                    if (button != null)
+                    {
+                        return button.DataContext as Table;
+                    }
+                }
+                
+                // Cách 2: Từ Tag của MenuItem (backup)
+                if (menuItem.Tag is Table tableFromTag)
+                {
+                    return tableFromTag;
+                }
+            }
+        }
+        catch
+        {
+            // Fallback: không làm gì
+        }
+        return null;
+    }
+
+    private static T? FindVisualParent<T>(DependencyObject child) where T : DependencyObject
+    {
+        var parentObject = System.Windows.Media.VisualTreeHelper.GetParent(child);
+        if (parentObject == null) return null;
+        
+        if (parentObject is T parent)
+        {
+            return parent;
+        }
+        else
+        {
+            return FindVisualParent<T>(parentObject);
+        }
+    }
+
+    private void MenuItem_OrderMore_Click(object sender, RoutedEventArgs e)
+    {
+        // Ưu tiên sử dụng _currentContextTable, nếu không có thì lấy từ MenuItem
+        var table = _currentContextTable ?? GetTableFromMenuItem(sender);
+        if (table == null) return;
+        
+        _currentContextTable = null; // Clear sau khi sử dụng
+
+        try
+        {
+            var invoiceRepository = new InvoiceRepository();
+            var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
+            
+            if (activeInvoice != null)
+            {
+                var orderWindow = new OrderWindow(activeInvoice);
+                orderWindow.ShowDialog();
+                
+                // Reload table map after closing order window
+                RefreshCurrentTableMap();
+            }
+            else
+            {
+                MessageBox.Show(
+                    $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
+                    "Thông báo",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void MenuItem_Checkout_Click(object sender, RoutedEventArgs e)
+    {
+        // Ưu tiên sử dụng _currentContextTable, nếu không có thì lấy từ MenuItem
+        var table = _currentContextTable ?? GetTableFromMenuItem(sender);
+        if (table == null) return;
+        
+        _currentContextTable = null; // Clear sau khi sử dụng
+
+        try
+        {
+            // Mở CheckoutWindow
+            var checkoutWindow = new CheckoutWindow(table.ID);
+            if (checkoutWindow.ShowDialog() == true)
+            {
+                // Thanh toán thành công, reload table map
+                RefreshCurrentTableMap();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi thanh toán: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void OpenOrderWindow(Table table)
+    {
+        try
+        {
+            var invoiceRepository = new InvoiceRepository();
+            var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
+            
+            if (activeInvoice != null)
+            {
+                var orderWindow = new OrderWindow(activeInvoice);
+                orderWindow.ShowDialog();
+                
+                // Reload table map after closing order window
+                RefreshCurrentTableMap();
+            }
+            else
+            {
+                MessageBox.Show(
+                    $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
+                    "Thông báo",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void RefreshCurrentTableMap()
+    {
+        // Reload table map based on current area selection
+        var selectedItem = lbAreas.SelectedItem as AreaFilterItem;
+        if (selectedItem != null)
+        {
+            if (selectedItem.IsAll)
+            {
+                LoadTableMap();
+            }
+            else
+            {
+                LoadTableMapByArea(selectedItem.ID);
+            }
+        }
+        else
+        {
+            LoadTableMap();
+        }
     }
 }

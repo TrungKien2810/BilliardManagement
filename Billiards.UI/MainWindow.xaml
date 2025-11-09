@@ -39,7 +39,7 @@
                 <MenuItem Header="Về trang chủ" Click="MenuItem_Home_Click"/>
             </MenuItem>
             <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed">
-                <!-- Sẽ thêm menu báo cáo ở Task 06 -->
+                <MenuItem Header="Báo cáo Doanh thu" Click="MenuItem_RevenueReport_Click"/>
             </MenuItem>
         </Menu>
 
@@ -98,11 +98,18 @@
                                         Height="80" 
                                         Margin="5"
                                         Click="Table_Click"
+                                        ContextMenuOpening="Table_ContextMenuOpening"
                                         Cursor="Hand">
                                     <Button.Background>
                                         <Binding Path="Status" 
                                                  Converter="{StaticResource StatusToBrushConverter}"/>
                                     </Button.Background>
+                                    <Button.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Order thêm" Click="MenuItem_OrderMore_Click"/>
+                                            <MenuItem Header="Thanh toán" Click="MenuItem_Checkout_Click"/>
+                                        </ContextMenu>
+                                    </Button.ContextMenu>
                                     <StackPanel>
                                         <TextBlock Text="{Binding TableName}" 
                                                    FontSize="14" 
