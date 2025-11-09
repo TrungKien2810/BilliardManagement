@@ -40,7 +40,11 @@ public class InvoiceRepository
 
     public Invoice? GetActiveInvoiceByTable(int tableId)
     {
+        // Clear tracked entities to avoid stale cache after updates from other contexts
+        _context.ChangeTracker.Clear();
+
         return _context.Invoices
+            .AsNoTracking()
             .FirstOrDefault(i => i.TableID == tableId && i.Status == "Active");
     }
 
@@ -56,6 +60,30 @@ public class InvoiceRepository
     {
         _context.Invoices.Update(invoice);
         _context.SaveChanges();
+    }
+
+    public bool CloseActiveInvoiceForTable(int tableId)
+    {
+        var active = _context.Invoices.FirstOrDefault(i => i.TableID == tableId && i.Status == "Active");
+        if (active == null)
+        {
+            return false;
+        }
+
+        active.Status = "Paid";
+        if (!active.EndTime.HasValue)
+        {
+            active.EndTime = DateTime.Now;
+        }
+        // đảm bảo TotalAmount nhất quán nếu chưa được tính (giữ nguyên nếu đã có)
+        if (active.TotalAmount <= 0)
+        {
+            active.TotalAmount = (active.TableFee + active.ProductFee) - active.Discount;
+            if (active.TotalAmount < 0) active.TotalAmount = 0;
+        }
+
+        _context.SaveChanges();
+        return true;
     }
 
     public List<InvoiceDetail> GetInvoiceDetails(int invoiceId)

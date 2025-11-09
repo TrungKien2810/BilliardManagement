@@ -215,16 +215,12 @@ public partial class MainWindow : Window
 
                     // Start session và tạo invoice mới
                     var invoice = _tableService.StartSession(table.ID, session.CurrentEmployee.ID);
-                    
+
                     // Reload table map để cập nhật trạng thái bàn
                     RefreshCurrentTableMap();
-                    
-                    // Mở OrderWindow
-                    var orderWindow = new OrderWindow(invoice);
-                    orderWindow.ShowDialog();
-                    
-                    // Reload table map sau khi đóng order window
-                    RefreshCurrentTableMap();
+
+                    // Không tự động mở OrderWindow khi mở bàn
+                    MessageBox.Show($"Đã mở {table.TableName}.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
@@ -406,6 +402,16 @@ public partial class MainWindow : Window
     private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
     {
         ShowTableMap();
+    }
+
+    private void MenuItem_RevenueReport_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new ReportsView());
     }
 
     private Table? _currentContextTable;

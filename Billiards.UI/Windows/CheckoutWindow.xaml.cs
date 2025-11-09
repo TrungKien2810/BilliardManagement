@@ -121,8 +121,23 @@ public partial class CheckoutWindow : Window
                 discount = discountValue;
             }
 
-            // Lấy customer ID (tạm thời để null, có thể thêm tìm kiếm sau)
+            // Liên kết khách hàng chỉ khi đã tồn tại (không tự tạo mới)
             int? customerId = null;
+            var phone = txtCustomerPhone.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                try
+                {
+                    var customerService = new CustomerService();
+                    var existing = customerService.GetCustomerByPhoneNumber(phone);
+                    if (existing != null) customerId = existing.ID;
+                }
+                catch (Exception ex)
+                {
+                    // Không chặn thanh toán nếu không tạo/tra cứu KH được; chỉ cảnh báo
+                    MessageBox.Show($"Không thể xác định khách hàng theo SĐT: {ex.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
 
             // Finalize checkout
             var success = _billingService.FinalizeCheckout(_currentInvoice.ID, discount, customerId);
@@ -148,6 +163,37 @@ public partial class CheckoutWindow : Window
     {
         this.DialogResult = false;
         this.Close();
+    }
+
+    private void txtCustomerPhone_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        try
+        {
+            var phone = txtCustomerPhone.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(phone))
+            {
+                txtCustomerName.Text = string.Empty;
+                return;
+            }
+
+            var customerService = new CustomerService();
+            var existing = customerService.GetCustomerByPhoneNumber(phone);
+            if (existing != null)
+            {
+                txtCustomerName.Text = $"Khách: {existing.FullName}";
+                txtCustomerName.Foreground = System.Windows.Media.Brushes.Green;
+            }
+            else
+            {
+                txtCustomerName.Text = "Không tìm thấy khách hàng";
+                txtCustomerName.Foreground = System.Windows.Media.Brushes.OrangeRed;
+            }
+        }
+        catch
+        {
+            txtCustomerName.Text = "Không thể tra cứu khách hàng";
+            txtCustomerName.Foreground = System.Windows.Media.Brushes.OrangeRed;
+        }
     }
 }
 

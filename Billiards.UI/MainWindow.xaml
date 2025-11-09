@@ -39,7 +39,7 @@
                 <MenuItem Header="Về trang chủ" Click="MenuItem_Home_Click"/>
             </MenuItem>
             <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed">
-                <!-- Sẽ thêm menu báo cáo ở Task 06 -->
+                <MenuItem Header="Báo cáo Doanh thu" Click="MenuItem_RevenueReport_Click"/>
             </MenuItem>
         </Menu>
 
