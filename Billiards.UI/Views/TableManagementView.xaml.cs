@@ -392,3 +392,5 @@ public partial class TableManagementView : UserControl
     #endregion
 }
 
+
+

@@ -12,6 +12,10 @@
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
     </Window.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="167*"/>
+            <ColumnDefinition Width="1033*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -19,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <!-- Menu Bar -->
-        <Menu Grid.Row="0" Background="#F0F0F0">
+        <Menu Grid.Row="0" Background="#F0F0F0" Grid.ColumnSpan="2" Margin="0,0,0,22" Grid.RowSpan="2">
             <MenuItem Header="Hệ thống">
                 <MenuItem Header="Đăng xuất" Click="MenuItem_Logout_Click"/>
                 <Separator/>
@@ -40,14 +44,14 @@
         </Menu>
 
         <!-- Status Bar với thông tin người dùng -->
-        <StatusBar Grid.Row="1" Background="#E0E0E0">
+        <StatusBar Grid.Row="1" Background="#E0E0E0" Grid.ColumnSpan="2" Margin="0,0,0,644" Grid.RowSpan="2">
             <StatusBarItem>
                 <TextBlock x:Name="txtUserInfo" Text="Chưa đăng nhập" Margin="5,0"/>
             </StatusBarItem>
         </StatusBar>
 
         <!-- Main Content Area -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Grid.ColumnSpan="2">
             <!-- Default View: Table Map -->
             <Grid x:Name="gridTableMap">
                 <Grid.ColumnDefinitions>

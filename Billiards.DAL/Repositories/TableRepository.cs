@@ -20,8 +20,19 @@ public class TableRepository
     public List<Table> GetAllTables()
     {
         return _context.Tables
+            .AsNoTracking() // Disable tracking to ensure fresh data
             .Include(t => t.Area)
             .Include(t => t.TableType)
+            .ToList();
+    }
+
+    public List<Table> GetTablesByArea(int areaId)
+    {
+        return _context.Tables
+            .AsNoTracking() // Disable tracking to ensure fresh data
+            .Include(t => t.Area)
+            .Include(t => t.TableType)
+            .Where(t => t.AreaID == areaId)
             .ToList();
     }
 
@@ -38,6 +49,7 @@ public class TableRepository
     public List<Table> GetAll()
     {
         return _context.Tables
+            .AsNoTracking() // Disable tracking to ensure fresh data
             .Include(t => t.Area)
             .Include(t => t.TableType)
             .OrderBy(t => t.TableName)
@@ -60,8 +72,23 @@ public class TableRepository
 
     public void Update(Table table)
     {
-        _context.Tables.Update(table);
-        _context.SaveChanges();
+        // Find the existing table in the current context
+        var existingTable = _context.Tables.FirstOrDefault(t => t.ID == table.ID);
+        if (existingTable != null)
+        {
+            // Update properties
+            existingTable.TableName = table.TableName;
+            existingTable.AreaID = table.AreaID;
+            existingTable.TypeID = table.TypeID;
+            existingTable.Status = table.Status;
+            _context.SaveChanges();
+        }
+        else
+        {
+            // If not found, attach and update
+            _context.Tables.Update(table);
+            _context.SaveChanges();
+        }
     }
 
     public void Delete(int tableId)

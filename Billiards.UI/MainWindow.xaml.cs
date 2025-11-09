@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Billiards.BLL.Services;
@@ -8,6 +10,14 @@ using Billiards.UI.Windows;
 using Billiards.UI.Views;
 
 namespace Billiards.UI;
+
+// Helper class for "All Areas" option
+public class AreaFilterItem
+{
+    public int ID { get; set; }
+    public string AreaName { get; set; } = string.Empty;
+    public bool IsAll { get; set; }
+}
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -83,8 +93,31 @@ public partial class MainWindow : Window
     {
         try
         {
-            var areas = _areaService.GetAllAreas();
-            lbAreas.ItemsSource = areas;
+            // Create a new service instance to ensure fresh data from database
+            var areaService = new AreaService();
+            var areas = areaService.GetAllAreas();
+            
+            // Create a list with "Tất cả" option at the beginning
+            var areaList = new List<AreaFilterItem>
+            {
+                new AreaFilterItem { ID = 0, AreaName = "Tất cả", IsAll = true }
+            };
+            
+            // Add real areas
+            foreach (var area in areas)
+            {
+                areaList.Add(new AreaFilterItem { ID = area.ID, AreaName = area.AreaName, IsAll = false });
+            }
+            
+            // Clear and set ItemsSource to force UI refresh
+            lbAreas.ItemsSource = null;
+            lbAreas.ItemsSource = areaList;
+            
+            // Select "Tất cả" by default
+            if (areaList.Count > 0)
+            {
+                lbAreas.SelectedIndex = 0;
+            }
         }
         catch (Exception ex)
         {
@@ -96,7 +129,30 @@ public partial class MainWindow : Window
     {
         try
         {
-            var tables = _tableService.GetTableMap();
+            // Create a new service instance to ensure fresh data from database
+            var tableService = new TableService();
+            var tables = tableService.GetTableMap();
+            
+            // Clear and set ItemsSource to force UI refresh
+            icTableMap.ItemsSource = null;
+            icTableMap.ItemsSource = tables;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi tải sơ đồ bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void LoadTableMapByArea(int areaId)
+    {
+        try
+        {
+            // Create a new service instance to ensure fresh data from database
+            var tableService = new TableService();
+            var tables = tableService.GetTableMapByArea(areaId);
+            
+            // Clear and set ItemsSource to force UI refresh
+            icTableMap.ItemsSource = null;
             icTableMap.ItemsSource = tables;
         }
         catch (Exception ex)
@@ -107,9 +163,22 @@ public partial class MainWindow : Window
 
     private void lbAreas_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Chức năng lọc theo Area sẽ được thực hiện sau
-        // Tạm thời load lại toàn bộ bàn
-        LoadTableMap();
+        var selectedItem = lbAreas.SelectedItem as AreaFilterItem;
+        if (selectedItem == null)
+        {
+            return;
+        }
+
+        if (selectedItem.IsAll)
+        {
+            // Show all tables
+            LoadTableMap();
+        }
+        else
+        {
+            // Filter by area
+            LoadTableMapByArea(selectedItem.ID);
+        }
     }
 
     private void Table_Click(object sender, RoutedEventArgs e)
@@ -255,7 +324,53 @@ public partial class MainWindow : Window
         gridTableMap.Visibility = Visibility.Visible;
         contentAdminViews.Visibility = Visibility.Collapsed;
         contentAdminViews.Content = null;
-        LoadTableMap(); // Reload table map when returning
+        
+        // Force reload data from database when returning to home
+        RefreshTableMapData();
+    }
+
+    private void RefreshTableMapData()
+    {
+        // Save current area selection
+        var currentSelection = lbAreas.SelectedItem as AreaFilterItem;
+        int? selectedAreaId = currentSelection?.IsAll == false ? currentSelection.ID : null;
+        bool wasAllSelected = currentSelection?.IsAll == true;
+        
+        // Clear existing data to force refresh
+        icTableMap.ItemsSource = null;
+        
+        // Reload areas from database (we're already on UI thread)
+        LoadAreas();
+        
+        // Restore selection or default to "Tất cả"
+        if (wasAllSelected || selectedAreaId == null)
+        {
+            // Select "Tất cả" (first item)
+            if (lbAreas.Items.Count > 0)
+            {
+                lbAreas.SelectedIndex = 0;
+            }
+            LoadTableMap();
+        }
+        else
+        {
+            // Find and select the previously selected area
+            var areaList = lbAreas.ItemsSource as List<AreaFilterItem>;
+            if (areaList != null)
+            {
+                var areaToSelect = areaList.FirstOrDefault(a => a.ID == selectedAreaId && !a.IsAll);
+                if (areaToSelect != null)
+                {
+                    lbAreas.SelectedItem = areaToSelect;
+                }
+                else
+                {
+                    // If area not found, select "Tất cả"
+                    lbAreas.SelectedIndex = 0;
+                    LoadTableMap();
+                }
+            }
+        }
     }
 
     private void MenuItem_ProductManagement_Click(object sender, RoutedEventArgs e)

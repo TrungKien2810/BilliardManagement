@@ -171,3 +171,5 @@ public partial class PricingManagementView : UserControl
     }
 }
 
+
+

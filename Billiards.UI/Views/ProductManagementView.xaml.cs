@@ -234,3 +234,5 @@ public partial class ProductManagementView : UserControl
     }
 }
 
+
+
