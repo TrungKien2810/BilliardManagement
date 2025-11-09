@@ -19,7 +19,9 @@ public class TableRepository
 
     public List<Table> GetAllTables()
     {
+        // Dùng AsNoTracking để đảm bảo lấy dữ liệu mới nhất từ DB, không dùng cache
         return _context.Tables
+            .AsNoTracking()
             .Include(t => t.Area)
             .Include(t => t.TableType)
             .ToList();
@@ -33,6 +35,14 @@ public class TableRepository
             table.Status = newStatus;
             _context.SaveChanges();
         }
+    }
+
+    public Table? GetById(int tableId)
+    {
+        return _context.Tables
+            .Include(t => t.Area)
+            .Include(t => t.TableType)
+            .FirstOrDefault(t => t.ID == tableId);
     }
 }
 

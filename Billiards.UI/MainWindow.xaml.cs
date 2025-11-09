@@ -95,8 +95,14 @@ public partial class MainWindow : Window
     {
         try
         {
+            // Clear ItemsSource trước để force reload
+            icTableMap.ItemsSource = null;
+            
             var tables = _tableService.GetTableMap();
             icTableMap.ItemsSource = tables;
+            
+            // Force refresh UI
+            icTableMap.UpdateLayout();
         }
         catch (Exception ex)
         {
@@ -159,19 +165,20 @@ public partial class MainWindow : Window
         }
         else if (table.Status == "InUse")
         {
+            // Hiển thị ContextMenu với 2 lựa chọn: Order thêm và Thanh toán
+            // ContextMenu sẽ được hiển thị tự động khi right-click
+            // Left-click sẽ mặc định mở OrderWindow
             try
             {
-                // Lấy invoice đang active của bàn này
                 var invoiceRepository = new InvoiceRepository();
                 var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
                 
                 if (activeInvoice != null)
                 {
-                    // Mở OrderWindow với invoice hiện tại
+                    // Mặc định mở OrderWindow khi left-click
                     var orderWindow = new OrderWindow(activeInvoice);
                     orderWindow.ShowDialog();
                     
-                    // Reload table map sau khi đóng order window
                     LoadTableMap();
                 }
                 else
@@ -240,5 +247,67 @@ public partial class MainWindow : Window
         var loginWindow = new LoginWindow();
         loginWindow.Show();
         this.Close();
+    }
+
+    private void Table_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        // ContextMenu sẽ tự động hiển thị khi right-click
+    }
+
+    private void MenuItem_Order_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.MenuItem menuItem && menuItem.Tag is Table table)
+        {
+            try
+            {
+                var invoiceRepository = new InvoiceRepository();
+                var activeInvoice = invoiceRepository.GetActiveInvoiceByTable(table.ID);
+                
+                if (activeInvoice != null)
+                {
+                    var orderWindow = new OrderWindow(activeInvoice);
+                    orderWindow.ShowDialog();
+                    LoadTableMap();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Bàn {table.TableName} đang được sử dụng nhưng không tìm thấy hóa đơn.",
+                        "Thông báo",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+
+    private void MenuItem_Checkout_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.MenuItem menuItem && menuItem.Tag is Table table)
+        {
+            try
+            {
+                var checkoutWindow = new CheckoutWindow(table.ID);
+                var result = checkoutWindow.ShowDialog();
+                
+                if (result == true)
+                {
+                    // Thanh toán thành công, reload table map
+                    // Đợi một chút để đảm bảo DB đã commit
+                    System.Threading.Thread.Sleep(100);
+                    LoadTableMap();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi thanh toán: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Reload lại table map ngay cả khi có lỗi
+                LoadTableMap();
+            }
+        }
     }
 }
