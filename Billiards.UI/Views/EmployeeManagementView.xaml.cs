@@ -35,6 +35,7 @@ public partial class EmployeeManagementView : UserControl
         {
             var employees = _employeeService.GetAllEmployees();
             dgEmployees.ItemsSource = employees;
+            dgEmployees.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -63,7 +64,47 @@ public partial class EmployeeManagementView : UserControl
             txtFullName.Text = _selectedEmployee.FullName;
             txtPhoneNumber.Text = _selectedEmployee.PhoneNumber ?? string.Empty;
             txtAddress.Text = _selectedEmployee.Address ?? string.Empty;
+            
+            // Check if employee has account
+            var account = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+            if (account != null)
+            {
+                chkHasAccount.IsChecked = true;
+                gridAccount.IsEnabled = true;
+                txtUsername.Text = account.Username;
+                txtPassword.Password = string.Empty; // Don't show password
+                var roleItem = cmbRole.Items.Cast<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Tag?.ToString() == account.Role);
+                if (roleItem != null)
+                    cmbRole.SelectedItem = roleItem;
+            }
+            else
+            {
+                chkHasAccount.IsChecked = false;
+                gridAccount.IsEnabled = false;
+                txtUsername.Text = string.Empty;
+                txtPassword.Password = string.Empty;
+                cmbRole.SelectedIndex = -1;
+            }
         }
+        else
+        {
+            chkHasAccount.IsChecked = false;
+            gridAccount.IsEnabled = false;
+        }
+    }
+    
+    private void chkHasAccount_Checked(object sender, RoutedEventArgs e)
+    {
+        gridAccount.IsEnabled = true;
+    }
+    
+    private void chkHasAccount_Unchecked(object sender, RoutedEventArgs e)
+    {
+        gridAccount.IsEnabled = false;
+        txtUsername.Text = string.Empty;
+        txtPassword.Password = string.Empty;
+        cmbRole.SelectedIndex = -1;
     }
 
     private void btnAddNewEmployee_Click(object sender, RoutedEventArgs e)
@@ -72,6 +113,11 @@ public partial class EmployeeManagementView : UserControl
         txtFullName.Text = string.Empty;
         txtPhoneNumber.Text = string.Empty;
         txtAddress.Text = string.Empty;
+        chkHasAccount.IsChecked = false;
+        gridAccount.IsEnabled = false;
+        txtUsername.Text = string.Empty;
+        txtPassword.Password = string.Empty;
+        cmbRole.SelectedIndex = -1;
         dgEmployees.SelectedItem = null;
     }
 
@@ -93,6 +139,66 @@ public partial class EmployeeManagementView : UserControl
                 _selectedEmployee.Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text;
                 _employeeService.UpdateEmployee(_selectedEmployee);
 
+                // Handle account if checkbox is checked
+                if (chkHasAccount.IsChecked == true && gridAccount.IsEnabled)
+                {
+                    var existingAccount = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
+                    
+                    if (string.IsNullOrWhiteSpace(txtUsername.Text))
+                    {
+                        MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    if (existingAccount != null)
+                    {
+                        // Update existing account
+                        existingAccount.Username = txtUsername.Text;
+                        if (!string.IsNullOrWhiteSpace(txtPassword.Password))
+                        {
+                            existingAccount.Password = txtPassword.Password; // In production, hash this
+                        }
+                        existingAccount.Role = role;
+                        _employeeService.UpdateAccount(existingAccount);
+                    }
+                    else
+                    {
+                        // Create new account
+                        if (string.IsNullOrWhiteSpace(txtPassword.Password))
+                        {
+                            MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        // Check if username already exists
+                        var usernameExists = _employeeService.GetAccountByUsername(txtUsername.Text);
+                        if (usernameExists != null)
+                        {
+                            MessageBox.Show("Tên đăng nhập đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        var newAccount = new Account
+                        {
+                            Username = txtUsername.Text,
+                            Password = txtPassword.Password, // In production, hash this
+                            EmployeeID = _selectedEmployee.ID,
+                            Role = role
+                        };
+                        _employeeService.AddAccount(newAccount);
+                    }
+                }
+                else if (chkHasAccount.IsChecked == false)
+                {
+                    // Delete account if exists
+                    var existingAccount = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+                    if (existingAccount != null)
+                    {
+                        _employeeService.DeleteAccount(existingAccount.Username);
+                    }
+                }
+
                 MessageBox.Show("Cập nhật nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
@@ -105,6 +211,41 @@ public partial class EmployeeManagementView : UserControl
                     Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text
                 };
                 _employeeService.AddEmployee(newEmployee);
+
+                // Handle account if checkbox is checked
+                if (chkHasAccount.IsChecked == true && gridAccount.IsEnabled)
+                {
+                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
+                    
+                    if (string.IsNullOrWhiteSpace(txtUsername.Text))
+                    {
+                        MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(txtPassword.Password))
+                    {
+                        MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    // Check if username already exists
+                    var usernameExists = _employeeService.GetAccountByUsername(txtUsername.Text);
+                    if (usernameExists != null)
+                    {
+                        MessageBox.Show("Tên đăng nhập đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    var newAccount = new Account
+                    {
+                        Username = txtUsername.Text,
+                        Password = txtPassword.Password, // In production, hash this
+                        EmployeeID = newEmployee.ID,
+                        Role = role
+                    };
+                    _employeeService.AddAccount(newAccount);
+                }
 
                 MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -169,6 +310,7 @@ public partial class EmployeeManagementView : UserControl
         {
             var accounts = _employeeService.GetAllAccounts();
             dgAccounts.ItemsSource = accounts;
+            dgAccounts.SelectedItem = null;
         }
         catch (Exception ex)
         {

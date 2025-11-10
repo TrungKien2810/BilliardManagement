@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Billiards.UI"
         xmlns:converters="clr-namespace:Billiards.UI.Converters"
         mc:Ignorable="d"
-        Title="Quản Lý Quán Bida" Height="700" Width="1200"
+        Title="Quản Lý Quán Bida" Height="800" Width="1200"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
@@ -17,19 +17,19 @@
             <ColumnDefinition Width="1033*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Menu Bar -->
-        <Menu Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,22" Grid.RowSpan="2">
-            <MenuItem Header="Hệ thống">
+        <Menu Grid.Row="0" Grid.ColumnSpan="2" VerticalAlignment="Center" Height="30">
+            <MenuItem Header="Hệ thống" VerticalAlignment="Center">
                 <MenuItem Header="Đăng xuất" Click="MenuItem_Logout_Click"/>
                 <Separator/>
                 <MenuItem Header="Thoát" Click="MenuItem_Exit_Click"/>
             </MenuItem>
-            <MenuItem Header="Quản lý" x:Name="mnuAdmin" Visibility="Collapsed">
+            <MenuItem Header="Quản lý" x:Name="mnuAdmin" Visibility="Collapsed" VerticalAlignment="Center">
                 <MenuItem Header="Dashboard" Click="MenuItem_Dashboard_Click"/>
                 <MenuItem Header="Quản lý Đơn hàng" Click="MenuItem_OrderManagement_Click"/>
                 <Separator/>
@@ -41,15 +41,19 @@
                 <Separator/>
                 <MenuItem Header="Về trang chủ" Click="MenuItem_Home_Click"/>
             </MenuItem>
-            <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed">
+            <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed" VerticalAlignment="Center">
                 <MenuItem Header="Báo cáo Doanh thu" Click="MenuItem_RevenueReport_Click"/>
             </MenuItem>
         </Menu>
 
         <!-- Status Bar với thông tin người dùng -->
-        <StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,644" Grid.RowSpan="2">
+        <StatusBar Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top">
             <StatusBarItem>
-                <TextBlock x:Name="txtUserInfo" Text="Chưa đăng nhập" Margin="5,0" FontWeight="SemiBold"/>
+                <TextBlock x:Name="txtUserInfo" 
+                           Text="Chưa đăng nhập" 
+                           Margin="10,5" 
+                           FontWeight="SemiBold"
+                           Foreground="White"/>
             </StatusBarItem>
         </StatusBar>
 

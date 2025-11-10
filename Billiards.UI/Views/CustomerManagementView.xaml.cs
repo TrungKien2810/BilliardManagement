@@ -31,6 +31,7 @@ public partial class CustomerManagementView : UserControl
         {
             var customers = _customerService.GetAllCustomers();
             dgCustomers.ItemsSource = customers;
+            dgCustomers.SelectedItem = null;
         }
         catch (Exception ex)
         {

@@ -15,17 +15,28 @@
                         <ColumnDefinition Width="350"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Nhân viên" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Danh sách Nhân viên" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <DataGrid x:Name="dgEmployees" 
+                                  Grid.Row="1"
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgEmployees_SelectionChanged"
                                   IsReadOnly="True"
-                                  Height="550">
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
                                 <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="*"/>
@@ -35,14 +46,19 @@
                                 <DataGridTextColumn Header="Vai trò" Binding="{Binding Account.Role}" Width="100"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
+                    </Grid>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Nhân viên" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                        <Border Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Thông tin Nhân viên" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -95,7 +111,7 @@
                                 </Grid>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                 <Button x:Name="btnAddNewEmployee" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewEmployee_Click" FontSize="14"/>
                                 <Button x:Name="btnSaveEmployee" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveEmployee_Click" FontSize="14"/>
                                 <Button x:Name="btnDeleteEmployee" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteEmployee_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
@@ -113,17 +129,28 @@
                         <ColumnDefinition Width="350"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Tài khoản" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Danh sách Tài khoản" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <DataGrid x:Name="dgAccounts" 
+                                  Grid.Row="1"
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgAccounts_SelectionChanged"
                                   IsReadOnly="True"
-                                  Height="550">
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
                                 <DataGridTextColumn Header="Password" Binding="{Binding Password}" Width="150"/>
@@ -131,14 +158,19 @@
                                 <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
+                    </Grid>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Tài khoản" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                        <Border Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Thông tin Tài khoản" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -146,7 +178,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Margin="0,0,0,10">
@@ -180,7 +212,7 @@
                                 </ComboBox>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button x:Name="btnAddNewAccount" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewAccount_Click" FontSize="14"/>
                                 <Button x:Name="btnSaveAccount" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveAccount_Click" FontSize="14"/>
                                 <Button x:Name="btnDeleteAccount" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteAccount_Click" Style="{StaticResource DangerButton}" FontSize="14"/>

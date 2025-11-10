@@ -154,8 +154,9 @@
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryLightColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryDarkColor}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="0,0,0,10"/>

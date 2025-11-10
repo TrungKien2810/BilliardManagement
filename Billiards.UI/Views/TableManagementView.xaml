@@ -15,17 +15,28 @@
                         <ColumnDefinition Width="350"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Bàn" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Danh sách Bàn" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <DataGrid x:Name="dgTables" 
+                                  Grid.Row="1"
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgTables_SelectionChanged"
                                   IsReadOnly="True"
-                                  Height="550">
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
                                 <DataGridTextColumn Header="Tên bàn" Binding="{Binding TableName}" Width="*"/>
@@ -34,14 +45,19 @@
                                 <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}" Width="120"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
+                    </Grid>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Bàn" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                        <Border Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Thông tin Bàn" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -100,30 +116,46 @@
                         <ColumnDefinition Width="350"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Khu vực" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Danh sách Khu vực" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <DataGrid x:Name="dgAreas" 
+                                  Grid.Row="1"
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgAreas_SelectionChanged"
                                   IsReadOnly="True"
-                                  Height="550">
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="100"/>
                                 <DataGridTextColumn Header="Tên khu vực" Binding="{Binding AreaName}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
+                    </Grid>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Khu vực" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                        <Border Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Thông tin Khu vực" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -153,30 +185,46 @@
                         <ColumnDefinition Width="350"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Loại bàn" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                    <Grid Grid.Column="0" Margin="0,0,10,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Danh sách Loại bàn" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <DataGrid x:Name="dgTableTypes" 
+                                  Grid.Row="1"
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgTableTypes_SelectionChanged"
                                   IsReadOnly="True"
-                                  Height="550">
+                                  VerticalAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="100"/>
                                 <DataGridTextColumn Header="Tên loại bàn" Binding="{Binding TypeName}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                    </StackPanel>
+                    </Grid>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Loại bàn" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryColor}"
-                                   Margin="0,0,0,15"/>
+                        <Border Background="{StaticResource PrimaryColor}"
+                                CornerRadius="4"
+                                Padding="12,8"
+                                Margin="0,0,0,15">
+                            <TextBlock Text="Thông tin Loại bàn" 
+                                       FontSize="18" 
+                                       FontWeight="Bold" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Left"/>
+                        </Border>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>

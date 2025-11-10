@@ -31,6 +31,7 @@ public partial class ProductManagementView : UserControl
         {
             var products = _productService.GetAllProducts();
             dgProducts.ItemsSource = products;
+            dgProducts.SelectedItem = null;
         }
         catch (Exception ex)
         {

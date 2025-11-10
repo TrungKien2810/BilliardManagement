@@ -44,6 +44,7 @@ public partial class PricingManagementView : UserControl
         {
             var rules = _pricingService.GetAllPricingRules();
             dgPricingRules.ItemsSource = rules;
+            dgPricingRules.SelectedItem = null;
         }
         catch (Exception ex)
         {

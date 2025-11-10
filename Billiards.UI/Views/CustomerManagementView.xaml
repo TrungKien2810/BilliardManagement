@@ -12,17 +12,28 @@
         </Grid.ColumnDefinitions>
 
         <!-- Left Column: DataGrid -->
-        <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Danh sách Khách hàng" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource PrimaryColor}"
-                       Margin="0,0,0,15"/>
+        <Grid Grid.Column="0" Margin="0,0,10,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                    Background="{StaticResource PrimaryColor}"
+                    CornerRadius="4"
+                    Padding="12,8"
+                    Margin="0,0,0,15">
+                <TextBlock Text="Danh sách Khách hàng" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           HorizontalAlignment="Left"/>
+            </Border>
             <DataGrid x:Name="dgCustomers" 
+                      Grid.Row="1"
                       AutoGenerateColumns="False"
                       SelectionChanged="dgCustomers_SelectionChanged"
                       IsReadOnly="True"
-                      Height="500">
+                      VerticalAlignment="Stretch">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50"/>
                     <DataGridTextColumn Header="Họ tên" Binding="{Binding FullName}" Width="*"/>
@@ -30,15 +41,20 @@
                     <DataGridTextColumn Header="Điểm tích lũy" Binding="{Binding LoyaltyPoints}" Width="120"/>
                 </DataGrid.Columns>
             </DataGrid>
-        </StackPanel>
+        </Grid>
 
         <!-- Right Column: Form -->
         <StackPanel Grid.Column="1">
-            <TextBlock Text="Thông tin Khách hàng" 
-                       FontSize="18" 
-                       FontWeight="Bold" 
-                       Foreground="{StaticResource PrimaryColor}"
-                       Margin="0,0,0,15"/>
+            <Border Background="{StaticResource PrimaryColor}"
+                    CornerRadius="4"
+                    Padding="12,8"
+                    Margin="0,0,0,15">
+                <TextBlock Text="Thông tin Khách hàng" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           Foreground="White"
+                           HorizontalAlignment="Left"/>
+            </Border>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

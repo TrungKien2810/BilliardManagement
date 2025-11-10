@@ -38,6 +38,7 @@ public partial class TableManagementView : UserControl
         {
             var tables = _tableService.GetAllTables();
             dgTables.ItemsSource = tables;
+            dgTables.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -195,6 +196,7 @@ public partial class TableManagementView : UserControl
         {
             var areas = _tableService.GetAllAreas();
             dgAreas.ItemsSource = areas;
+            dgAreas.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -347,6 +349,7 @@ public partial class TableManagementView : UserControl
         {
             var tableTypes = _tableService.GetAllTableTypes();
             dgTableTypes.ItemsSource = tableTypes;
+            dgTableTypes.SelectedItem = null;
         }
         catch (Exception ex)
         {
