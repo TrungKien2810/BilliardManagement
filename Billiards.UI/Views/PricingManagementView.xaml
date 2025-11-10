@@ -92,7 +92,7 @@
 
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="btnAddNew" 
-                            Content="Thêm mới" 
+                            Content="Làm mới" 
                             Width="110" 
                             Height="38" 
                             Margin="5,0" 

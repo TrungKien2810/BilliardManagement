@@ -132,7 +132,7 @@
 
                         <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button x:Name="btnAddNew" 
-                                    Content="Thêm mới" 
+                                    Content="Làm mới" 
                                     Width="110" 
                                     Height="38" 
                                     Margin="5,0" 
@@ -189,7 +189,7 @@
 
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
                             <Button x:Name="btnAddNewCategory" 
-                                    Content="Thêm mới" 
+                                    Content="Làm mới" 
                                     Width="110" 
                                     Height="38" 
                                     Margin="5,0" 

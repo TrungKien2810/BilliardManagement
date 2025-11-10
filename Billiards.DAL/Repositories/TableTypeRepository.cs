@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using Billiards.DAL.Models;
 
@@ -27,14 +28,33 @@ public class TableTypeRepository
         return _context.TableTypes.FirstOrDefault(t => t.ID == tableTypeId);
     }
 
+    public bool IsTableTypeNameExists(string typeName, int? excludeTableTypeId = null)
+    {
+        var query = _context.TableTypes.Where(t => t.TypeName.Trim().ToLower() == typeName.Trim().ToLower());
+        if (excludeTableTypeId.HasValue)
+        {
+            query = query.Where(t => t.ID != excludeTableTypeId.Value);
+        }
+        return query.Any();
+    }
+
     public void Add(TableType tableType)
     {
+        if (IsTableTypeNameExists(tableType.TypeName))
+        {
+            throw new InvalidOperationException($"Tên loại bàn \"{tableType.TypeName}\" đã tồn tại!");
+        }
         _context.TableTypes.Add(tableType);
         _context.SaveChanges();
     }
 
     public void Update(TableType tableType)
     {
+        // Check for duplicate table type name (excluding current table type)
+        if (IsTableTypeNameExists(tableType.TypeName, tableType.ID))
+        {
+            throw new InvalidOperationException($"Tên loại bàn \"{tableType.TypeName}\" đã tồn tại!");
+        }
         _context.TableTypes.Update(tableType);
         _context.SaveChanges();
     }

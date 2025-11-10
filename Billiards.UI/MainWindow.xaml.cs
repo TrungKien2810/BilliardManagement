@@ -448,6 +448,16 @@ public partial class MainWindow : Window
         ShowAdminView(new PricingManagementView(), "Quản lý Giá giờ");
     }
 
+    private void MenuItem_LoyaltyManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new LoyaltyManagementView(), "Quản lý Tích điểm");
+    }
+
     private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
     {
         ShowTableMap();

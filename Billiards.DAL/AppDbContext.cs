@@ -25,6 +25,7 @@ public class AppDbContext : DbContext
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
     public DbSet<HourlyPricingRule> HourlyPricingRules { get; set; }
+    public DbSet<LoyaltyRule> LoyaltyRules { get; set; }
 
     public static string? ConnectionString { get; set; }
 
@@ -208,6 +209,18 @@ public class AppDbContext : DbContext
                 .WithMany(tt => tt.HourlyPricingRules)
                 .HasForeignKey(e => e.TableTypeID)
                 .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        // Configure LoyaltyRule
+        modelBuilder.Entity<LoyaltyRule>(entity =>
+        {
+            entity.ToTable("LoyaltyRules");
+            entity.HasKey(e => e.ID);
+            entity.Property(e => e.ID).HasColumnName("ID").ValueGeneratedOnAdd();
+            entity.Property(e => e.PointsPerAmount).HasColumnName("PointsPerAmount").HasColumnType("decimal(18,2)").IsRequired().HasDefaultValue(10000);
+            entity.Property(e => e.AmountPerPoint).HasColumnName("AmountPerPoint").HasColumnType("decimal(18,2)").IsRequired().HasDefaultValue(100);
+            entity.Property(e => e.MinimumPointsToRedeem).HasColumnName("MinimumPointsToRedeem").IsRequired().HasDefaultValue(1000);
+            entity.Property(e => e.IsActive).HasColumnName("IsActive").IsRequired().HasDefaultValue(true);
         });
     }
 }

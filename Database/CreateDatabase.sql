@@ -138,6 +138,16 @@ CREATE TABLE HourlyPricingRules (
 );
 GO
 
+-- Bảng LoyaltyRules (Quy tắc tích điểm và đổi điểm)
+CREATE TABLE LoyaltyRules (
+    ID INT PRIMARY KEY IDENTITY(1,1),
+    PointsPerAmount DECIMAL(18, 2) NOT NULL DEFAULT 10000, -- Số VND cần để có 1 điểm (mặc định: 10.000đ = 1 điểm)
+    AmountPerPoint DECIMAL(18, 2) NOT NULL DEFAULT 100, -- 1 điểm = bao nhiêu VND khi đổi (mặc định: 1 điểm = 100đ)
+    MinimumPointsToRedeem INT NOT NULL DEFAULT 1000, -- Số điểm tối thiểu để được đổi (mặc định: 1000 điểm)
+    IsActive BIT NOT NULL DEFAULT 1 -- Có kích hoạt hệ thống tích điểm không
+);
+GO
+
 -- =============================================
 -- CHÈN DỮ LIỆU MẪU ĐỂ TEST
 -- =============================================
@@ -222,6 +232,12 @@ INSERT INTO HourlyPricingRules (TableTypeID, StartTimeSlot, EndTimeSlot, PricePe
 (3, '22:00:00', '24:00:00', 120000);
 GO
 
+-- Chèn LoyaltyRules (Quy tắc tích điểm và đổi điểm)
+-- Mặc định: 10.000đ = 1 điểm, 1 điểm = 100đ giảm giá, tối thiểu 1000 điểm để đổi
+INSERT INTO LoyaltyRules (PointsPerAmount, AmountPerPoint, MinimumPointsToRedeem, IsActive) VALUES
+(10000, 100, 1000, 1);
+GO
+
 -- =============================================
 -- KIỂM TRA DỮ LIỆU
 -- =============================================
@@ -241,7 +257,9 @@ SELECT 'Accounts', COUNT(*) FROM Accounts
 UNION ALL
 SELECT 'Customers', COUNT(*) FROM Customers
 UNION ALL
-SELECT 'HourlyPricingRules', COUNT(*) FROM HourlyPricingRules;
+SELECT 'HourlyPricingRules', COUNT(*) FROM HourlyPricingRules
+UNION ALL
+SELECT 'LoyaltyRules', COUNT(*) FROM LoyaltyRules;
 GO
 
 PRINT '=============================================';
