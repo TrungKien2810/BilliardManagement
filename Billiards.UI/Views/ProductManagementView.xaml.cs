@@ -66,6 +66,7 @@ public partial class ProductManagementView : UserControl
             cmbCategory.SelectedValue = _selectedProduct.CategoryID;
             txtSalePrice.Text = _selectedProduct.SalePrice.ToString("N0"); // Format số với dấu phẩy
             txtStockQuantity.Text = _selectedProduct.StockQuantity.ToString();
+            txtMinimumStock.Text = _selectedProduct.MinimumStock.ToString();
 
             // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
             btnSave.Content = "Cập nhật"; // Đổi chữ nút "Lưu" thành "Cập nhật"
@@ -100,6 +101,7 @@ public partial class ProductManagementView : UserControl
         cmbCategory.SelectedIndex = -1;
         txtSalePrice.Text = string.Empty;
         txtStockQuantity.Text = string.Empty;
+        txtMinimumStock.Text = "10"; // Giá trị mặc định
     }
 
     private void UpdateUIForCreateMode()
@@ -144,6 +146,13 @@ public partial class ProductManagementView : UserControl
                 return;
             }
 
+            if (!int.TryParse(txtMinimumStock.Text, out int minimumStock) || minimumStock < 0)
+            {
+                MessageBox.Show("Tồn kho tối thiểu không hợp lệ!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtMinimumStock.Focus();
+                return;
+            }
+
             // Logic chính: Kiểm tra _selectedProduct để xác định Create hay Update
             if (_selectedProduct == null)
             {
@@ -153,7 +162,8 @@ public partial class ProductManagementView : UserControl
                     ProductName = txtProductName.Text.Trim(),
                     CategoryID = (int)cmbCategory.SelectedValue,
                     SalePrice = salePrice,
-                    StockQuantity = stockQuantity
+                    StockQuantity = stockQuantity,
+                    MinimumStock = minimumStock
                 };
                 _productService.AddProduct(newProduct);
                 MessageBox.Show("✅ Thêm sản phẩm mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -165,6 +175,7 @@ public partial class ProductManagementView : UserControl
                 _selectedProduct.CategoryID = (int)cmbCategory.SelectedValue;
                 _selectedProduct.SalePrice = salePrice;
                 _selectedProduct.StockQuantity = stockQuantity;
+                _selectedProduct.MinimumStock = minimumStock;
                 _productService.UpdateProduct(_selectedProduct);
                 MessageBox.Show("✅ Cập nhật sản phẩm thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }

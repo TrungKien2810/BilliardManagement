@@ -70,7 +70,8 @@ CREATE TABLE Products (
     ProductName NVARCHAR(200) NOT NULL,
     CategoryID INT FOREIGN KEY REFERENCES ProductCategories(ID),
     SalePrice DECIMAL(18, 2) NOT NULL,
-    StockQuantity INT NOT NULL DEFAULT 0
+    StockQuantity INT NOT NULL DEFAULT 0,
+    MinimumStock INT NOT NULL DEFAULT 10 -- Tồn kho tối thiểu để cảnh báo
 );
 GO
 
@@ -175,17 +176,17 @@ INSERT INTO ProductCategories (CategoryName) VALUES
 GO
 
 -- Chèn Products (Sản phẩm)
-INSERT INTO Products (ProductName, CategoryID, SalePrice, StockQuantity) VALUES
-('Coca Cola', 1, 15000, 100),
-('Pepsi', 1, 15000, 100),
-('Nước suối', 1, 10000, 200),
-('Bia Heineken', 1, 35000, 50),
-('Bia Tiger', 1, 30000, 50),
-('Mì tôm', 2, 25000, 50),
-('Bánh mì', 2, 15000, 30),
-('Thuốc lá Vina', 3, 20000, 50),
-('Thuốc lá Jet', 3, 18000, 50),
-('Khăn lạnh', 4, 5000, 200);
+INSERT INTO Products (ProductName, CategoryID, SalePrice, StockQuantity, MinimumStock) VALUES
+('Coca Cola', 1, 15000, 100, 20),
+('Pepsi', 1, 15000, 100, 20),
+('Nước suối', 1, 10000, 200, 50),
+('Bia Heineken', 1, 35000, 50, 10),
+('Bia Tiger', 1, 30000, 50, 10),
+('Mì tôm', 2, 25000, 50, 15),
+('Bánh mì', 2, 15000, 30, 10),
+('Thuốc lá Vina', 3, 20000, 50, 10),
+('Thuốc lá Jet', 3, 18000, 50, 10),
+('Khăn lạnh', 4, 5000, 200, 50);
 GO
 
 -- Chèn Employees (Nhân viên)

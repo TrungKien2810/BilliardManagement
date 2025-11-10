@@ -54,6 +54,48 @@ public partial class MainWindow : Window
 
         LoadAreas();
         LoadTableMap();
+
+        // Kiểm tra và hiển thị cảnh báo tồn kho thấp (chỉ cho Admin)
+        // Sử dụng Dispatcher để đợi MainWindow render xong trước khi hiển thị dialog
+        Dispatcher.BeginInvoke(new System.Action(() =>
+        {
+            CheckLowStockAlert();
+        }), System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    private void CheckLowStockAlert()
+    {
+        // Hiển thị cảnh báo cho cả Admin và Cashier
+        try
+        {
+            var productService = new ProductService();
+            var lowStockProducts = productService.GetLowStockProducts();
+
+            if (lowStockProducts != null && lowStockProducts.Count > 0)
+            {
+                // Kiểm tra quyền Admin để quyết định hiển thị nút chuyển hướng
+                bool isAdmin = AuthorizationHelper.IsAdmin();
+                
+                // Hiển thị dialog cảnh báo
+                var alertDialog = new LowStockAlertDialog(lowStockProducts, isAdmin);
+                alertDialog.Owner = this;
+                alertDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                var result = alertDialog.ShowDialog();
+
+                // Nếu người dùng chọn "Đến Quản lý Sản phẩm" (chỉ Admin)
+                if (result == true && alertDialog.NavigateToProducts && isAdmin)
+                {
+                    // Chuyển đến quản lý sản phẩm
+                    MenuItem_ProductManagement_Click(null, null);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Không hiển thị lỗi nếu không load được (có thể do database chưa có dữ liệu)
+            // Chỉ log lỗi, không làm gián đoạn quá trình đăng nhập
+            System.Diagnostics.Debug.WriteLine($"Lỗi khi kiểm tra tồn kho thấp: {ex.Message}");
+        }
     }
 
     private void UpdateUserInfo()

@@ -95,5 +95,18 @@ public class ProductRepository
             _context.SaveChanges();
         }
     }
+
+    /// <summary>
+    /// Lấy danh sách sản phẩm có tồn kho thấp (StockQuantity <= MinimumStock)
+    /// </summary>
+    public List<Product> GetLowStockProducts()
+    {
+        return _context.Products
+            .Include(p => p.Category)
+            .Where(p => p.StockQuantity <= p.MinimumStock)
+            .OrderBy(p => p.StockQuantity)
+            .ThenBy(p => p.ProductName)
+            .ToList();
+    }
 }
 

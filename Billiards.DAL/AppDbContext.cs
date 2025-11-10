@@ -98,6 +98,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.ProductName).HasColumnName("ProductName").HasMaxLength(200).IsRequired();
             entity.Property(e => e.SalePrice).HasColumnName("SalePrice").HasColumnType("decimal(18,2)").IsRequired();
             entity.Property(e => e.StockQuantity).HasColumnName("StockQuantity").IsRequired();
+            entity.Property(e => e.MinimumStock).HasColumnName("MinimumStock").IsRequired().HasDefaultValue(10);
             
             entity.HasOne(e => e.Category)
                 .WithMany(pc => pc.Products)
