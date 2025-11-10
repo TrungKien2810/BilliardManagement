@@ -1,0 +1,204 @@
+<UserControl x:Class="Billiards.UI.Views.OrderManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="Quản lý Đơn hàng" 
+                   FontSize="24" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,15"/>
+
+        <!-- Filters -->
+        <Border Grid.Row="1" 
+                BorderBrush="#CCCCCC" 
+                BorderThickness="1" 
+                CornerRadius="5" 
+                Padding="15" 
+                Margin="0,0,0,15"
+                Background="#F9F9F9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Date Filters -->
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="0" 
+                           Text="Từ ngày:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,8,5"/>
+                <DatePicker x:Name="dpStartDate" 
+                            Grid.Row="0" 
+                            Grid.Column="1" 
+                            Width="140" 
+                            Margin="0,0,16,5"/>
+
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="2" 
+                           Text="Đến ngày:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,8,5"/>
+                <DatePicker x:Name="dpEndDate" 
+                            Grid.Row="0" 
+                            Grid.Column="3" 
+                            Width="140" 
+                            Margin="0,0,16,5"/>
+
+                <!-- Status Filter -->
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="4" 
+                           Text="Trạng thái:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,0,8,5"/>
+                <ComboBox x:Name="cmbStatus" 
+                          Grid.Row="0" 
+                          Grid.Column="5" 
+                          Width="150" 
+                          Margin="0,0,16,5">
+                    <ComboBoxItem Content="Tất cả" Tag="" IsSelected="True"/>
+                    <ComboBoxItem Content="Active" Tag="Active"/>
+                    <ComboBoxItem Content="Paid" Tag="Paid"/>
+                    <ComboBoxItem Content="Cancelled" Tag="Cancelled"/>
+                </ComboBox>
+
+                <!-- Buttons -->
+                <Button x:Name="btnSearch" 
+                        Grid.Row="0" 
+                        Grid.Column="6" 
+                        Content="Tìm kiếm" 
+                        Click="btnSearch_Click" 
+                        Padding="15,5" 
+                        Margin="0,0,0,5"/>
+
+                <!-- Search by ID -->
+                <TextBlock Grid.Row="1" 
+                           Grid.Column="0" 
+                           Text="Tìm theo ID:" 
+                           VerticalAlignment="Center" 
+                           Margin="0,5,8,0"/>
+                <TextBox x:Name="txtSearchId" 
+                         Grid.Row="1" 
+                         Grid.Column="1" 
+                         Width="140" 
+                         Margin="0,5,16,0"
+                         KeyDown="txtSearchId_KeyDown"/>
+            </Grid>
+        </Border>
+
+        <!-- DataGrid -->
+        <DataGrid x:Name="dgOrders" 
+                  Grid.Row="2" 
+                  AutoGenerateColumns="False" 
+                  IsReadOnly="True" 
+                  CanUserAddRows="False" 
+                  SelectionMode="Single"
+                  SelectionChanged="dgOrders_SelectionChanged"
+                  Margin="0,0,0,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" 
+                                    Binding="{Binding ID}" 
+                                    Width="60"/>
+                <DataGridTextColumn Header="Bàn" 
+                                    Binding="{Binding Table.TableName}" 
+                                    Width="100"/>
+                <DataGridTextColumn Header="Bắt đầu" 
+                                    Binding="{Binding StartTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" 
+                                    Width="140"/>
+                <DataGridTextColumn Header="Kết thúc" 
+                                    Binding="{Binding EndTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" 
+                                    Width="140"/>
+                <DataGridTextColumn Header="Tiền giờ" 
+                                    Binding="{Binding TableFee, StringFormat=\{0:N0\}}" 
+                                    Width="100"/>
+                <DataGridTextColumn Header="Dịch vụ" 
+                                    Binding="{Binding ProductFee, StringFormat=\{0:N0\}}" 
+                                    Width="100"/>
+                <DataGridTextColumn Header="Giảm giá" 
+                                    Binding="{Binding Discount, StringFormat=\{0:N0\}}" 
+                                    Width="100"/>
+                <DataGridTextColumn Header="Tổng" 
+                                    Binding="{Binding TotalAmount, StringFormat=\{0:N0\}}" 
+                                    Width="120"/>
+                <DataGridTextColumn Header="Trạng thái" 
+                                    Binding="{Binding Status}" 
+                                    Width="100"/>
+                <DataGridTextColumn Header="NV tạo" 
+                                    Binding="{Binding CreatedByEmployee.FullName}" 
+                                    Width="150"/>
+                <DataGridTextColumn Header="Khách hàng" 
+                                    Binding="{Binding Customer.FullName}" 
+                                    Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Action Buttons and Summary -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Summary -->
+            <StackPanel Grid.Column="0" 
+                        Orientation="Horizontal" 
+                        VerticalAlignment="Center">
+                <TextBlock Text="Tổng số đơn: " 
+                           FontWeight="Bold" 
+                           Margin="0,0,5,0"/>
+                <TextBlock x:Name="txtTotalCount" 
+                           Margin="0,0,20,0"/>
+                <TextBlock Text="Tổng doanh thu: " 
+                           FontWeight="Bold" 
+                           Margin="0,0,5,0"/>
+                <TextBlock x:Name="txtTotalRevenue" 
+                           Foreground="#2196F3" 
+                           FontWeight="Bold"/>
+            </StackPanel>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Column="1" 
+                        Orientation="Horizontal">
+                <Button x:Name="btnViewDetails" 
+                        Content="Xem chi tiết" 
+                        Click="btnViewDetails_Click" 
+                        Padding="15,5" 
+                        Margin="0,0,10,0"
+                        IsEnabled="False"/>
+                <Button x:Name="btnCancel" 
+                        Content="Hủy đơn" 
+                        Click="btnCancel_Click" 
+                        Padding="15,5" 
+                        Margin="0,0,10,0"
+                        Background="#F44336"
+                        Foreground="White"
+                        IsEnabled="False"/>
+                <Button x:Name="btnRefresh" 
+                        Content="Làm mới" 
+                        Click="btnRefresh_Click" 
+                        Padding="15,5"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
+
