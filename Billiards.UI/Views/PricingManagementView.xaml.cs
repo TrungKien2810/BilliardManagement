@@ -23,6 +23,8 @@ public partial class PricingManagementView : UserControl
     {
         LoadTableTypes();
         LoadDataGrid();
+        // Khởi tạo UI về Create Mode khi load lần đầu
+        UpdateUIForCreateMode();
     }
 
     private void LoadTableTypes()
@@ -44,6 +46,7 @@ public partial class PricingManagementView : UserControl
         {
             var rules = _pricingService.GetAllPricingRules();
             dgPricingRules.ItemsSource = rules;
+            dgPricingRules.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -56,21 +59,51 @@ public partial class PricingManagementView : UserControl
         _selectedRule = dgPricingRules.SelectedItem as HourlyPricingRule;
         if (_selectedRule != null)
         {
+            // 1. Đổ dữ liệu từ quy tắc giá được chọn vào form
             cmbTableType.SelectedValue = _selectedRule.TableTypeID;
             txtStartTime.Text = _selectedRule.StartTimeSlot.ToString(@"hh\:mm");
             txtEndTime.Text = _selectedRule.EndTimeSlot.ToString(@"hh\:mm");
             txtPricePerHour.Text = _selectedRule.PricePerHour.ToString();
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSave.Content = "Cập nhật";
+            btnDelete.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            // Không có quy tắc giá nào được chọn, chuyển về Create Mode
+            UpdateUIForCreateMode();
         }
     }
 
     private void btnAddNew_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedRule = null;
+        dgPricingRules.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForCreateMode();
+
+        // 3. Tự động focus vào ô đầu tiên
+        cmbTableType.Focus();
+    }
+
+    private void ClearForm()
+    {
         cmbTableType.SelectedIndex = -1;
         txtStartTime.Text = "08:00";
         txtEndTime.Text = "22:00";
         txtPricePerHour.Text = string.Empty;
-        dgPricingRules.SelectedItem = null;
+    }
+
+    private void UpdateUIForCreateMode()
+    {
+        btnSave.Content = "Lưu mới";
+        btnDelete.Visibility = Visibility.Collapsed;
     }
 
     private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -107,19 +140,10 @@ public partial class PricingManagementView : UserControl
                 return;
             }
 
-            if (_selectedRule != null)
+            // Logic chính: Kiểm tra _selectedRule để xác định Create hay Update
+            if (_selectedRule == null)
             {
-                // Update existing rule
-                _selectedRule.TableTypeID = (int)cmbTableType.SelectedValue;
-                _selectedRule.StartTimeSlot = startTime;
-                _selectedRule.EndTimeSlot = endTime;
-                _selectedRule.PricePerHour = pricePerHour;
-                _pricingService.UpdatePricingRule(_selectedRule);
-                MessageBox.Show("Cập nhật quy tắc giá thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                // Add new rule
+                // CREATE MODE: Tạo quy tắc giá mới
                 var newRule = new HourlyPricingRule
                 {
                     TableTypeID = (int)cmbTableType.SelectedValue,
@@ -128,7 +152,17 @@ public partial class PricingManagementView : UserControl
                     PricePerHour = pricePerHour
                 };
                 _pricingService.AddPricingRule(newRule);
-                MessageBox.Show("Thêm quy tắc giá thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Thêm quy tắc giá mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // UPDATE MODE: Cập nhật quy tắc giá hiện tại
+                _selectedRule.TableTypeID = (int)cmbTableType.SelectedValue;
+                _selectedRule.StartTimeSlot = startTime;
+                _selectedRule.EndTimeSlot = endTime;
+                _selectedRule.PricePerHour = pricePerHour;
+                _pricingService.UpdatePricingRule(_selectedRule);
+                MessageBox.Show("✅ Cập nhật quy tắc giá thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadDataGrid();
@@ -136,7 +170,7 @@ public partial class PricingManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -159,13 +193,13 @@ public partial class PricingManagementView : UserControl
             try
             {
                 _pricingService.DeletePricingRule(_selectedRule.ID);
-                MessageBox.Show("Xóa quy tắc giá thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa quy tắc giá thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadDataGrid();
                 btnAddNew_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa quy tắc giá: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa quy tắc giá: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

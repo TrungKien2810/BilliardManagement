@@ -25,6 +25,9 @@ public partial class EmployeeManagementView : UserControl
         LoadEmployees();
         LoadAccounts();
         LoadEmployeesForAccountCombo();
+        // Khởi tạo UI về Create Mode khi load lần đầu
+        UpdateUIForEmployeeCreateMode();
+        UpdateUIForAccountCreateMode();
     }
 
     #region Employees Management
@@ -35,6 +38,7 @@ public partial class EmployeeManagementView : UserControl
         {
             var employees = _employeeService.GetAllEmployees();
             dgEmployees.ItemsSource = employees;
+            dgEmployees.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -60,19 +64,91 @@ public partial class EmployeeManagementView : UserControl
         _selectedEmployee = dgEmployees.SelectedItem as Employee;
         if (_selectedEmployee != null)
         {
+            // 1. Đổ dữ liệu từ nhân viên được chọn vào form
             txtFullName.Text = _selectedEmployee.FullName;
             txtPhoneNumber.Text = _selectedEmployee.PhoneNumber ?? string.Empty;
             txtAddress.Text = _selectedEmployee.Address ?? string.Empty;
+            
+            // Check if employee has account
+            var account = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+            if (account != null)
+            {
+                chkHasAccount.IsChecked = true;
+                gridAccount.IsEnabled = true;
+                txtUsername.Text = account.Username;
+                txtPassword.Password = string.Empty; // Don't show password
+                var roleItem = cmbRole.Items.Cast<ComboBoxItem>()
+                    .FirstOrDefault(item => item.Tag?.ToString() == account.Role);
+                if (roleItem != null)
+                    cmbRole.SelectedItem = roleItem;
+            }
+            else
+            {
+                chkHasAccount.IsChecked = false;
+                gridAccount.IsEnabled = false;
+                txtUsername.Text = string.Empty;
+                txtPassword.Password = string.Empty;
+                cmbRole.SelectedIndex = -1;
+            }
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSaveEmployee.Content = "Cập nhật";
+            btnDeleteEmployee.Visibility = Visibility.Visible;
         }
+        else
+        {
+            chkHasAccount.IsChecked = false;
+            gridAccount.IsEnabled = false;
+            // Không có nhân viên nào được chọn, chuyển về Create Mode
+            UpdateUIForEmployeeCreateMode();
+        }
+    }
+    
+    private void chkHasAccount_Checked(object sender, RoutedEventArgs e)
+    {
+        gridAccount.IsEnabled = true;
+    }
+    
+    private void chkHasAccount_Unchecked(object sender, RoutedEventArgs e)
+    {
+        gridAccount.IsEnabled = false;
+        txtUsername.Text = string.Empty;
+        txtPassword.Password = string.Empty;
+        cmbRole.SelectedIndex = -1;
     }
 
     private void btnAddNewEmployee_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedEmployee = null;
+        dgEmployees.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearEmployeeForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForEmployeeCreateMode();
+
+        // 3. Tự động focus vào ô đầu tiên
+        txtFullName.Focus();
+    }
+
+    private void ClearEmployeeForm()
+    {
         txtFullName.Text = string.Empty;
         txtPhoneNumber.Text = string.Empty;
         txtAddress.Text = string.Empty;
-        dgEmployees.SelectedItem = null;
+        chkHasAccount.IsChecked = false;
+        gridAccount.IsEnabled = false;
+        txtUsername.Text = string.Empty;
+        txtPassword.Password = string.Empty;
+        cmbRole.SelectedIndex = -1;
+    }
+
+    private void UpdateUIForEmployeeCreateMode()
+    {
+        btnSaveEmployee.Content = "Lưu mới";
+        btnDeleteEmployee.Visibility = Visibility.Collapsed;
     }
 
     private void btnSaveEmployee_Click(object sender, RoutedEventArgs e)
@@ -85,28 +161,124 @@ public partial class EmployeeManagementView : UserControl
                 return;
             }
 
-            if (_selectedEmployee != null)
+            // Logic chính: Kiểm tra _selectedEmployee để xác định Create hay Update
+            if (_selectedEmployee == null)
             {
-                // Update existing employee
-                _selectedEmployee.FullName = txtFullName.Text;
-                _selectedEmployee.PhoneNumber = string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? null : txtPhoneNumber.Text;
-                _selectedEmployee.Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text;
-                _employeeService.UpdateEmployee(_selectedEmployee);
-
-                MessageBox.Show("Cập nhật nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                // Add new employee
+                // CREATE MODE: Tạo nhân viên mới
                 var newEmployee = new Employee
                 {
-                    FullName = txtFullName.Text,
-                    PhoneNumber = string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? null : txtPhoneNumber.Text,
-                    Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text
+                    FullName = txtFullName.Text.Trim(),
+                    PhoneNumber = string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? null : txtPhoneNumber.Text.Trim(),
+                    Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text.Trim()
                 };
                 _employeeService.AddEmployee(newEmployee);
 
-                MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Handle account if checkbox is checked
+                if (chkHasAccount.IsChecked == true && gridAccount.IsEnabled)
+                {
+                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
+                    
+                    if (string.IsNullOrWhiteSpace(txtUsername.Text))
+                    {
+                        MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(txtPassword.Password))
+                    {
+                        MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    // Check if username already exists
+                    var usernameExists = _employeeService.GetAccountByUsername(txtUsername.Text);
+                    if (usernameExists != null)
+                    {
+                        MessageBox.Show("Tên đăng nhập đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    var newAccount = new Account
+                    {
+                        Username = txtUsername.Text.Trim(),
+                        Password = txtPassword.Password, // In production, hash this
+                        EmployeeID = newEmployee.ID,
+                        Role = role
+                    };
+                    _employeeService.AddAccount(newAccount);
+                }
+
+                MessageBox.Show("✅ Thêm nhân viên mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // UPDATE MODE: Cập nhật nhân viên hiện tại
+                _selectedEmployee.FullName = txtFullName.Text.Trim();
+                _selectedEmployee.PhoneNumber = string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? null : txtPhoneNumber.Text.Trim();
+                _selectedEmployee.Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text.Trim();
+                _employeeService.UpdateEmployee(_selectedEmployee);
+
+                // Handle account if checkbox is checked
+                if (chkHasAccount.IsChecked == true && gridAccount.IsEnabled)
+                {
+                    var existingAccount = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
+                    
+                    if (string.IsNullOrWhiteSpace(txtUsername.Text))
+                    {
+                        MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    
+                    if (existingAccount != null)
+                    {
+                        // Update existing account
+                        existingAccount.Username = txtUsername.Text.Trim();
+                        if (!string.IsNullOrWhiteSpace(txtPassword.Password))
+                        {
+                            existingAccount.Password = txtPassword.Password; // In production, hash this
+                        }
+                        existingAccount.Role = role;
+                        _employeeService.UpdateAccount(existingAccount);
+                    }
+                    else
+                    {
+                        // Create new account
+                        if (string.IsNullOrWhiteSpace(txtPassword.Password))
+                        {
+                            MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        // Check if username already exists
+                        var usernameExists = _employeeService.GetAccountByUsername(txtUsername.Text);
+                        if (usernameExists != null)
+                        {
+                            MessageBox.Show("Tên đăng nhập đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                        
+                        var newAccount = new Account
+                        {
+                            Username = txtUsername.Text.Trim(),
+                            Password = txtPassword.Password, // In production, hash this
+                            EmployeeID = _selectedEmployee.ID,
+                            Role = role
+                        };
+                        _employeeService.AddAccount(newAccount);
+                    }
+                }
+                else if (chkHasAccount.IsChecked == false)
+                {
+                    // Delete account if exists
+                    var existingAccount = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
+                    if (existingAccount != null)
+                    {
+                        _employeeService.DeleteAccount(existingAccount.Username);
+                    }
+                }
+
+                MessageBox.Show("✅ Cập nhật nhân viên thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadEmployees();
@@ -116,7 +288,7 @@ public partial class EmployeeManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -146,7 +318,7 @@ public partial class EmployeeManagementView : UserControl
                 }
 
                 _employeeService.DeleteEmployee(_selectedEmployee.ID);
-                MessageBox.Show("Xóa nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa nhân viên thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadEmployees();
                 LoadAccounts();
                 LoadEmployeesForAccountCombo();
@@ -154,7 +326,7 @@ public partial class EmployeeManagementView : UserControl
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa nhân viên: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa nhân viên: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
@@ -169,6 +341,7 @@ public partial class EmployeeManagementView : UserControl
         {
             var accounts = _employeeService.GetAllAccounts();
             dgAccounts.ItemsSource = accounts;
+            dgAccounts.SelectedItem = null;
         }
         catch (Exception ex)
         {
@@ -181,6 +354,7 @@ public partial class EmployeeManagementView : UserControl
         _selectedAccount = dgAccounts.SelectedItem as Account;
         if (_selectedAccount != null)
         {
+            // 1. Đổ dữ liệu từ tài khoản được chọn vào form
             cmbEmployeeForAccount.SelectedValue = _selectedAccount.EmployeeID;
             txtAccountUsername.Text = _selectedAccount.Username;
             
@@ -220,22 +394,48 @@ public partial class EmployeeManagementView : UserControl
                 .FirstOrDefault(item => item.Tag?.ToString() == _selectedAccount.Role);
             if (roleItem != null)
                 cmbAccountRole.SelectedItem = roleItem;
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSaveAccount.Content = "Cập nhật";
+            btnDeleteAccount.Visibility = Visibility.Visible;
         }
         else
         {
             txtAccountPasswordDisplay.Text = string.Empty;
+            // Không có tài khoản nào được chọn, chuyển về Create Mode
+            UpdateUIForAccountCreateMode();
         }
     }
 
     private void btnAddNewAccount_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedAccount = null;
+        dgAccounts.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearAccountForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForAccountCreateMode();
+
+        // 3. Tự động focus vào ô đầu tiên
+        cmbEmployeeForAccount.Focus();
+    }
+
+    private void ClearAccountForm()
+    {
         cmbEmployeeForAccount.SelectedIndex = -1;
         txtAccountUsername.Text = string.Empty;
         txtAccountPasswordDisplay.Text = string.Empty;
         txtAccountPassword.Password = string.Empty;
         cmbAccountRole.SelectedIndex = -1;
-        dgAccounts.SelectedItem = null;
+    }
+
+    private void UpdateUIForAccountCreateMode()
+    {
+        btnSaveAccount.Content = "Lưu mới";
+        btnDeleteAccount.Visibility = Visibility.Collapsed;
     }
 
     private void btnSaveAccount_Click(object sender, RoutedEventArgs e)
@@ -262,21 +462,10 @@ public partial class EmployeeManagementView : UserControl
 
             var role = (cmbAccountRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
 
-            if (_selectedAccount != null)
+            // Logic chính: Kiểm tra _selectedAccount để xác định Create hay Update
+            if (_selectedAccount == null)
             {
-                // Update existing account
-                _selectedAccount.Username = txtAccountUsername.Text;
-                if (!string.IsNullOrWhiteSpace(txtAccountPassword.Password))
-                {
-                    _selectedAccount.Password = txtAccountPassword.Password; // In production, hash this
-                }
-                _selectedAccount.EmployeeID = (int)cmbEmployeeForAccount.SelectedValue;
-                _selectedAccount.Role = role;
-                _employeeService.UpdateAccount(_selectedAccount);
-                MessageBox.Show("Cập nhật tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
+                // CREATE MODE: Tạo tài khoản mới
                 // Check if username already exists
                 var existingAccount = _employeeService.GetAccountByUsername(txtAccountUsername.Text);
                 if (existingAccount != null)
@@ -303,13 +492,26 @@ public partial class EmployeeManagementView : UserControl
                 // Add new account
                 var newAccount = new Account
                 {
-                    Username = txtAccountUsername.Text,
+                    Username = txtAccountUsername.Text.Trim(),
                     Password = txtAccountPassword.Password, // In production, hash this
                     EmployeeID = employeeId,
                     Role = role
                 };
                 _employeeService.AddAccount(newAccount);
-                MessageBox.Show("Thêm tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Thêm tài khoản mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // UPDATE MODE: Cập nhật tài khoản hiện tại
+                _selectedAccount.Username = txtAccountUsername.Text.Trim();
+                if (!string.IsNullOrWhiteSpace(txtAccountPassword.Password))
+                {
+                    _selectedAccount.Password = txtAccountPassword.Password; // In production, hash this
+                }
+                _selectedAccount.EmployeeID = (int)cmbEmployeeForAccount.SelectedValue;
+                _selectedAccount.Role = role;
+                _employeeService.UpdateAccount(_selectedAccount);
+                MessageBox.Show("✅ Cập nhật tài khoản thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadAccounts();
@@ -318,7 +520,7 @@ public partial class EmployeeManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -341,14 +543,14 @@ public partial class EmployeeManagementView : UserControl
             try
             {
                 _employeeService.DeleteAccount(_selectedAccount.Username);
-                MessageBox.Show("Xóa tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa tài khoản thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadAccounts();
                 LoadEmployees();
                 btnAddNewAccount_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa tài khoản: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa tài khoản: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

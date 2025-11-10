@@ -6,130 +6,373 @@
         xmlns:local="clr-namespace:Billiards.UI"
         xmlns:converters="clr-namespace:Billiards.UI.Converters"
         mc:Ignorable="d"
-        Title="Quản Lý Quán Bida" Height="700" Width="1200"
-        WindowStartupLocation="CenterScreen">
+        Title="Quản Lý Quán Bida" Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
+
     <Window.Resources>
         <converters:StatusToBrushConverter x:Key="StatusToBrushConverter"/>
+
+        <!-- Styles -->
+        <Style x:Key="ModernMenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+
+        <Style x:Key="TableButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="12"
+                                BorderBrush="{StaticResource PrimaryDarkColor}"
+                                BorderThickness="2"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" 
+                                                  ShadowDepth="2" 
+                                                  Opacity="0.3" 
+                                                  Color="Black"/>
+                            </Border.Effect>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="12" 
+                                                          ShadowDepth="3" 
+                                                          Opacity="0.5" 
+                                                          Color="Black"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
+
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="167*"/>
-            <ColumnDefinition Width="1033*"/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Menu Bar -->
-        <Menu Grid.Row="0" Background="#F0F0F0" Grid.ColumnSpan="2" Margin="0,0,0,22" Grid.RowSpan="2">
-            <MenuItem Header="Hệ thống">
-                <MenuItem Header="Đăng xuất" Click="MenuItem_Logout_Click"/>
-                <Separator/>
-                <MenuItem Header="Thoát" Click="MenuItem_Exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="Quản lý" x:Name="mnuAdmin" Visibility="Collapsed">
-                <MenuItem Header="Dashboard" Click="MenuItem_Dashboard_Click"/>
-                <MenuItem Header="Quản lý Đơn hàng" Click="MenuItem_OrderManagement_Click"/>
-                <Separator/>
-                <MenuItem Header="Quản lý Sản phẩm" Click="MenuItem_ProductManagement_Click"/>
-                <MenuItem Header="Quản lý Bàn" Click="MenuItem_TableManagement_Click"/>
-                <MenuItem Header="Quản lý Nhân viên" Click="MenuItem_EmployeeManagement_Click"/>
-                <MenuItem Header="Quản lý Khách hàng" Click="MenuItem_CustomerManagement_Click"/>
-                <MenuItem Header="Quản lý Giá giờ" Click="MenuItem_PricingManagement_Click"/>
-                <Separator/>
-                <MenuItem Header="Về trang chủ" Click="MenuItem_Home_Click"/>
-            </MenuItem>
-            <MenuItem Header="Báo cáo" x:Name="mnuReports" Visibility="Collapsed">
-                <MenuItem Header="Báo cáo Doanh thu" Click="MenuItem_RevenueReport_Click"/>
-            </MenuItem>
-        </Menu>
+        <!-- Header với Menu Bar -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryColor}"
+                BorderBrush="{StaticResource PrimaryDarkColor}"
+                BorderThickness="0,0,0,1">
+            <Grid Height="55">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Status Bar với thông tin người dùng -->
-        <StatusBar Grid.Row="1" Background="#E0E0E0" Grid.ColumnSpan="2" Margin="0,0,0,644" Grid.RowSpan="2">
-            <StatusBarItem>
-                <TextBlock x:Name="txtUserInfo" Text="Chưa đăng nhập" Margin="5,0"/>
-            </StatusBarItem>
-        </StatusBar>
+                <!-- Logo/Title -->
+                <StackPanel Grid.Column="0" 
+                            Orientation="Horizontal" 
+                            Margin="20,0">
+                    <TextBlock Text="🎱" 
+                               FontSize="28" 
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
+                    <TextBlock Text="Quản Lý Quán Bida" 
+                               FontSize="20" 
+                               FontWeight="Bold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Menu -->
+                <Menu Grid.Column="1" 
+                      Background="Transparent"
+                      VerticalAlignment="Center"
+                      Margin="20,0">
+                    <MenuItem Header="Hệ thống" 
+                              Style="{StaticResource ModernMenuItemStyle}"
+                              Foreground="White">
+                        <MenuItem Header="Đăng xuất" Click="MenuItem_Logout_Click"/>
+                        <Separator/>
+                        <MenuItem Header="Thoát" Click="MenuItem_Exit_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Quản lý" 
+                              x:Name="mnuAdmin" 
+                              Visibility="Collapsed"
+                              Style="{StaticResource ModernMenuItemStyle}"
+                              Foreground="White">
+                        <MenuItem Header="📋 Quản lý Đơn hàng" Click="MenuItem_OrderManagement_Click"/>
+                        <Separator/>
+                        <MenuItem Header="🍹 Quản lý Sản phẩm" Click="MenuItem_ProductManagement_Click"/>
+                        <MenuItem Header="🎯 Quản lý Bàn" Click="MenuItem_TableManagement_Click"/>
+                        <MenuItem Header="👥 Quản lý Nhân viên" Click="MenuItem_EmployeeManagement_Click"/>
+                        <MenuItem Header="👤 Quản lý Khách hàng" Click="MenuItem_CustomerManagement_Click"/>
+                        <MenuItem Header="💰 Quản lý Giá giờ" Click="MenuItem_PricingManagement_Click"/>
+                        <Separator/>
+                        <MenuItem Header="🏠 Về trang chủ" Click="MenuItem_Home_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Báo cáo" 
+                              x:Name="mnuReports" 
+                              Visibility="Collapsed"
+                              Style="{StaticResource ModernMenuItemStyle}"
+                              Foreground="White">
+                        <MenuItem Header="📊 Báo cáo &amp; Dashboard" Click="MenuItem_RevenueReport_Click"/>
+                    </MenuItem>
+                </Menu>
+
+                <!-- User Info -->
+                <Border Grid.Column="2" 
+                        Background="{StaticResource PrimaryDarkColor}"
+                        CornerRadius="20"
+                        Padding="15,8"
+                        Margin="0,0,20,0"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="👤" 
+                                   FontSize="16" 
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock x:Name="txtUserInfo" 
+                                   Text="Chưa đăng nhập" 
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Breadcrumb/Status Bar -->
+        <Border Grid.Row="1" 
+                Background="{StaticResource SurfaceColor}"
+                BorderBrush="{StaticResource BorderColor}"
+                BorderThickness="0,0,0,1"
+                Padding="20,10">
+            <Grid>
+                <TextBlock x:Name="txtBreadcrumb" 
+                           Text="🏠 Trang chủ / Sơ đồ bàn" 
+                           FontSize="12"
+                           Foreground="{StaticResource TextSecondaryColor}"/>
+            </Grid>
+        </Border>
 
         <!-- Main Content Area -->
-        <Grid Grid.Row="2" Grid.ColumnSpan="2">
+        <Grid Grid.Row="2" Background="{StaticResource BackgroundColor}">
             <!-- Default View: Table Map -->
             <Grid x:Name="gridTableMap">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="280"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Sidebar: Danh sách Areas -->
                 <Border Grid.Column="0" 
-                        Background="#F0F0F0" 
-                        BorderBrush="#CCCCCC" 
+                        Background="{StaticResource SurfaceColor}" 
+                        BorderBrush="{StaticResource BorderColor}" 
                         BorderThickness="0,0,1,0">
-                    <StackPanel Margin="10">
-                        <TextBlock Text="Khu vực" 
-                                   FontSize="16" 
-                                   FontWeight="Bold" 
-                                   Margin="0,0,0,10"/>
-                        <ListBox x:Name="lbAreas" 
-                                 SelectionChanged="lbAreas_SelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding AreaName}" 
-                                               Padding="5"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header Sidebar -->
+                        <Border Grid.Row="0"
+                                Background="{StaticResource PrimaryLightColor}"
+                                Padding="20,15"
+                                BorderBrush="{StaticResource BorderColor}"
+                                BorderThickness="0,0,0,1">
+                            <TextBlock Text="KHU VỰC" 
+                                       FontSize="16" 
+                                       FontWeight="Bold" 
+                                       Foreground="{StaticResource PrimaryColor}"/>
+                        </Border>
+
+                        <!-- List Areas -->
+                        <ScrollViewer Grid.Row="1" 
+                                      VerticalScrollBarVisibility="Auto"
+                                      Padding="15">
+                            <ListBox x:Name="lbAreas" 
+                                     SelectionChanged="lbAreas_SelectionChanged"
+                                     BorderThickness="0"
+                                     Background="Transparent">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Margin" Value="0,5"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <Border x:Name="border"
+                                                            Background="White"
+                                                            CornerRadius="8"
+                                                            BorderBrush="{StaticResource BorderColor}"
+                                                            BorderThickness="1"
+                                                            Padding="15,12">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryColor}"/>
+                                                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryDarkColor}"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding AreaName}" 
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
                 <!-- Main Content: Sơ đồ bàn -->
-                <ScrollViewer Grid.Column="1" 
-                              VerticalScrollBarVisibility="Auto" 
-                              HorizontalScrollBarVisibility="Auto">
-                    <ItemsControl x:Name="icTableMap" 
-                                  Margin="10">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Width="100" 
-                                        Height="80" 
-                                        Margin="5"
-                                        Click="Table_Click"
-                                        ContextMenuOpening="Table_ContextMenuOpening"
-                                        Cursor="Hand">
-                                    <Button.Background>
-                                        <Binding Path="Status" 
-                                                 Converter="{StaticResource StatusToBrushConverter}"/>
-                                    </Button.Background>
-                                    <Button.ContextMenu>
-                                        <ContextMenu>
-                                            <MenuItem Header="Order thêm" Click="MenuItem_OrderMore_Click"/>
-                                            <MenuItem Header="Thanh toán" Click="MenuItem_Checkout_Click"/>
-                                        </ContextMenu>
-                                    </Button.ContextMenu>
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding TableName}" 
-                                                   FontSize="14" 
-                                                   FontWeight="Bold"
-                                                   HorizontalAlignment="Center"
-                                                   Foreground="White"/>
-                                        <TextBlock Text="{Binding Status}" 
-                                                   FontSize="10"
-                                                   HorizontalAlignment="Center"
-                                                   Foreground="White"
-                                                   Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Filter/Legend Bar -->
+                    <Border Grid.Row="0" 
+                            Background="White"
+                            BorderBrush="{StaticResource BorderColor}"
+                            BorderThickness="0,0,0,1"
+                            Padding="20,15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center">
+                                <Run Text="Sơ đồ bàn" Foreground="{StaticResource TextPrimaryColor}"/>
+                            </TextBlock>
+
+                            <!-- Legend -->
+                            <StackPanel Grid.Column="1" 
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                <Border Background="#4CAF50" 
+                                        Width="20" Height="20" 
+                                        CornerRadius="4"
+                                        Margin="0,0,5,0"/>
+                                <TextBlock Text="Trống" 
+                                           Margin="0,0,20,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"/>
+
+                                <Border Background="#FF9800" 
+                                        Width="20" Height="20" 
+                                        CornerRadius="4"
+                                        Margin="0,0,5,0"/>
+                                <TextBlock Text="Đang sử dụng" 
+                                           Margin="0,0,20,0"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"/>
+
+                                <Border Background="#F44336" 
+                                        Width="20" Height="20" 
+                                        CornerRadius="4"
+                                        Margin="0,0,5,0"/>
+                                <TextBlock Text="Đã đặt" 
+                                           VerticalAlignment="Center"
+                                           FontSize="12"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Tables Grid -->
+                    <ScrollViewer Grid.Row="1" 
+                                  VerticalScrollBarVisibility="Auto" 
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Background="{StaticResource BackgroundColor}">
+                        <ItemsControl x:Name="icTableMap" 
+                                      Margin="25,20">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Width="140" 
+                                            Height="110" 
+                                            Margin="10"
+                                            Click="Table_Click"
+                                            ContextMenuOpening="Table_ContextMenuOpening"
+                                            Cursor="Hand"
+                                            Style="{StaticResource TableButtonStyle}">
+                                        <Button.Background>
+                                            <Binding Path="Status" 
+                                                     Converter="{StaticResource StatusToBrushConverter}"/>
+                                        </Button.Background>
+                                        <Button.ContextMenu>
+                                            <ContextMenu Background="White">
+                                                <MenuItem Header="🛒 Order thêm" Click="MenuItem_OrderMore_Click"/>
+                                                <MenuItem Header="💳 Thanh toán" Click="MenuItem_Checkout_Click"/>
+                                            </ContextMenu>
+                                        </Button.ContextMenu>
+                                        <StackPanel>
+                                            <TextBlock Text="🎱" 
+                                                       FontSize="24"
+                                                       HorizontalAlignment="Center"
+                                                       Margin="0,0,0,8"/>
+                                            <TextBlock Text="{Binding TableName}" 
+                                                       FontSize="18" 
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Center"
+                                                       Foreground="White"/>
+                                            <Border Background="#00000040"
+                                                    CornerRadius="10"
+                                                    Padding="8,4"
+                                                    Margin="0,8,0,0"
+                                                    HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding Status}" 
+                                                           FontSize="11"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Center"
+                                                           Foreground="White"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </Grid>
 
             <!-- Admin Views Container -->

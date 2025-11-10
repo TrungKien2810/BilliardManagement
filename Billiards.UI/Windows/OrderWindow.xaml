@@ -5,29 +5,165 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Billiards.UI.Windows"
         mc:Ignorable="d"
-        Title="Đặt hàng" Height="600" Width="1000"
+        Title="Đặt hàng"
+        Height="700"
+        Width="1200"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         Loaded="Window_Loaded">
-    <Grid Margin="10">
+    <Window.Resources>
+        <Style x:Key="CategoryListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="border"
+                                Background="White"
+                                CornerRadius="8"
+                                BorderBrush="{StaticResource BorderColor}"
+                                BorderThickness="1"
+                                Padding="15,12">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryColor}"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryDarkColor}"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ProductButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.3" Color="Black"/>
+                            </Border.Effect>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryDarkColor}"/>
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.5" Color="Black"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource BackgroundColor}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="280"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
 
         <!-- Cột 1: Danh mục sản phẩm -->
-        <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Danh mục" FontWeight="Bold" FontSize="14" Margin="0,0,0,10"/>
-            <ListBox x:Name="lbCategories" 
-                     SelectionChanged="lbCategories_SelectionChanged"
-                     DisplayMemberPath="CategoryName"
-                     SelectedValuePath="ID"/>
-        </StackPanel>
+        <Border Grid.Column="0" 
+                Background="{StaticResource SurfaceColor}" 
+                BorderBrush="{StaticResource BorderColor}" 
+                BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource PrimaryColor}"
+                        Padding="20,15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📁" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="DANH MỤC" 
+                                   FontWeight="Bold" 
+                                   FontSize="16" 
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- List Categories -->
+                <ScrollViewer Grid.Row="1" 
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="15">
+                    <ListBox x:Name="lbCategories" 
+                             SelectionChanged="lbCategories_SelectionChanged"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             ItemContainerStyle="{StaticResource CategoryListBoxItemStyle}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CategoryName}" 
+                                           FontSize="14"
+                                           FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                    <Setter Property="Foreground" Value="White"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+        </Border>
 
         <!-- Cột 2: Sản phẩm -->
-        <StackPanel Grid.Column="1" Margin="0,0,10,0">
-            <TextBlock Text="Sản phẩm" FontWeight="Bold" FontSize="14" Margin="0,0,0,10"/>
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="White"
+                    BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="0,0,0,1"
+                    Padding="20,15">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🛒" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Text="SẢN PHẨM" 
+                               FontWeight="Bold" 
+                               FontSize="16" 
+                               Foreground="{StaticResource PrimaryColor}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Products Grid -->
+            <ScrollViewer Grid.Row="1" 
+                          VerticalScrollBarVisibility="Auto"
+                          Padding="20">
                 <ItemsControl x:Name="icProducts">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -36,60 +172,181 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding ProductName}" 
-                                    Width="120" 
-                                    Height="80" 
-                                    Margin="5"
+                            <Button Width="150" 
+                                    Height="120" 
+                                    Margin="10"
                                     Click="Product_Click"
-                                    Tag="{Binding}">
+                                    Tag="{Binding}"
+                                    Style="{StaticResource ProductButtonStyle}">
                                 <Button.ToolTip>
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding ProductName}" FontWeight="Bold"/>
-                                        <TextBlock>
-                                            <Run Text="Giá: "/>
-                                            <Run Text="{Binding SalePrice, StringFormat='{}{0:N0} VNĐ'}"/>
-                                        </TextBlock>
-                                        <TextBlock>
-                                            <Run Text="Tồn kho: "/>
-                                            <Run Text="{Binding StockQuantity}"/>
-                                        </TextBlock>
-                                    </StackPanel>
+                                    <Border Background="White"
+                                            BorderBrush="{StaticResource BorderColor}"
+                                            BorderThickness="1"
+                                            CornerRadius="5"
+                                            Padding="10">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding ProductName}" 
+                                                       FontWeight="Bold"
+                                                       Foreground="{StaticResource TextPrimaryColor}"/>
+                                            <TextBlock Margin="0,5,0,0" 
+                                                       Foreground="{StaticResource TextSecondaryColor}">
+                                                <Run Text="Giá: "/>
+                                                <Run Text="{Binding SalePrice, StringFormat='{}{0:N0} VNĐ'}" FontWeight="Bold"/>
+                                            </TextBlock>
+                                            <TextBlock Foreground="{StaticResource TextSecondaryColor}">
+                                                <Run Text="Tồn kho: "/>
+                                                <Run Text="{Binding StockQuantity}" FontWeight="Bold"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
                                 </Button.ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding ProductName}" 
+                                               FontSize="19" 
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               MaxHeight="40"
+                                               Foreground="White"/>
+                                    <Border Background="#00000040"
+                                            CornerRadius="10"
+                                            Padding="6,3"
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center">
+                                        <TextBlock FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="White">
+                                            <Run Text="{Binding SalePrice, StringFormat='{}{0:N0}'}"/>
+                                            <Run Text="đ"/>
+                                        </TextBlock>
+                                    </Border>
+                                </StackPanel>
                             </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-        </StackPanel>
+        </Grid>
 
         <!-- Cột 3: Giỏ hàng -->
-        <StackPanel Grid.Column="2">
-            <TextBlock Text="Giỏ hàng" FontWeight="Bold" FontSize="14" Margin="0,0,0,10"/>
-            <DataGrid x:Name="dgCart" 
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      HeadersVisibility="Column"
-                      Height="400">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding ProductName}" Width="*"/>
-                    <DataGridTextColumn Header="SL" Binding="{Binding Quantity}" Width="50"/>
-                    <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice, StringFormat='{}{0:N0}'}" Width="80"/>
-                    <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total, StringFormat='{}{0:N0}'}" Width="100"/>
-                </DataGrid.Columns>
-            </DataGrid>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-                <Button x:Name="btnConfirm" 
-                        Content="Xác nhận Order" 
-                        Width="120" 
-                        Height="35" 
-                        Margin="5,0"
-                        Click="btnConfirm_Click"/>
-                <Button Content="Hủy" 
-                        Width="80" 
-                        Height="35" 
-                        Margin="5,0"
-                        Click="btnCancel_Click"/>
-            </StackPanel>
-        </StackPanel>
+        <Border Grid.Column="2" 
+                Background="{StaticResource SurfaceColor}" 
+                BorderBrush="{StaticResource BorderColor}" 
+                BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Border Grid.Row="0"
+                        Background="{StaticResource SecondaryColor}"
+                        Padding="20,15">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🛍️" FontSize="20" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="GIỎ HÀNG" 
+                                   FontWeight="Bold" 
+                                   FontSize="16" 
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Cart Items -->
+                <DataGrid Grid.Row="1"
+                          x:Name="dgCart" 
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0"
+                          RowBackground="White"
+                          AlternatingRowBackground="#F9F9F9"
+                          Margin="0">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                            <Setter Property="Foreground" Value="{StaticResource PrimaryDarkColor}"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Padding" Value="10,8"/>
+                            <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Sản phẩm" Binding="{Binding ProductName}" Width="*">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10,5"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="SL" Binding="{Binding Quantity}" Width="50">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10,5"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice, StringFormat='{}{0:N0}'}" Width="90">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10,5"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total, StringFormat='{}{0:N0}'}" Width="100">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Padding" Value="10,5"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="{StaticResource SecondaryColor}"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Actions -->
+                <Border Grid.Row="2"
+                        Background="White"
+                        BorderBrush="{StaticResource BorderColor}"
+                        BorderThickness="0,1,0,0"
+                        Padding="20">
+                    <StackPanel>
+                        <Button x:Name="btnConfirm" 
+                                Content="✓ XÁC NHẬN ORDER" 
+                                Height="50" 
+                                FontSize="15"
+                                FontWeight="Bold"
+                                Margin="0,0,0,10"
+                                Click="btnConfirm_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                    <Setter Property="Background" Value="{StaticResource SuccessColor}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#388E3C"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Content="✕ HỦY" 
+                                Height="45" 
+                                FontSize="14"
+                                Style="{StaticResource DangerButton}"
+                                Click="btnCancel_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

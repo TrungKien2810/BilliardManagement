@@ -20,9 +20,10 @@ public class OrderManagementService
     /// <summary>
     /// Lấy tất cả invoices với filter
     /// </summary>
-    public List<Invoice> GetAllInvoices(DateTime? startDate = null, DateTime? endDate = null, string? status = null, int? tableId = null, int? employeeId = null)
+    public List<Invoice> GetAllInvoices(DateTime? startDate = null, DateTime? endDate = null, string? status = null, 
+        int? tableId = null, int? employeeId = null, int? customerId = null)
     {
-        return _invoiceRepository.GetAllInvoices(startDate, endDate, status, tableId, employeeId);
+        return _invoiceRepository.GetAllInvoices(startDate, endDate, status, tableId, employeeId, customerId);
     }
 
     /// <summary>
