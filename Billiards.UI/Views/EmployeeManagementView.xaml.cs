@@ -63,44 +63,7 @@ public partial class EmployeeManagementView : UserControl
             txtFullName.Text = _selectedEmployee.FullName;
             txtPhoneNumber.Text = _selectedEmployee.PhoneNumber ?? string.Empty;
             txtAddress.Text = _selectedEmployee.Address ?? string.Empty;
-
-            // Check if employee has account
-            var account = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
-            if (account != null)
-            {
-                chkHasAccount.IsChecked = true;
-                gridAccount.IsEnabled = true;
-                txtUsername.Text = account.Username;
-                txtPassword.Password = string.Empty; // Don't show password
-                
-                // Set role
-                var roleItem = cmbRole.Items.Cast<ComboBoxItem>()
-                    .FirstOrDefault(item => item.Tag?.ToString() == account.Role);
-                if (roleItem != null)
-                    cmbRole.SelectedItem = roleItem;
-            }
-            else
-            {
-                chkHasAccount.IsChecked = false;
-                gridAccount.IsEnabled = false;
-                txtUsername.Text = string.Empty;
-                txtPassword.Password = string.Empty;
-                cmbRole.SelectedIndex = -1;
-            }
         }
-    }
-
-    private void chkHasAccount_Checked(object sender, RoutedEventArgs e)
-    {
-        gridAccount.IsEnabled = true;
-    }
-
-    private void chkHasAccount_Unchecked(object sender, RoutedEventArgs e)
-    {
-        gridAccount.IsEnabled = false;
-        txtUsername.Text = string.Empty;
-        txtPassword.Password = string.Empty;
-        cmbRole.SelectedIndex = -1;
     }
 
     private void btnAddNewEmployee_Click(object sender, RoutedEventArgs e)
@@ -109,10 +72,6 @@ public partial class EmployeeManagementView : UserControl
         txtFullName.Text = string.Empty;
         txtPhoneNumber.Text = string.Empty;
         txtAddress.Text = string.Empty;
-        chkHasAccount.IsChecked = false;
-        txtUsername.Text = string.Empty;
-        txtPassword.Password = string.Empty;
-        cmbRole.SelectedIndex = -1;
         dgEmployees.SelectedItem = null;
     }
 
@@ -126,27 +85,6 @@ public partial class EmployeeManagementView : UserControl
                 return;
             }
 
-            if (chkHasAccount.IsChecked == true)
-            {
-                if (string.IsNullOrWhiteSpace(txtUsername.Text))
-                {
-                    MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtPassword.Password))
-                {
-                    MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (cmbRole.SelectedItem == null)
-                {
-                    MessageBox.Show("Vui lòng chọn vai trò!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-            }
-
             if (_selectedEmployee != null)
             {
                 // Update existing employee
@@ -154,44 +92,6 @@ public partial class EmployeeManagementView : UserControl
                 _selectedEmployee.PhoneNumber = string.IsNullOrWhiteSpace(txtPhoneNumber.Text) ? null : txtPhoneNumber.Text;
                 _selectedEmployee.Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text;
                 _employeeService.UpdateEmployee(_selectedEmployee);
-
-                // Handle account
-                var existingAccount = _employeeService.GetAccountByEmployeeId(_selectedEmployee.ID);
-                if (chkHasAccount.IsChecked == true)
-                {
-                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Staff";
-                    if (existingAccount != null)
-                    {
-                        // Update account
-                        existingAccount.Username = txtUsername.Text;
-                        if (!string.IsNullOrWhiteSpace(txtPassword.Password))
-                        {
-                            existingAccount.Password = txtPassword.Password; // In production, hash this
-                        }
-                        existingAccount.Role = role;
-                        _employeeService.UpdateAccount(existingAccount);
-                    }
-                    else
-                    {
-                        // Create new account
-                        var newAccount = new Account
-                        {
-                            Username = txtUsername.Text,
-                            Password = txtPassword.Password, // In production, hash this
-                            EmployeeID = _selectedEmployee.ID,
-                            Role = role
-                        };
-                        _employeeService.AddAccount(newAccount);
-                    }
-                }
-                else
-                {
-                    // Remove account if exists
-                    if (existingAccount != null)
-                    {
-                        _employeeService.DeleteAccount(existingAccount.Username);
-                    }
-                }
 
                 MessageBox.Show("Cập nhật nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -205,20 +105,6 @@ public partial class EmployeeManagementView : UserControl
                     Address = string.IsNullOrWhiteSpace(txtAddress.Text) ? null : txtAddress.Text
                 };
                 _employeeService.AddEmployee(newEmployee);
-
-                // Create account if checked
-                if (chkHasAccount.IsChecked == true)
-                {
-                    var role = (cmbRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Staff";
-                    var newAccount = new Account
-                    {
-                        Username = txtUsername.Text,
-                        Password = txtPassword.Password, // In production, hash this
-                        EmployeeID = newEmployee.ID,
-                        Role = role
-                    };
-                    _employeeService.AddAccount(newAccount);
-                }
 
                 MessageBox.Show("Thêm nhân viên thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -297,13 +183,47 @@ public partial class EmployeeManagementView : UserControl
         {
             cmbEmployeeForAccount.SelectedValue = _selectedAccount.EmployeeID;
             txtAccountUsername.Text = _selectedAccount.Username;
-            txtAccountPassword.Password = string.Empty; // Don't show password
+            
+            // Hiển thị mật khẩu - thử từ object hiện tại trước, nếu không có thì load từ DB
+            if (!string.IsNullOrEmpty(_selectedAccount.Password))
+            {
+                // Password đã có trong object từ DataGrid
+                txtAccountPasswordDisplay.Text = _selectedAccount.Password;
+            }
+            else
+            {
+                // Load lại từ DB để lấy password
+                try
+                {
+                    var accountFromDb = _employeeService.GetAccountByUsername(_selectedAccount.Username);
+                    if (accountFromDb != null && !string.IsNullOrEmpty(accountFromDb.Password))
+                    {
+                        txtAccountPasswordDisplay.Text = accountFromDb.Password;
+                        // Cập nhật password trong _selectedAccount để DataGrid cũng hiển thị
+                        _selectedAccount.Password = accountFromDb.Password;
+                    }
+                    else
+                    {
+                        txtAccountPasswordDisplay.Text = string.Empty;
+                    }
+                }
+                catch
+                {
+                    txtAccountPasswordDisplay.Text = string.Empty;
+                }
+            }
+            
+            txtAccountPassword.Password = string.Empty; // Clear password input for new password
             
             // Set role
             var roleItem = cmbAccountRole.Items.Cast<ComboBoxItem>()
                 .FirstOrDefault(item => item.Tag?.ToString() == _selectedAccount.Role);
             if (roleItem != null)
                 cmbAccountRole.SelectedItem = roleItem;
+        }
+        else
+        {
+            txtAccountPasswordDisplay.Text = string.Empty;
         }
     }
 
@@ -312,6 +232,7 @@ public partial class EmployeeManagementView : UserControl
         _selectedAccount = null;
         cmbEmployeeForAccount.SelectedIndex = -1;
         txtAccountUsername.Text = string.Empty;
+        txtAccountPasswordDisplay.Text = string.Empty;
         txtAccountPassword.Password = string.Empty;
         cmbAccountRole.SelectedIndex = -1;
         dgAccounts.SelectedItem = null;
@@ -339,7 +260,7 @@ public partial class EmployeeManagementView : UserControl
                 return;
             }
 
-            var role = (cmbAccountRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Staff";
+            var role = (cmbAccountRole.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Cashier";
 
             if (_selectedAccount != null)
             {

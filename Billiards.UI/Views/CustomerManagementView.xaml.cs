@@ -92,18 +92,7 @@ public partial class CustomerManagementView : UserControl
 
             if (_selectedCustomer != null)
             {
-                // Update existing customer
-                // Check duplicate phone if changed
-                if (!string.IsNullOrWhiteSpace(phone) && phone != (_selectedCustomer.PhoneNumber ?? string.Empty))
-                {
-                    var duplicate = _customerService.GetCustomerByPhoneNumber(phone);
-                    if (duplicate != null && duplicate.ID != _selectedCustomer.ID)
-                    {
-                        MessageBox.Show("Số điện thoại đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                }
-
+                // Update existing customer - no duplicate phone check
                 _selectedCustomer.FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text;
                 _selectedCustomer.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone;
                 _selectedCustomer.LoyaltyPoints = loyaltyPoints;
@@ -112,18 +101,7 @@ public partial class CustomerManagementView : UserControl
             }
             else
             {
-                // Check if phone number already exists (if provided)
-                if (!string.IsNullOrWhiteSpace(phone))
-                {
-                    var existingCustomer = _customerService.GetCustomerByPhoneNumber(phone);
-                    if (existingCustomer != null)
-                    {
-                        MessageBox.Show("Số điện thoại đã tồn tại!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
-                    }
-                }
-
-                // Add new customer
+                // Add new customer - no duplicate phone check
                 var newCustomer = new Customer
                 {
                     FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text,
@@ -155,7 +133,7 @@ public partial class CustomerManagementView : UserControl
             return true;
         }
 
-        // Format check
+        // Format check only - removed duplicate check as per requirement
         var phoneRegex = new Regex(@"^(0\d{9,10})$");
         if (!phoneRegex.IsMatch(phone))
         {
@@ -165,29 +143,7 @@ public partial class CustomerManagementView : UserControl
             return false;
         }
 
-        // Duplicate check
-        try
-        {
-            var existing = _customerService.GetCustomerByPhoneNumber(phone);
-            var isEditingSame = _selectedCustomer != null && existing != null && existing.ID == _selectedCustomer.ID;
-            if (existing != null && !isEditingSame)
-            {
-                txtPhoneValidation.Text = "Số điện thoại đã tồn tại.";
-                txtPhoneValidation.Foreground = Brushes.OrangeRed;
-                txtPhoneNumber.BorderBrush = Brushes.OrangeRed;
-                return false;
-            }
-        }
-        catch
-        {
-            // If lookup fails, don't block typing but show a warning
-            txtPhoneValidation.Text = "Không thể kiểm tra trùng SĐT lúc này.";
-            txtPhoneValidation.Foreground = Brushes.OrangeRed;
-            txtPhoneNumber.BorderBrush = Brushes.OrangeRed;
-            return false;
-        }
-
-        // OK
+        // OK - only format validation, no duplicate check
         txtPhoneValidation.Text = "Số điện thoại hợp lệ.";
         txtPhoneValidation.Foreground = Brushes.Green;
         txtPhoneNumber.BorderBrush = Brushes.Green;

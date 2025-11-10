@@ -66,8 +66,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
-                    <Button x:Name="btnSave" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
+                    <Button x:Name="btnAddNew" Content="Làm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
+                    <Button x:Name="btnSave" Content="Tạo/Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
                     <Button x:Name="btnDelete" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDelete_Click"/>
                 </StackPanel>
             </Grid>
@@ -88,8 +88,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-                    <Button x:Name="btnAddCategory" Content="Thêm danh mục" Width="120" Height="35" Margin="5,0" Click="btnAddCategory_Click"/>
-                    <Button x:Name="btnDeleteCategory" Content="Xóa danh mục" Width="120" Height="35" Margin="5,0" Click="btnDeleteCategory_Click"/>
+                    <Button x:Name="btnAddCategory" Content="Thêm/Lưu" Width="100" Height="35" Margin="5,0" Click="btnAddCategory_Click"/>
+                    <Button x:Name="btnDeleteCategory" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteCategory_Click"/>
                 </StackPanel>
 
                 <ListBox x:Name="lbCategories" 

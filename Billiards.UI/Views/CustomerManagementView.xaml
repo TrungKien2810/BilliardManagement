@@ -56,8 +56,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
-                    <Button x:Name="btnSave" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
+                    <Button x:Name="btnAddNew" Content="Làm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
+                    <Button x:Name="btnSave" Content="Tạo/Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
                     <Button x:Name="btnDelete" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDelete_Click"/>
                 </StackPanel>
             </Grid>

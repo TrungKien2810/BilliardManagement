@@ -32,16 +32,44 @@ public class EmployeeRepository
             .FirstOrDefault(e => e.ID == employeeId);
     }
 
+    public bool IsPhoneNumberExists(string phoneNumber, int? excludeEmployeeId = null)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return false; // Empty phone number is allowed
+        }
+        var query = _context.Employees.Where(e => e.PhoneNumber != null && e.PhoneNumber.Trim() == phoneNumber.Trim());
+        if (excludeEmployeeId.HasValue)
+        {
+            query = query.Where(e => e.ID != excludeEmployeeId.Value);
+        }
+        return query.Any();
+    }
+
     public void Add(Employee employee)
     {
+        if (!string.IsNullOrWhiteSpace(employee.PhoneNumber) && IsPhoneNumberExists(employee.PhoneNumber))
+        {
+            throw new InvalidOperationException($"Số điện thoại \"{employee.PhoneNumber}\" đã tồn tại!");
+        }
         _context.Employees.Add(employee);
         _context.SaveChanges();
     }
 
     public void Update(Employee employee)
     {
+        if (!string.IsNullOrWhiteSpace(employee.PhoneNumber) && IsPhoneNumberExists(employee.PhoneNumber, employee.ID))
+        {
+            throw new InvalidOperationException($"Số điện thoại \"{employee.PhoneNumber}\" đã tồn tại!");
+        }
         _context.Employees.Update(employee);
         _context.SaveChanges();
+    }
+
+    public bool HasInvoices(int employeeId)
+    {
+        return _context.Invoices
+            .Any(i => i.CreatedByEmployeeID == employeeId);
     }
 
     public void Delete(int employeeId)
@@ -49,6 +77,12 @@ public class EmployeeRepository
         var employee = _context.Employees.FirstOrDefault(e => e.ID == employeeId);
         if (employee != null)
         {
+            // Check if employee has invoices
+            if (HasInvoices(employeeId))
+            {
+                throw new InvalidOperationException($"Không thể xóa nhân viên \"{employee.FullName}\" vì nhân viên đã tạo các hóa đơn trong hệ thống!");
+            }
+
             _context.Employees.Remove(employee);
             _context.SaveChanges();
         }
@@ -57,7 +91,9 @@ public class EmployeeRepository
     // Account methods
     public List<Account> GetAllAccounts()
     {
+        // Use AsNoTracking to ensure fresh data and include password
         return _context.Accounts
+            .AsNoTracking()
             .Include(a => a.Employee)
             .OrderBy(a => a.Username)
             .ToList();
@@ -65,7 +101,9 @@ public class EmployeeRepository
 
     public Account? GetAccountByUsername(string username)
     {
+        // Use AsNoTracking to ensure fresh data and include password
         return _context.Accounts
+            .AsNoTracking()
             .Include(a => a.Employee)
             .FirstOrDefault(a => a.Username == username);
     }

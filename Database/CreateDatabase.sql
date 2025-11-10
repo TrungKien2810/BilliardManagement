@@ -88,7 +88,7 @@ CREATE TABLE Accounts (
     Username VARCHAR(100) PRIMARY KEY,
     Password NVARCHAR(MAX) NOT NULL,
     EmployeeID INT FOREIGN KEY REFERENCES Employees(ID),
-    Role NVARCHAR(50) NOT NULL -- (Admin, Cashier, Staff)
+    Role NVARCHAR(50) NOT NULL -- (Admin, Cashier)
 );
 GO
 
@@ -197,10 +197,10 @@ GO
 
 -- Chèn Accounts (Tài khoản)
 -- Mật khẩu: admin (sẽ được hash sau)
+-- Role: Admin (toàn quyền), Cashier (quản lý bàn, đơn hàng và thanh toán)
 INSERT INTO Accounts (Username, Password, EmployeeID, Role) VALUES
 ('admin', 'admin', 1, 'Admin'),
-('cashier', 'cashier', 2, 'Cashier'),
-('staff', 'staff', 3, 'Staff');
+('cashier', 'cashier', 2, 'Cashier');
 GO
 
 -- Chèn Customers (Khách hàng - có thể để trống, sẽ thêm khi cần)
@@ -246,9 +246,8 @@ GO
 PRINT '=============================================';
 PRINT 'Database BilliardsDB đã được tạo thành công!';
 PRINT 'Tài khoản test:';
-PRINT '  - admin / admin (Admin)';
-PRINT '  - cashier / cashier (Cashier)';
-PRINT '  - staff / staff (Staff)';
+PRINT '  - admin / admin (Admin - Toàn quyền)';
+PRINT '  - cashier / cashier (Cashier - Quản lý bàn, đơn hàng và thanh toán)';
 PRINT '=============================================';
 GO
 

@@ -75,7 +75,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTable" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTable_Click"/>
+                                <Button x:Name="btnAddNewTable" Content="Làm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTable_Click"/>
                                 <Button x:Name="btnSaveTable" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveTable_Click"/>
                                 <Button x:Name="btnDeleteTable" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteTable_Click"/>
                             </StackPanel>
@@ -120,7 +120,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewArea" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewArea_Click"/>
+                                <Button x:Name="btnAddNewArea" Content="Làm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewArea_Click"/>
                                 <Button x:Name="btnSaveArea" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveArea_Click"/>
                                 <Button x:Name="btnDeleteArea" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteArea_Click"/>
                             </StackPanel>
@@ -165,7 +165,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTableType" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTableType_Click"/>
+                                <Button x:Name="btnAddNewTableType" Content="Làm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTableType_Click"/>
                                 <Button x:Name="btnSaveTableType" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveTableType_Click"/>
                                 <Button x:Name="btnDeleteTableType" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteTableType_Click"/>
                             </StackPanel>

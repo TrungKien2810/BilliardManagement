@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
+using System.Text.RegularExpressions;
 using Billiards.BLL.Services;
 using Billiards.DAL.Models;
 
@@ -91,7 +93,8 @@ public partial class CheckoutWindow : Window
 
         if (decimal.TryParse(txtDiscount.Text?.Replace(",", "").Replace(".", ""), out decimal discountValue))
         {
-            discount = discountValue;
+            // Đảm bảo discount không âm
+            discount = Math.Max(0, discountValue);
         }
 
         var totalAmount = tableFee + productFee - discount;
@@ -107,17 +110,59 @@ public partial class CheckoutWindow : Window
 
     private void txtDiscount_LostFocus(object sender, RoutedEventArgs e)
     {
+        // Validate và đảm bảo giá trị không âm
+        if (decimal.TryParse(txtDiscount.Text?.Replace(",", "").Replace(".", ""), out decimal discountValue))
+        {
+            if (discountValue < 0)
+            {
+                MessageBox.Show("Giảm giá không được nhỏ hơn 0!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtDiscount.Text = "0";
+            }
+            else
+            {
+                // Format lại số
+                txtDiscount.Text = discountValue.ToString("N0");
+            }
+        }
+        else
+        {
+            // Nếu không parse được, set về 0
+            txtDiscount.Text = "0";
+        }
+        
         UpdateTotalAmount();
+    }
+    
+    private void txtDiscount_PreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        // Chỉ cho phép nhập số
+        Regex regex = new Regex("[^0-9]+");
+        e.Handled = regex.IsMatch(e.Text);
+    }
+    
+    private void txtDiscount_PreviewKeyDown(object sender, KeyEventArgs e)
+    {
+        // Ngăn nhập dấu trừ (-)
+        if (e.Key == Key.Subtract || e.Key == Key.OemMinus)
+        {
+            e.Handled = true;
+        }
     }
 
     private void btnCheckout_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            // Lấy giảm giá
+            // Lấy giảm giá và validate
             decimal discount = 0;
             if (decimal.TryParse(txtDiscount.Text?.Replace(",", "").Replace(".", ""), out decimal discountValue))
             {
+                // Đảm bảo discount không âm
+                if (discountValue < 0)
+                {
+                    MessageBox.Show("Giảm giá không được nhỏ hơn 0!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
                 discount = discountValue;
             }
 

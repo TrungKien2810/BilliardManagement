@@ -184,12 +184,24 @@ public partial class ProductManagementView : UserControl
                 return;
             }
 
-            var newCategory = new ProductCategory
+            if (_selectedCategory != null)
             {
-                CategoryName = txtCategoryName.Text
-            };
-            _productService.AddCategory(newCategory);
-            MessageBox.Show("Thêm danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Update existing category
+                _selectedCategory.CategoryName = txtCategoryName.Text;
+                _productService.UpdateCategory(_selectedCategory);
+                MessageBox.Show("Cập nhật danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // Add new category
+                var newCategory = new ProductCategory
+                {
+                    CategoryName = txtCategoryName.Text
+                };
+                _productService.AddCategory(newCategory);
+                MessageBox.Show("Thêm danh mục thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
             LoadCategories();
             txtCategoryName.Text = string.Empty;
             lbCategories.SelectedItem = null;
