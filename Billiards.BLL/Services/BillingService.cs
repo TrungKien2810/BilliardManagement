@@ -163,7 +163,7 @@ public class BillingService
         return activeInvoice;
     }
 
-    public bool FinalizeCheckout(int invoiceId, decimal discount, int? customerId)
+    public bool FinalizeCheckout(int invoiceId, decimal discount, int? customerId, int? pointsToRedeem = null)
     {
         try
         {
@@ -200,6 +200,13 @@ public class BillingService
             // Tính lại TotalAmount (sau khi đã cập nhật TableFee)
             invoice.TotalAmount = invoice.TableFee + invoice.ProductFee - invoice.Discount;
             if (invoice.TotalAmount < 0) invoice.TotalAmount = 0;
+
+            // Trừ điểm nếu có (trong transaction)
+            if (customerId.HasValue && pointsToRedeem.HasValue && pointsToRedeem.Value > 0)
+            {
+                var loyaltyService = new LoyaltyService();
+                loyaltyService.RedeemPoints(customerId.Value, pointsToRedeem.Value);
+            }
 
             // Cập nhật invoice vào database
             _invoiceRepository.Update(invoice);

@@ -235,57 +235,129 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Giảm giá và Khách hàng -->
+                <!-- Khách hàng và Tích điểm -->
                 <Border Style="{StaticResource InfoCardStyle}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Grid.Row="0"
-                                   Text="🎁 GIẢM GIÁ &amp; KHÁCH HÀNG"
+                    <StackPanel>
+                        <TextBlock Text="👤 KHÁCH HÀNG &amp; TÍCH ĐIỂM"
                                    Style="{StaticResource SectionHeaderStyle}"/>
 
-                        <Grid Grid.Row="1">
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                <TextBlock Text="Giảm giá (VNĐ)" 
-                                           FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Margin="0,0,0,8"/>
-                                <TextBox x:Name="txtDiscount" 
-                                         Text="0"
-                                         FontSize="16"
-                                         FontWeight="Bold"
-                                         Padding="12,10"
-                                         TextChanged="txtDiscount_TextChanged"
-                                         LostFocus="txtDiscount_LostFocus"
-                                         PreviewTextInput="txtDiscount_PreviewTextInput"
-                                         PreviewKeyDown="txtDiscount_PreviewKeyDown"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                 <TextBlock Text="Số điện thoại khách hàng" 
                                            FontSize="13"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,8"/>
-                                <TextBox x:Name="txtCustomerPhone" 
-                                         FontSize="16"
-                                         Padding="12,10"
-                                         TextChanged="txtCustomerPhone_TextChanged"/>
-                                <TextBlock x:Name="txtCustomerName" 
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="txtCustomerPhone" 
+                                             Grid.Column="0"
+                                             FontSize="16"
+                                             Padding="12,10"
+                                             TextChanged="txtCustomerPhone_TextChanged"
+                                             KeyDown="txtCustomerPhone_KeyDown"/>
+                                    <Button x:Name="btnAddCustomer"
+                                            Grid.Column="1"
+                                            Content="➕ Thêm KH mới"
+                                            Margin="5,0,0,0"
+                                            Padding="10,8"
+                                            FontSize="12"
+                                            Click="btnAddCustomer_Click"
+                                            Visibility="Collapsed"/>
+                                </Grid>
+                                <TextBlock x:Name="txtCustomerInfo" 
                                            Margin="0,8,0,0" 
-                                           FontSize="12"
-                                           FontStyle="Italic"
-                                           Foreground="{StaticResource SuccessColor}"/>
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"/>
+                                <TextBlock x:Name="txtCustomerPoints" 
+                                           Margin="0,5,0,0" 
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource SecondaryColor}"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Top">
+                                <Button x:Name="btnRedeemPoints"
+                                        Content="🎁 Đổi điểm"
+                                        Height="45"
+                                        Padding="15,0"
+                                        FontSize="14"
+                                        FontWeight="Bold"
+                                        Background="{StaticResource WarningColor}"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        Cursor="Hand"
+                                        Click="btnRedeemPoints_Click"
+                                        IsEnabled="False"
+                                        Visibility="Collapsed"
+                                        Margin="0,28,0,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="{StaticResource WarningColor}"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}"
+                                                                CornerRadius="8"
+                                                                Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                              VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#F57C00"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Background" Value="#CCCCCC"/>
+                                                    <Setter Property="Foreground" Value="#666666"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                         </Grid>
-                    </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Giảm giá -->
+                <Border Style="{StaticResource InfoCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="🎁 GIẢM GIÁ"
+                                   Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Giảm giá (VNĐ)" 
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,8"/>
+                        <TextBox x:Name="txtDiscount" 
+                                 Text="0"
+                                 FontSize="16"
+                                 FontWeight="Bold"
+                                 Padding="12,10"
+                                 TextChanged="txtDiscount_TextChanged"
+                                 LostFocus="txtDiscount_LostFocus"
+                                 PreviewTextInput="txtDiscount_PreviewTextInput"
+                                 PreviewKeyDown="txtDiscount_PreviewKeyDown"/>
+                        <TextBlock x:Name="txtPointsDiscountInfo"
+                                   Margin="0,8,0,0"
+                                   FontSize="12"
+                                   FontStyle="Italic"
+                                   Foreground="{StaticResource WarningColor}"
+                                   TextWrapping="Wrap"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
                 </Border>
 
                 <!-- Tổng thanh toán -->

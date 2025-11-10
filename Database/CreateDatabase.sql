@@ -70,7 +70,8 @@ CREATE TABLE Products (
     ProductName NVARCHAR(200) NOT NULL,
     CategoryID INT FOREIGN KEY REFERENCES ProductCategories(ID),
     SalePrice DECIMAL(18, 2) NOT NULL,
-    StockQuantity INT NOT NULL DEFAULT 0
+    StockQuantity INT NOT NULL DEFAULT 0,
+    MinimumStock INT NOT NULL DEFAULT 10 -- Tồn kho tối thiểu để cảnh báo
 );
 GO
 
@@ -137,6 +138,16 @@ CREATE TABLE HourlyPricingRules (
 );
 GO
 
+-- Bảng LoyaltyRules (Quy tắc tích điểm và đổi điểm)
+CREATE TABLE LoyaltyRules (
+    ID INT PRIMARY KEY IDENTITY(1,1),
+    PointsPerAmount DECIMAL(18, 2) NOT NULL DEFAULT 10000, -- Số VND cần để có 1 điểm (mặc định: 10.000đ = 1 điểm)
+    AmountPerPoint DECIMAL(18, 2) NOT NULL DEFAULT 100, -- 1 điểm = bao nhiêu VND khi đổi (mặc định: 1 điểm = 100đ)
+    MinimumPointsToRedeem INT NOT NULL DEFAULT 1000, -- Số điểm tối thiểu để được đổi (mặc định: 1000 điểm)
+    IsActive BIT NOT NULL DEFAULT 1 -- Có kích hoạt hệ thống tích điểm không
+);
+GO
+
 -- =============================================
 -- CHÈN DỮ LIỆU MẪU ĐỂ TEST
 -- =============================================
@@ -175,17 +186,17 @@ INSERT INTO ProductCategories (CategoryName) VALUES
 GO
 
 -- Chèn Products (Sản phẩm)
-INSERT INTO Products (ProductName, CategoryID, SalePrice, StockQuantity) VALUES
-('Coca Cola', 1, 15000, 100),
-('Pepsi', 1, 15000, 100),
-('Nước suối', 1, 10000, 200),
-('Bia Heineken', 1, 35000, 50),
-('Bia Tiger', 1, 30000, 50),
-('Mì tôm', 2, 25000, 50),
-('Bánh mì', 2, 15000, 30),
-('Thuốc lá Vina', 3, 20000, 50),
-('Thuốc lá Jet', 3, 18000, 50),
-('Khăn lạnh', 4, 5000, 200);
+INSERT INTO Products (ProductName, CategoryID, SalePrice, StockQuantity, MinimumStock) VALUES
+('Coca Cola', 1, 15000, 100, 20),
+('Pepsi', 1, 15000, 100, 20),
+('Nước suối', 1, 10000, 200, 50),
+('Bia Heineken', 1, 35000, 50, 10),
+('Bia Tiger', 1, 30000, 50, 10),
+('Mì tôm', 2, 25000, 50, 15),
+('Bánh mì', 2, 15000, 30, 10),
+('Thuốc lá Vina', 3, 20000, 50, 10),
+('Thuốc lá Jet', 3, 18000, 50, 10),
+('Khăn lạnh', 4, 5000, 200, 50);
 GO
 
 -- Chèn Employees (Nhân viên)
@@ -221,6 +232,12 @@ INSERT INTO HourlyPricingRules (TableTypeID, StartTimeSlot, EndTimeSlot, PricePe
 (3, '22:00:00', '24:00:00', 120000);
 GO
 
+-- Chèn LoyaltyRules (Quy tắc tích điểm và đổi điểm)
+-- Mặc định: 10.000đ = 1 điểm, 1 điểm = 100đ giảm giá, tối thiểu 1000 điểm để đổi
+INSERT INTO LoyaltyRules (PointsPerAmount, AmountPerPoint, MinimumPointsToRedeem, IsActive) VALUES
+(10000, 100, 1000, 1);
+GO
+
 -- =============================================
 -- KIỂM TRA DỮ LIỆU
 -- =============================================
@@ -240,7 +257,9 @@ SELECT 'Accounts', COUNT(*) FROM Accounts
 UNION ALL
 SELECT 'Customers', COUNT(*) FROM Customers
 UNION ALL
-SELECT 'HourlyPricingRules', COUNT(*) FROM HourlyPricingRules;
+SELECT 'HourlyPricingRules', COUNT(*) FROM HourlyPricingRules
+UNION ALL
+SELECT 'LoyaltyRules', COUNT(*) FROM LoyaltyRules;
 GO
 
 PRINT '=============================================';

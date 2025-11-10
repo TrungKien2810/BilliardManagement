@@ -1,29 +1,31 @@
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Billiards.UI.Converters;
-
-public class StatusToBrushConverter : IValueConverter
+namespace Billiards.UI.Converters
 {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public class StatusToBrushConverter : IValueConverter
     {
-        if (value is string status)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return status switch
+            if (value is string status)
             {
-                "Free" => Brushes.Green,
-                "InUse" => Brushes.Red,
-                "Reserved" => Brushes.Blue,
-                "Maintenance" => Brushes.Orange,
-                _ => Brushes.Gray
-            };
+                return status switch
+                {
+                    "Free" => Brushes.Green,
+                    "InUse" => Brushes.Red,
+                    "Reserved" => Brushes.Blue,
+                    "Maintenance" => Brushes.Orange,
+                    _ => Brushes.Gray
+                };
+            }
+            return Brushes.Gray;
         }
-        return Brushes.Gray;
-    }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

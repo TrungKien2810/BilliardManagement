@@ -1,0 +1,276 @@
+<Window x:Class="Billiards.UI.Windows.TransferTableDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Chuyển bàn" 
+        Height="500"
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent">
+
+    <Border Background="White"
+            CornerRadius="12"
+            BorderBrush="{StaticResource PrimaryColor}"
+            BorderThickness="2">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" 
+                              ShadowDepth="0" 
+                              Opacity="0.3" 
+                              Color="Black"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource PrimaryColor}"
+                    Padding="20,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Text="🔄" 
+                                   FontSize="20" 
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,10,0"/>
+                        <TextBlock Text="Chuyển bàn" 
+                                   FontSize="16" 
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Close button -->
+                    <Button Grid.Column="1"
+                            Content="✕"
+                            Width="30"
+                            Height="30"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Background="Transparent"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="btnCancel_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="15"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#40FFFFFF"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Content -->
+            <Grid Grid.Row="1" Margin="25,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Info -->
+                <TextBlock x:Name="txtInfo" 
+                           Grid.Row="0" 
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryColor}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,15"/>
+
+                <!-- Table List -->
+                <Border Grid.Row="1"
+                        BorderBrush="{StaticResource BorderColor}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Background="White">
+                    <ListBox x:Name="lbTables" 
+                             SelectionMode="Single"
+                             BorderThickness="0"
+                             Background="Transparent">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Margin" Value="5"/>
+                                <Setter Property="Padding" Value="15,12"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="border"
+                                                    Background="White"
+                                                    CornerRadius="6"
+                                                    BorderBrush="{StaticResource BorderColor}"
+                                                    BorderThickness="1"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryColor}"/>
+                                                    <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryDarkColor}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="🎱" 
+                                               FontSize="18" 
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TableName}" 
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextPrimaryColor}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                            <Setter Property="Foreground" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding Area.AreaName, StringFormat='Khu vực: {0}'}" 
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextSecondaryColor}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryColor}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                                                            <Setter Property="Foreground" Value="#E0E0E0"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+            </Grid>
+
+            <!-- Buttons -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource SurfaceColor}"
+                    BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="0,1,0,0"
+                    Padding="25,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            x:Name="btnConfirm"
+                            Content="✓ XÁC NHẬN" 
+                            Height="45" 
+                            Margin="0,0,8,0" 
+                            Click="btnConfirm_Click" 
+                            IsDefault="True"
+                            FontSize="14"
+                            FontWeight="Bold"
+                            IsEnabled="False">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="{StaticResource SuccessColor}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="8"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#388E3C"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter Property="Background" Value="#CCCCCC"/>
+                                        <Setter Property="Foreground" Value="#666666"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Content="✕ HỦY" 
+                            Height="45" 
+                            Margin="8,0,0,0" 
+                            Click="btnCancel_Click" 
+                            IsCancel="True"
+                            FontSize="14"
+                            FontWeight="Bold">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="{StaticResource TextSecondaryColor}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="8"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#616161"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+

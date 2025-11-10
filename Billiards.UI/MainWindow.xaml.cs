@@ -54,6 +54,48 @@ public partial class MainWindow : Window
 
         LoadAreas();
         LoadTableMap();
+
+        // Kiểm tra và hiển thị cảnh báo tồn kho thấp (chỉ cho Admin)
+        // Sử dụng Dispatcher để đợi MainWindow render xong trước khi hiển thị dialog
+        Dispatcher.BeginInvoke(new System.Action(() =>
+        {
+            CheckLowStockAlert();
+        }), System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    private void CheckLowStockAlert()
+    {
+        // Hiển thị cảnh báo cho cả Admin và Cashier
+        try
+        {
+            var productService = new ProductService();
+            var lowStockProducts = productService.GetLowStockProducts();
+
+            if (lowStockProducts != null && lowStockProducts.Count > 0)
+            {
+                // Kiểm tra quyền Admin để quyết định hiển thị nút chuyển hướng
+                bool isAdmin = AuthorizationHelper.IsAdmin();
+                
+                // Hiển thị dialog cảnh báo
+                var alertDialog = new LowStockAlertDialog(lowStockProducts, isAdmin);
+                alertDialog.Owner = this;
+                alertDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                var result = alertDialog.ShowDialog();
+
+                // Nếu người dùng chọn "Đến Quản lý Sản phẩm" (chỉ Admin)
+                if (result == true && alertDialog.NavigateToProducts && isAdmin)
+                {
+                    // Chuyển đến quản lý sản phẩm
+                    MenuItem_ProductManagement_Click(null, null);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Không hiển thị lỗi nếu không load được (có thể do database chưa có dữ liệu)
+            // Chỉ log lỗi, không làm gián đoạn quá trình đăng nhập
+            System.Diagnostics.Debug.WriteLine($"Lỗi khi kiểm tra tồn kho thấp: {ex.Message}");
+        }
     }
 
     private void UpdateUserInfo()
@@ -406,6 +448,16 @@ public partial class MainWindow : Window
         ShowAdminView(new PricingManagementView(), "Quản lý Giá giờ");
     }
 
+    private void MenuItem_LoyaltyManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new LoyaltyManagementView(), "Quản lý Tích điểm");
+    }
+
     private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
     {
         ShowTableMap();
@@ -534,6 +586,61 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             MessageBox.Show($"Lỗi khi mở đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private void MenuItem_TransferTable_Click(object sender, RoutedEventArgs e)
+    {
+        // Ưu tiên sử dụng _currentContextTable, nếu không có thì lấy từ MenuItem
+        var fromTable = _currentContextTable ?? GetTableFromMenuItem(sender);
+        if (fromTable == null) return;
+        
+        _currentContextTable = null; // Clear sau khi sử dụng
+
+        try
+        {
+            // Kiểm tra session
+            if (!SessionManager.Instance.IsLoggedIn || SessionManager.Instance.CurrentEmployee == null)
+            {
+                MessageBox.Show("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Mở dialog chọn bàn đích
+            var transferDialog = new TransferTableDialog(fromTable.ID, fromTable.TableName);
+            if (transferDialog.ShowDialog() == true && transferDialog.SelectedTableId.HasValue)
+            {
+                var toTableId = transferDialog.SelectedTableId.Value;
+                var employeeId = SessionManager.Instance.CurrentEmployee.ID;
+
+                // Xác nhận trước khi chuyển
+                var confirmResult = MessageBox.Show(
+                    $"Bạn có chắc chắn muốn chuyển từ {fromTable.TableName} sang bàn đã chọn?\n\n" +
+                    "Lưu ý: Hóa đơn và tất cả dịch vụ đã gọi sẽ được chuyển sang bàn mới.",
+                    "Xác nhận chuyển bàn",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (confirmResult == MessageBoxResult.Yes)
+                {
+                    // Gọi service để chuyển bàn (có transaction)
+                    var tableService = new TableService();
+                    tableService.TransferTable(fromTable.ID, toTableId, employeeId);
+
+                    MessageBox.Show(
+                        $"✅ Đã chuyển bàn thành công từ {fromTable.TableName} sang bàn đã chọn.",
+                        "Thành công",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    // Reload table map để cập nhật trạng thái
+                    RefreshCurrentTableMap();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi chuyển bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

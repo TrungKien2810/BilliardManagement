@@ -46,6 +46,14 @@ public class ProductService
         _productRepository.Delete(productId);
     }
 
+    /// <summary>
+    /// Lấy danh sách sản phẩm có tồn kho thấp (StockQuantity <= MinimumStock)
+    /// </summary>
+    public List<Product> GetLowStockProducts()
+    {
+        return _productRepository.GetLowStockProducts();
+    }
+
     // Category methods
     public List<ProductCategory> GetAllCategories()
     {
