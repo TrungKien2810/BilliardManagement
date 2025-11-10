@@ -23,6 +23,8 @@ public partial class CustomerManagementView : UserControl
     private void CustomerManagementView_Loaded(object sender, RoutedEventArgs e)
     {
         LoadDataGrid();
+        // Khởi tạo UI về Create Mode khi load lần đầu
+        UpdateUIForCreateMode();
     }
 
     private void LoadDataGrid()
@@ -44,22 +46,52 @@ public partial class CustomerManagementView : UserControl
         _selectedCustomer = dgCustomers.SelectedItem as Customer;
         if (_selectedCustomer != null)
         {
+            // 1. Đổ dữ liệu từ khách hàng được chọn vào form
             txtFullName.Text = _selectedCustomer.FullName ?? string.Empty;
             txtPhoneNumber.Text = _selectedCustomer.PhoneNumber ?? string.Empty;
             txtLoyaltyPoints.Text = _selectedCustomer.LoyaltyPoints.ToString();
             ValidatePhoneInput();
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSave.Content = "Cập nhật";
+            btnDelete.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            // Không có khách hàng nào được chọn, chuyển về Create Mode
+            UpdateUIForCreateMode();
         }
     }
 
     private void btnAddNew_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedCustomer = null;
+        dgCustomers.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForCreateMode();
+
+        // 3. Tự động focus vào ô đầu tiên
+        txtFullName.Focus();
+    }
+
+    private void ClearForm()
+    {
         txtFullName.Text = string.Empty;
         txtPhoneNumber.Text = string.Empty;
         txtLoyaltyPoints.Text = "0";
-        dgCustomers.SelectedItem = null;
         txtPhoneValidation.Text = string.Empty;
         txtPhoneNumber.ClearValue(TextBox.BorderBrushProperty);
+    }
+
+    private void UpdateUIForCreateMode()
+    {
+        btnSave.Content = "Lưu mới";
+        btnDelete.Visibility = Visibility.Collapsed;
     }
 
     private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -91,26 +123,27 @@ public partial class CustomerManagementView : UserControl
                 return;
             }
 
-            if (_selectedCustomer != null)
+            // Logic chính: Kiểm tra _selectedCustomer để xác định Create hay Update
+            if (_selectedCustomer == null)
             {
-                // Update existing customer - no duplicate phone check
-                _selectedCustomer.FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text;
-                _selectedCustomer.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone;
-                _selectedCustomer.LoyaltyPoints = loyaltyPoints;
-                _customerService.UpdateCustomer(_selectedCustomer);
-                MessageBox.Show("Cập nhật khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                // Add new customer - no duplicate phone check
+                // CREATE MODE: Tạo khách hàng mới
                 var newCustomer = new Customer
                 {
-                    FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text,
-                    PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone,
+                    FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text.Trim(),
+                    PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim(),
                     LoyaltyPoints = loyaltyPoints
                 };
                 _customerService.AddCustomer(newCustomer);
-                MessageBox.Show("Thêm khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Thêm khách hàng mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // UPDATE MODE: Cập nhật khách hàng hiện tại
+                _selectedCustomer.FullName = string.IsNullOrWhiteSpace(txtFullName.Text) ? null : txtFullName.Text.Trim();
+                _selectedCustomer.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
+                _selectedCustomer.LoyaltyPoints = loyaltyPoints;
+                _customerService.UpdateCustomer(_selectedCustomer);
+                MessageBox.Show("✅ Cập nhật khách hàng thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadDataGrid();
@@ -118,7 +151,7 @@ public partial class CustomerManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -175,13 +208,13 @@ public partial class CustomerManagementView : UserControl
             try
             {
                 _customerService.DeleteCustomer(_selectedCustomer.ID);
-                MessageBox.Show("Xóa khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa khách hàng thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadDataGrid();
                 btnAddNew_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa khách hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa khách hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

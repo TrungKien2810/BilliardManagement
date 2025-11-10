@@ -28,6 +28,10 @@ public partial class TableManagementView : UserControl
         LoadTableTypesForCombo();
         LoadAreas();
         LoadTableTypes();
+        // Khởi tạo UI về Create Mode khi load lần đầu
+        UpdateUIForTableCreateMode();
+        UpdateUIForAreaCreateMode();
+        UpdateUIForTableTypeCreateMode();
     }
 
     #region Tables Management
@@ -77,6 +81,7 @@ public partial class TableManagementView : UserControl
         _selectedTable = dgTables.SelectedItem as Table;
         if (_selectedTable != null)
         {
+            // 1. Đổ dữ liệu từ bàn được chọn vào form
             txtTableName.Text = _selectedTable.TableName;
             cmbArea.SelectedValue = _selectedTable.AreaID;
             cmbTableType.SelectedValue = _selectedTable.TypeID;
@@ -86,17 +91,46 @@ public partial class TableManagementView : UserControl
                 .FirstOrDefault(item => item.Tag?.ToString() == _selectedTable.Status);
             if (statusItem != null)
                 cmbStatus.SelectedItem = statusItem;
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSaveTable.Content = "Cập nhật";
+            btnDeleteTable.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            // Không có bàn nào được chọn, chuyển về Create Mode
+            UpdateUIForTableCreateMode();
         }
     }
 
     private void btnAddNewTable_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedTable = null;
+        dgTables.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearTableForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForTableCreateMode();
+
+        // 3. Tự động focus vào ô đầu tiên
+        txtTableName.Focus();
+    }
+
+    private void ClearTableForm()
+    {
         txtTableName.Text = string.Empty;
         cmbArea.SelectedIndex = -1;
         cmbTableType.SelectedIndex = -1;
         cmbStatus.SelectedIndex = 0; // Default to Free
-        dgTables.SelectedItem = null;
+    }
+
+    private void UpdateUIForTableCreateMode()
+    {
+        btnSaveTable.Content = "Lưu mới";
+        btnDeleteTable.Visibility = Visibility.Collapsed;
     }
 
     private void btnSaveTable_Click(object sender, RoutedEventArgs e)
@@ -123,28 +157,29 @@ public partial class TableManagementView : UserControl
 
             var status = (cmbStatus.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "Free";
 
-            if (_selectedTable != null)
+            // Logic chính: Kiểm tra _selectedTable để xác định Create hay Update
+            if (_selectedTable == null)
             {
-                // Update existing table
-                _selectedTable.TableName = txtTableName.Text;
-                _selectedTable.AreaID = (int)cmbArea.SelectedValue;
-                _selectedTable.TypeID = (int)cmbTableType.SelectedValue;
-                _selectedTable.Status = status;
-                _tableService.UpdateTable(_selectedTable);
-                MessageBox.Show("Cập nhật bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                // Add new table
+                // CREATE MODE: Tạo bàn mới
                 var newTable = new Table
                 {
-                    TableName = txtTableName.Text,
+                    TableName = txtTableName.Text.Trim(),
                     AreaID = (int)cmbArea.SelectedValue,
                     TypeID = (int)cmbTableType.SelectedValue,
                     Status = status
                 };
                 _tableService.AddTable(newTable);
-                MessageBox.Show("Thêm bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Thêm bàn mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // UPDATE MODE: Cập nhật bàn hiện tại
+                _selectedTable.TableName = txtTableName.Text.Trim();
+                _selectedTable.AreaID = (int)cmbArea.SelectedValue;
+                _selectedTable.TypeID = (int)cmbTableType.SelectedValue;
+                _selectedTable.Status = status;
+                _tableService.UpdateTable(_selectedTable);
+                MessageBox.Show("✅ Cập nhật bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadTables();
@@ -152,7 +187,7 @@ public partial class TableManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -175,13 +210,13 @@ public partial class TableManagementView : UserControl
             try
             {
                 _tableService.DeleteTable(_selectedTable.ID);
-                MessageBox.Show("Xóa bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadTables();
                 btnAddNewTable_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
@@ -209,15 +244,45 @@ public partial class TableManagementView : UserControl
         _selectedArea = dgAreas.SelectedItem as Area;
         if (_selectedArea != null)
         {
+            // 1. Đổ dữ liệu từ khu vực được chọn vào form
             txtAreaName.Text = _selectedArea.AreaName;
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSaveArea.Content = "Cập nhật";
+            btnDeleteArea.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            // Không có khu vực nào được chọn, chuyển về Create Mode
+            UpdateUIForAreaCreateMode();
         }
     }
 
     private void btnAddNewArea_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedArea = null;
-        txtAreaName.Text = string.Empty;
         dgAreas.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearAreaForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForAreaCreateMode();
+
+        // 3. Tự động focus vào ô nhập
+        txtAreaName.Focus();
+    }
+
+    private void ClearAreaForm()
+    {
+        txtAreaName.Text = string.Empty;
+    }
+
+    private void UpdateUIForAreaCreateMode()
+    {
+        btnSaveArea.Content = "Lưu mới";
+        btnDeleteArea.Visibility = Visibility.Collapsed;
     }
 
     private void btnSaveArea_Click(object sender, RoutedEventArgs e)
@@ -230,22 +295,23 @@ public partial class TableManagementView : UserControl
                 return;
             }
 
-            if (_selectedArea != null)
+            // Logic chính: Kiểm tra _selectedArea để xác định Create hay Update
+            if (_selectedArea == null)
             {
-                // Update existing area
-                _selectedArea.AreaName = txtAreaName.Text;
-                _tableService.UpdateArea(_selectedArea);
-                MessageBox.Show("Cập nhật khu vực thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // CREATE MODE: Tạo khu vực mới
+                var newArea = new Area
+                {
+                    AreaName = txtAreaName.Text.Trim()
+                };
+                _tableService.AddArea(newArea);
+                MessageBox.Show("✅ Thêm khu vực mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                // Add new area
-                var newArea = new Area
-                {
-                    AreaName = txtAreaName.Text
-                };
-                _tableService.AddArea(newArea);
-                MessageBox.Show("Thêm khu vực thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // UPDATE MODE: Cập nhật khu vực hiện tại
+                _selectedArea.AreaName = txtAreaName.Text.Trim();
+                _tableService.UpdateArea(_selectedArea);
+                MessageBox.Show("✅ Cập nhật khu vực thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadAreas();
@@ -254,7 +320,7 @@ public partial class TableManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -287,7 +353,7 @@ public partial class TableManagementView : UserControl
                 if (result == MessageBoxResult.Yes)
                 {
                     _tableService.DeleteArea(_selectedArea.ID, deleteTables: true);
-                    MessageBox.Show($"Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show($"✅ Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadAreas();
                     LoadAreasForCombo();
                     LoadTables(); // Reload tables
@@ -308,7 +374,7 @@ public partial class TableManagementView : UserControl
                 if (result == MessageBoxResult.Yes)
                 {
                     _tableService.DeleteArea(_selectedArea.ID, deleteTables: true);
-                    MessageBox.Show($"Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show($"✅ Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadAreas();
                     LoadAreasForCombo();
                     LoadTables(); // Reload tables
@@ -326,7 +392,7 @@ public partial class TableManagementView : UserControl
                 if (result == MessageBoxResult.Yes)
                 {
                     _tableService.DeleteArea(_selectedArea.ID);
-                    MessageBox.Show("Xóa khu vực thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("✅ Xóa khu vực thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadAreas();
                     LoadAreasForCombo();
                     btnAddNewArea_Click(sender, e);
@@ -335,7 +401,7 @@ public partial class TableManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi khi xóa khu vực: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi khi xóa khu vực: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -362,15 +428,45 @@ public partial class TableManagementView : UserControl
         _selectedTableType = dgTableTypes.SelectedItem as TableType;
         if (_selectedTableType != null)
         {
+            // 1. Đổ dữ liệu từ loại bàn được chọn vào form
             txtTableTypeName.Text = _selectedTableType.TypeName;
+
+            // 2. Thay đổi trạng thái nút (Chuyển sang Edit Mode)
+            btnSaveTableType.Content = "Cập nhật";
+            btnDeleteTableType.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            // Không có loại bàn nào được chọn, chuyển về Create Mode
+            UpdateUIForTableTypeCreateMode();
         }
     }
 
     private void btnAddNewTableType_Click(object sender, RoutedEventArgs e)
     {
+        // Chuyển sang Create Mode
         _selectedTableType = null;
-        txtTableTypeName.Text = string.Empty;
         dgTableTypes.SelectedItem = null;
+
+        // 1. Xóa trắng Form
+        ClearTableTypeForm();
+
+        // 2. Cập nhật UI cho Create Mode
+        UpdateUIForTableTypeCreateMode();
+
+        // 3. Tự động focus vào ô nhập
+        txtTableTypeName.Focus();
+    }
+
+    private void ClearTableTypeForm()
+    {
+        txtTableTypeName.Text = string.Empty;
+    }
+
+    private void UpdateUIForTableTypeCreateMode()
+    {
+        btnSaveTableType.Content = "Lưu mới";
+        btnDeleteTableType.Visibility = Visibility.Collapsed;
     }
 
     private void btnSaveTableType_Click(object sender, RoutedEventArgs e)
@@ -383,22 +479,23 @@ public partial class TableManagementView : UserControl
                 return;
             }
 
-            if (_selectedTableType != null)
+            // Logic chính: Kiểm tra _selectedTableType để xác định Create hay Update
+            if (_selectedTableType == null)
             {
-                // Update existing table type
-                _selectedTableType.TypeName = txtTableTypeName.Text;
-                _tableService.UpdateTableType(_selectedTableType);
-                MessageBox.Show("Cập nhật loại bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // CREATE MODE: Tạo loại bàn mới
+                var newTableType = new TableType
+                {
+                    TypeName = txtTableTypeName.Text.Trim()
+                };
+                _tableService.AddTableType(newTableType);
+                MessageBox.Show("✅ Thêm loại bàn mới thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                // Add new table type
-                var newTableType = new TableType
-                {
-                    TypeName = txtTableTypeName.Text
-                };
-                _tableService.AddTableType(newTableType);
-                MessageBox.Show("Thêm loại bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                // UPDATE MODE: Cập nhật loại bàn hiện tại
+                _selectedTableType.TypeName = txtTableTypeName.Text.Trim();
+                _tableService.UpdateTableType(_selectedTableType);
+                MessageBox.Show("✅ Cập nhật loại bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
             LoadTableTypes();
@@ -407,7 +504,7 @@ public partial class TableManagementView : UserControl
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -430,14 +527,14 @@ public partial class TableManagementView : UserControl
             try
             {
                 _tableService.DeleteTableType(_selectedTableType.ID);
-                MessageBox.Show("Xóa loại bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("✅ Xóa loại bàn thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 LoadTableTypes();
                 LoadTableTypesForCombo(); // Reload combo box
                 btnAddNewTableType_Click(sender, e);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi xóa loại bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"❌ Lỗi khi xóa loại bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

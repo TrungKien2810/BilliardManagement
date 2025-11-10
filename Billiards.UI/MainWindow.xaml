@@ -107,7 +107,6 @@
                               Visibility="Collapsed"
                               Style="{StaticResource ModernMenuItemStyle}"
                               Foreground="White">
-                        <MenuItem Header="📊 Dashboard" Click="MenuItem_Dashboard_Click"/>
                         <MenuItem Header="📋 Quản lý Đơn hàng" Click="MenuItem_OrderManagement_Click"/>
                         <Separator/>
                         <MenuItem Header="🍹 Quản lý Sản phẩm" Click="MenuItem_ProductManagement_Click"/>
@@ -123,7 +122,7 @@
                               Visibility="Collapsed"
                               Style="{StaticResource ModernMenuItemStyle}"
                               Foreground="White">
-                        <MenuItem Header="📈 Báo cáo Doanh thu" Click="MenuItem_RevenueReport_Click"/>
+                        <MenuItem Header="📊 Báo cáo &amp; Dashboard" Click="MenuItem_RevenueReport_Click"/>
                     </MenuItem>
                 </Menu>
 
@@ -157,7 +156,8 @@
                 BorderThickness="0,0,0,1"
                 Padding="20,10">
             <Grid>
-                <TextBlock Text="🏠 Trang chủ / Sơ đồ bàn" 
+                <TextBlock x:Name="txtBreadcrumb" 
+                           Text="🏠 Trang chủ / Sơ đồ bàn" 
                            FontSize="12"
                            Foreground="{StaticResource TextSecondaryColor}"/>
             </Grid>

@@ -92,9 +92,32 @@
                         </StackPanel>
 
                         <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button x:Name="btnAddNew" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNew_Click" FontSize="14"/>
-                            <Button x:Name="btnSave" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSave_Click" FontSize="14"/>
-                            <Button x:Name="btnDelete" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDelete_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                            <Button x:Name="btnAddNew" 
+                                    Content="Thêm mới" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnAddNew_Click" 
+                                    FontSize="14"
+                                    ToolTip="Tạo sản phẩm mới"/>
+                            <Button x:Name="btnSave" 
+                                    Content="Lưu mới" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnSave_Click" 
+                                    FontSize="14"
+                                    ToolTip="Lưu thông tin sản phẩm"/>
+                            <Button x:Name="btnDelete" 
+                                    Content="Xóa" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnDelete_Click" 
+                                    Style="{StaticResource DangerButton}" 
+                                    FontSize="14"
+                                    Visibility="Collapsed"
+                                    ToolTip="Xóa sản phẩm đã chọn"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -125,9 +148,33 @@
                             <TextBox x:Name="txtCategoryName" Height="30"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
-                            <Button x:Name="btnAddCategory" Content="Thêm danh mục" Width="140" Height="38" Margin="5,0" Click="btnAddCategory_Click" FontSize="14"/>
-                            <Button x:Name="btnDeleteCategory" Content="Xóa danh mục" Width="130" Height="38" Margin="5,0" Click="btnDeleteCategory_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,15">
+                            <Button x:Name="btnAddNewCategory" 
+                                    Content="Thêm mới" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnAddNewCategory_Click" 
+                                    FontSize="14"
+                                    ToolTip="Tạo danh mục mới"/>
+                            <Button x:Name="btnSaveCategory" 
+                                    Content="Lưu mới" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnSaveCategory_Click" 
+                                    FontSize="14"
+                                    ToolTip="Lưu thông tin danh mục"/>
+                            <Button x:Name="btnDeleteCategory" 
+                                    Content="Xóa" 
+                                    Width="110" 
+                                    Height="38" 
+                                    Margin="5,0" 
+                                    Click="btnDeleteCategory_Click" 
+                                    Style="{StaticResource DangerButton}" 
+                                    FontSize="14"
+                                    Visibility="Collapsed"
+                                    ToolTip="Xóa danh mục đã chọn"/>
                         </StackPanel>
 
                         <TextBlock Grid.Row="2"

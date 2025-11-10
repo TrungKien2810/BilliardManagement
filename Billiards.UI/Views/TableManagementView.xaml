@@ -99,9 +99,32 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTable" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewTable_Click" FontSize="14"/>
-                                <Button x:Name="btnSaveTable" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveTable_Click" FontSize="14"/>
-                                <Button x:Name="btnDeleteTable" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteTable_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                                <Button x:Name="btnAddNewTable" 
+                                        Content="Thêm mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnAddNewTable_Click" 
+                                        FontSize="14"
+                                        ToolTip="Tạo bàn mới"/>
+                                <Button x:Name="btnSaveTable" 
+                                        Content="Lưu mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnSaveTable_Click" 
+                                        FontSize="14"
+                                        ToolTip="Lưu thông tin bàn"/>
+                                <Button x:Name="btnDeleteTable" 
+                                        Content="Xóa" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnDeleteTable_Click" 
+                                        Style="{StaticResource DangerButton}" 
+                                        FontSize="14"
+                                        Visibility="Collapsed"
+                                        ToolTip="Xóa bàn đã chọn"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -168,9 +191,32 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewArea" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewArea_Click" FontSize="14"/>
-                                <Button x:Name="btnSaveArea" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveArea_Click" FontSize="14"/>
-                                <Button x:Name="btnDeleteArea" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteArea_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                                <Button x:Name="btnAddNewArea" 
+                                        Content="Thêm mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnAddNewArea_Click" 
+                                        FontSize="14"
+                                        ToolTip="Tạo khu vực mới"/>
+                                <Button x:Name="btnSaveArea" 
+                                        Content="Lưu mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnSaveArea_Click" 
+                                        FontSize="14"
+                                        ToolTip="Lưu thông tin khu vực"/>
+                                <Button x:Name="btnDeleteArea" 
+                                        Content="Xóa" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnDeleteArea_Click" 
+                                        Style="{StaticResource DangerButton}" 
+                                        FontSize="14"
+                                        Visibility="Collapsed"
+                                        ToolTip="Xóa khu vực đã chọn"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -237,9 +283,32 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTableType" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewTableType_Click" FontSize="14"/>
-                                <Button x:Name="btnSaveTableType" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveTableType_Click" FontSize="14"/>
-                                <Button x:Name="btnDeleteTableType" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteTableType_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                                <Button x:Name="btnAddNewTableType" 
+                                        Content="Thêm mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnAddNewTableType_Click" 
+                                        FontSize="14"
+                                        ToolTip="Tạo loại bàn mới"/>
+                                <Button x:Name="btnSaveTableType" 
+                                        Content="Lưu mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnSaveTableType_Click" 
+                                        FontSize="14"
+                                        ToolTip="Lưu thông tin loại bàn"/>
+                                <Button x:Name="btnDeleteTableType" 
+                                        Content="Xóa" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnDeleteTableType_Click" 
+                                        Style="{StaticResource DangerButton}" 
+                                        FontSize="14"
+                                        Visibility="Collapsed"
+                                        ToolTip="Xóa loại bàn đã chọn"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

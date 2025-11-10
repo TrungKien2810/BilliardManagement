@@ -5,134 +5,371 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d">
     <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <TabControl>
+            <!-- Tab 1: Dashboard -->
+            <TabItem Header="📊 Dashboard - Tổng quan">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <!-- Filters -->
-        <Border Background="{StaticResource SurfaceColor}" 
-                BorderBrush="{StaticResource PrimaryLightColor}" 
-                BorderThickness="2"
-                CornerRadius="5"
-                Padding="15"
-                Margin="0,0,0,15">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Từ ngày:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource TextColor}"
-                           Margin="0,0,8,0"/>
-                <DatePicker x:Name="dpStartDate" Width="140" Margin="0,0,16,0" FontSize="14"/>
-                <TextBlock Text="Đến ngày:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource TextColor}"
-                           Margin="0,0,8,0"/>
-                <DatePicker x:Name="dpEndDate" Width="140" Margin="0,0,16,0" FontSize="14"/>
-                <TextBlock Text="Khách hàng:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource TextColor}"
-                           Margin="0,0,8,0"/>
-                <TextBox x:Name="txtCustomerNameFilter" Width="180" Margin="0,0,16,0" FontSize="14"/>
-                <TextBlock Text="Nhân viên:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="SemiBold"
-                           Foreground="{StaticResource TextColor}"
-                           Margin="0,0,8,0"/>
-                <TextBox x:Name="txtEmployeeNameFilter" Width="180" Margin="0,0,16,0" FontSize="14"/>
-                <Button x:Name="btnRunReport" 
-                        Content="Chạy báo cáo" 
-                        Click="btnRunReport_Click" 
-                        Padding="16,8"
-                        FontSize="14"
-                        Height="38"/>
-            </StackPanel>
-        </Border>
+                    <!-- Header -->
+                    <TextBlock Grid.Row="0" 
+                               Text="Dashboard - Tổng quan" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Margin="0,0,0,20"/>
 
-        <!-- Results -->
-        <DataGrid x:Name="dgReports"
-                  Grid.Row="1"
-                  AutoGenerateColumns="False"
-                  IsReadOnly="True"
-                  CanUserAddRows="False"
-                  Margin="0,0,0,10">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="80"/>
-                <DataGridTextColumn Header="Bàn" Binding="{Binding Table.TableName}" Width="120"/>
-                <DataGridTextColumn Header="Bắt đầu" Binding="{Binding StartTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" Width="160"/>
-                <DataGridTextColumn Header="Kết thúc" Binding="{Binding EndTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" Width="160"/>
-                <DataGridTextColumn Header="Tiền giờ" Binding="{Binding TableFee, StringFormat=\{0:N0\}}" Width="120"/>
-                <DataGridTextColumn Header="Dịch vụ" Binding="{Binding ProductFee, StringFormat=\{0:N0\}}" Width="120"/>
-                <DataGridTextColumn Header="Giảm giá" Binding="{Binding Discount, StringFormat=\{0:N0\}}" Width="120"/>
-                <DataGridTextColumn Header="Tổng" Binding="{Binding TotalAmount, StringFormat=\{0:N0\}}" Width="140"/>
-                <DataGridTextColumn Header="NV tạo" Binding="{Binding CreatedByEmployee.FullName}" Width="160"/>
-                <DataGridTextColumn Header="Khách" Binding="{Binding Customer.FullName}" Width="160"/>
-            </DataGrid.Columns>
-        </DataGrid>
+                    <!-- Statistics Cards -->
+                    <UniformGrid Grid.Row="1" 
+                                 Columns="4" 
+                                 Margin="0,0,0,20">
+                        <!-- Doanh thu hôm nay -->
+                        <Border Background="#4CAF50" 
+                                CornerRadius="8" 
+                                Padding="20" 
+                                Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Doanh thu hôm nay" 
+                                           Foreground="White" 
+                                           FontSize="14" 
+                                           Opacity="0.9"/>
+                                <TextBlock x:Name="txtTodayRevenue" 
+                                           Text="0" 
+                                           Foreground="White" 
+                                           FontSize="28" 
+                                           FontWeight="Bold" 
+                                           Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
 
-        <!-- Summary -->
-        <Border Grid.Row="2" 
-                Background="{StaticResource PrimaryColor}" 
-                BorderBrush="{StaticResource PrimaryDarkColor}" 
-                BorderThickness="2"
-                CornerRadius="5"
-                Padding="20">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
-                    <TextBlock Text="Số hóa đơn: " 
-                               FontWeight="Bold" 
-                               FontSize="14"
-                               Foreground="White"/>
-                    <TextBlock x:Name="txtCount" 
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
-                    <TextBlock Text="Tiền giờ: " 
-                               FontWeight="Bold" 
-                               FontSize="14"
-                               Foreground="White"/>
-                    <TextBlock x:Name="txtSumTableFee" 
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
-                    <TextBlock Text="Dịch vụ: " 
-                               FontWeight="Bold" 
-                               FontSize="14"
-                               Foreground="White"/>
-                    <TextBlock x:Name="txtSumProductFee" 
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
-                    <TextBlock Text="Giảm giá: " 
-                               FontWeight="Bold" 
-                               FontSize="14"
-                               Foreground="White"/>
-                    <TextBlock x:Name="txtSumDiscount" 
-                               FontSize="14"
-                               FontWeight="Bold"
-                               Foreground="White"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Tổng doanh thu: " 
-                               FontWeight="Bold" 
-                               FontSize="15"
-                               Foreground="White"/>
-                    <TextBlock x:Name="txtSumTotal" 
-                               FontSize="15"
-                               FontWeight="Bold"
-                               Foreground="#FFEB3B"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
+                        <!-- Doanh thu tháng này -->
+                        <Border Background="#2196F3" 
+                                CornerRadius="8" 
+                                Padding="20" 
+                                Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Doanh thu tháng này" 
+                                           Foreground="White" 
+                                           FontSize="14" 
+                                           Opacity="0.9"/>
+                                <TextBlock x:Name="txtMonthRevenue" 
+                                           Text="0" 
+                                           Foreground="White" 
+                                           FontSize="28" 
+                                           FontWeight="Bold" 
+                                           Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Bàn đang sử dụng -->
+                        <Border Background="#FF9800" 
+                                CornerRadius="8" 
+                                Padding="20" 
+                                Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Bàn đang sử dụng" 
+                                           Foreground="White" 
+                                           FontSize="14" 
+                                           Opacity="0.9"/>
+                                <TextBlock x:Name="txtInUseTables" 
+                                           Text="0" 
+                                           Foreground="White" 
+                                           FontSize="28" 
+                                           FontWeight="Bold" 
+                                           Margin="0,5,0,0"/>
+                                <TextBlock x:Name="txtTotalTables" 
+                                           Text="/ 0" 
+                                           Foreground="White" 
+                                           FontSize="16" 
+                                           Opacity="0.8" 
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Đơn hàng hôm nay -->
+                        <Border Background="#9C27B0" 
+                                CornerRadius="8" 
+                                Padding="20" 
+                                Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Đơn hàng hôm nay" 
+                                           Foreground="White" 
+                                           FontSize="14" 
+                                           Opacity="0.9"/>
+                                <TextBlock x:Name="txtTodayInvoices" 
+                                           Text="0" 
+                                           Foreground="White" 
+                                           FontSize="28" 
+                                           FontWeight="Bold" 
+                                           Margin="0,5,0,0"/>
+                                <TextBlock x:Name="txtActiveInvoices" 
+                                           Text="0 đang active" 
+                                           Foreground="White" 
+                                           FontSize="14" 
+                                           Opacity="0.8" 
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- Charts and Tables -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Daily Revenue Chart (Table) -->
+                        <Border Grid.Column="0" 
+                                BorderBrush="#CCCCCC" 
+                                BorderThickness="1" 
+                                CornerRadius="8" 
+                                Padding="15" 
+                                Margin="0,0,10,0"
+                                Background="White">
+                            <StackPanel>
+                                <TextBlock Text="Doanh thu theo ngày (tháng này)" 
+                                           FontSize="16" 
+                                           FontWeight="Bold" 
+                                           Margin="0,0,0,10"/>
+                                <DataGrid x:Name="dgDailyRevenue" 
+                                          AutoGenerateColumns="False" 
+                                          IsReadOnly="True" 
+                                          CanUserAddRows="False"
+                                          HeadersVisibility="Column"
+                                          GridLinesVisibility="Horizontal"
+                                          AlternatingRowBackground="#F5F5F5">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Ngày" 
+                                                            Binding="{Binding Date, StringFormat=\{0:dd/MM/yyyy\}}" 
+                                                            Width="120"/>
+                                        <DataGridTextColumn Header="Doanh thu" 
+                                                            Binding="{Binding Revenue, StringFormat=\{0:N0\} VNĐ}" 
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Số đơn" 
+                                                            Binding="{Binding InvoiceCount}" 
+                                                            Width="80"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Top Products -->
+                        <Border Grid.Column="1" 
+                                BorderBrush="#CCCCCC" 
+                                BorderThickness="1" 
+                                CornerRadius="8" 
+                                Padding="15" 
+                                Background="White">
+                            <StackPanel>
+                                <TextBlock Text="Top sản phẩm hôm nay" 
+                                           FontSize="16" 
+                                           FontWeight="Bold" 
+                                           Margin="0,0,0,10"/>
+                                <DataGrid x:Name="dgTopProducts" 
+                                          AutoGenerateColumns="False" 
+                                          IsReadOnly="True" 
+                                          CanUserAddRows="False"
+                                          HeadersVisibility="Column"
+                                          GridLinesVisibility="Horizontal"
+                                          AlternatingRowBackground="#F5F5F5">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Sản phẩm" 
+                                                            Binding="{Binding ProductName}" 
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="SL" 
+                                                            Binding="{Binding TotalQuantity}" 
+                                                            Width="50"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- Tab 2: Báo cáo Doanh thu -->
+            <TabItem Header="📈 Báo cáo Doanh thu">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Filters -->
+                    <Border Background="{StaticResource SurfaceColor}" 
+                            BorderBrush="{StaticResource PrimaryLightColor}" 
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            Padding="15"
+                            Margin="0,0,0,15">
+                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Từ ngày:" 
+                                       VerticalAlignment="Center" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextColor}"
+                                       Margin="0,0,8,8"/>
+                            <DatePicker x:Name="dpStartDate" Width="140" Margin="0,0,16,8" FontSize="14"/>
+                            <TextBlock Text="Đến ngày:" 
+                                       VerticalAlignment="Center" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextColor}"
+                                       Margin="0,0,8,8"/>
+                            <DatePicker x:Name="dpEndDate" Width="140" Margin="0,0,16,8" FontSize="14"/>
+                            <TextBlock Text="Bàn:" 
+                                       VerticalAlignment="Center" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextColor}"
+                                       Margin="0,0,8,8"/>
+                            <ComboBox x:Name="cmbTableFilter" 
+                                      Width="160" 
+                                      Margin="0,0,16,8" 
+                                      FontSize="14"
+                                      DisplayMemberPath="DisplayName"
+                                      SelectedValuePath="ID"/>
+                            <TextBlock Text="Khách hàng:" 
+                                       VerticalAlignment="Center" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextColor}"
+                                       Margin="0,0,8,8"/>
+                            <ComboBox x:Name="cmbCustomerFilter" 
+                                      Width="180" 
+                                      Margin="0,0,16,8" 
+                                      FontSize="14"
+                                      DisplayMemberPath="DisplayName"
+                                      SelectedValuePath="ID"/>
+                            <TextBlock Text="Nhân viên:" 
+                                       VerticalAlignment="Center" 
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextColor}"
+                                       Margin="0,0,8,8"/>
+                            <ComboBox x:Name="cmbEmployeeFilter" 
+                                      Width="180" 
+                                      Margin="0,0,16,8" 
+                                      FontSize="14"
+                                      DisplayMemberPath="DisplayName"
+                                      SelectedValuePath="ID"/>
+                            <Button x:Name="btnRunReport" 
+                                    Content="Chạy báo cáo" 
+                                    Click="btnRunReport_Click" 
+                                    Padding="16,8"
+                                    FontSize="14"
+                                    Height="38"
+                                    Margin="0,0,10,8"/>
+                            <Button x:Name="btnResetFilters" 
+                                    Content="Xóa bộ lọc" 
+                                    Click="btnResetFilters_Click" 
+                                    Padding="16,8"
+                                    FontSize="14"
+                                    Height="38"
+                                    Background="#F44336"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Margin="0,0,0,8">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#F44336"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#D32F2F"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </WrapPanel>
+                    </Border>
+
+                    <!-- Results -->
+                    <DataGrid x:Name="dgReports"
+                              Grid.Row="1"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              Margin="0,0,0,10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="80"/>
+                            <DataGridTextColumn Header="Bàn" Binding="{Binding Table.TableName}" Width="120"/>
+                            <DataGridTextColumn Header="Bắt đầu" Binding="{Binding StartTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" Width="160"/>
+                            <DataGridTextColumn Header="Kết thúc" Binding="{Binding EndTime, StringFormat=\{0:dd/MM/yyyy HH:mm\}}" Width="160"/>
+                            <DataGridTextColumn Header="Tiền giờ" Binding="{Binding TableFee, StringFormat=\{0:N0\}}" Width="120"/>
+                            <DataGridTextColumn Header="Dịch vụ" Binding="{Binding ProductFee, StringFormat=\{0:N0\}}" Width="120"/>
+                            <DataGridTextColumn Header="Giảm giá" Binding="{Binding Discount, StringFormat=\{0:N0\}}" Width="120"/>
+                            <DataGridTextColumn Header="Tổng" Binding="{Binding TotalAmount, StringFormat=\{0:N0\}}" Width="140"/>
+                            <DataGridTextColumn Header="NV tạo" Binding="{Binding CreatedByEmployee.FullName}" Width="160"/>
+                            <DataGridTextColumn Header="Khách" Binding="{Binding Customer.FullName}" Width="160"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Summary -->
+                    <Border Grid.Row="2" 
+                            Background="{StaticResource PrimaryColor}" 
+                            BorderBrush="{StaticResource PrimaryDarkColor}" 
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            Padding="20">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                                <TextBlock Text="Số hóa đơn: " 
+                                           FontWeight="Bold" 
+                                           FontSize="14"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtCount" 
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                                <TextBlock Text="Tiền giờ: " 
+                                           FontWeight="Bold" 
+                                           FontSize="14"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtSumTableFee" 
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                                <TextBlock Text="Dịch vụ: " 
+                                           FontWeight="Bold" 
+                                           FontSize="14"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtSumProductFee" 
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                                <TextBlock Text="Giảm giá: " 
+                                           FontWeight="Bold" 
+                                           FontSize="14"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtSumDiscount" 
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Tổng doanh thu: " 
+                                           FontWeight="Bold" 
+                                           FontSize="15"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="txtSumTotal" 
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           Foreground="#FFEB3B"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
 

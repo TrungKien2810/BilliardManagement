@@ -288,11 +288,12 @@ public partial class MainWindow : Window
         this.Close();
     }
 
-    private void ShowAdminView(UserControl view)
+    private void ShowAdminView(UserControl view, string viewName)
     {
         gridTableMap.Visibility = Visibility.Collapsed;
         contentAdminViews.Visibility = Visibility.Visible;
         contentAdminViews.Content = view;
+        UpdateBreadcrumb(viewName);
     }
 
     private void ShowTableMap()
@@ -300,9 +301,15 @@ public partial class MainWindow : Window
         gridTableMap.Visibility = Visibility.Visible;
         contentAdminViews.Visibility = Visibility.Collapsed;
         contentAdminViews.Content = null;
+        UpdateBreadcrumb("Sơ đồ bàn");
         
         // Force reload data from database when returning to home
         RefreshTableMapData();
+    }
+
+    private void UpdateBreadcrumb(string currentPage)
+    {
+        txtBreadcrumb.Text = $"🏠 Trang chủ / {currentPage}";
     }
 
     private void RefreshTableMapData()
@@ -356,7 +363,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new ProductManagementView());
+        ShowAdminView(new ProductManagementView(), "Quản lý Sản phẩm");
     }
 
     private void MenuItem_TableManagement_Click(object sender, RoutedEventArgs e)
@@ -366,7 +373,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new TableManagementView());
+        ShowAdminView(new TableManagementView(), "Quản lý Bàn");
     }
 
     private void MenuItem_EmployeeManagement_Click(object sender, RoutedEventArgs e)
@@ -376,7 +383,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new EmployeeManagementView());
+        ShowAdminView(new EmployeeManagementView(), "Quản lý Nhân viên");
     }
 
     private void MenuItem_CustomerManagement_Click(object sender, RoutedEventArgs e)
@@ -386,7 +393,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new CustomerManagementView());
+        ShowAdminView(new CustomerManagementView(), "Quản lý Khách hàng");
     }
 
     private void MenuItem_PricingManagement_Click(object sender, RoutedEventArgs e)
@@ -396,7 +403,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new PricingManagementView());
+        ShowAdminView(new PricingManagementView(), "Quản lý Giá giờ");
     }
 
     private void MenuItem_Home_Click(object sender, RoutedEventArgs e)
@@ -411,17 +418,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new ReportsView());
-    }
-
-    private void MenuItem_Dashboard_Click(object sender, RoutedEventArgs e)
-    {
-        if (!AuthorizationHelper.IsAdmin())
-        {
-            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-        ShowAdminView(new DashboardView());
+        ShowAdminView(new ReportsView(), "Báo cáo & Dashboard");
     }
 
     private void MenuItem_OrderManagement_Click(object sender, RoutedEventArgs e)
@@ -431,7 +428,7 @@ public partial class MainWindow : Window
             MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
-        ShowAdminView(new OrderManagementView());
+        ShowAdminView(new OrderManagementView(), "Quản lý Đơn hàng");
     }
 
     private Table? _currentContextTable;

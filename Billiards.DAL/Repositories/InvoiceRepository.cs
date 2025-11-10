@@ -97,7 +97,8 @@ public class InvoiceRepository
     /// <summary>
     /// Lấy tất cả invoices với filter
     /// </summary>
-    public List<Invoice> GetAllInvoices(DateTime? startDate = null, DateTime? endDate = null, string? status = null, int? tableId = null, int? employeeId = null)
+    public List<Invoice> GetAllInvoices(DateTime? startDate = null, DateTime? endDate = null, string? status = null, 
+        int? tableId = null, int? employeeId = null, int? customerId = null)
     {
         _context.ChangeTracker.Clear();
 
@@ -125,14 +126,22 @@ public class InvoiceRepository
             query = query.Where(i => i.Status == status);
         }
 
+        // Filter by TableID (performance: uses index)
         if (tableId.HasValue)
         {
             query = query.Where(i => i.TableID == tableId.Value);
         }
 
+        // Filter by EmployeeID (performance: uses index)
         if (employeeId.HasValue)
         {
             query = query.Where(i => i.CreatedByEmployeeID == employeeId.Value);
+        }
+
+        // Filter by CustomerID (performance: uses index)
+        if (customerId.HasValue)
+        {
+            query = query.Where(i => i.CustomerID == customerId.Value);
         }
 
         return query

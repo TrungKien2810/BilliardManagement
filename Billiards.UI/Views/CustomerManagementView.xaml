@@ -80,9 +80,32 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNew_Click" FontSize="14"/>
-                    <Button x:Name="btnSave" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSave_Click" FontSize="14"/>
-                    <Button x:Name="btnDelete" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDelete_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                    <Button x:Name="btnAddNew" 
+                            Content="Thêm mới" 
+                            Width="110" 
+                            Height="38" 
+                            Margin="5,0" 
+                            Click="btnAddNew_Click" 
+                            FontSize="14"
+                            ToolTip="Tạo khách hàng mới"/>
+                    <Button x:Name="btnSave" 
+                            Content="Lưu mới" 
+                            Width="110" 
+                            Height="38" 
+                            Margin="5,0" 
+                            Click="btnSave_Click" 
+                            FontSize="14"
+                            ToolTip="Lưu thông tin khách hàng"/>
+                    <Button x:Name="btnDelete" 
+                            Content="Xóa" 
+                            Width="110" 
+                            Height="38" 
+                            Margin="5,0" 
+                            Click="btnDelete_Click" 
+                            Style="{StaticResource DangerButton}" 
+                            FontSize="14"
+                            Visibility="Collapsed"
+                            ToolTip="Xóa khách hàng đã chọn"/>
                 </StackPanel>
             </Grid>
         </StackPanel>

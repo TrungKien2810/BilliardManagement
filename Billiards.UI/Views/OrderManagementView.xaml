@@ -27,83 +27,115 @@
                 Padding="15" 
                 Margin="0,0,0,15"
                 Background="#F9F9F9">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <StackPanel>
+                <!-- First Row: Date, Status, Table, Buttons -->
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <!-- Date Filters -->
+                    <TextBlock Text="Từ ngày:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <DatePicker x:Name="dpStartDate" 
+                                Width="140" 
+                                Margin="0,0,16,0" 
+                                FontSize="14"/>
 
-                <!-- Date Filters -->
-                <TextBlock Grid.Row="0" 
-                           Grid.Column="0" 
-                           Text="Từ ngày:" 
-                           VerticalAlignment="Center" 
-                           Margin="0,0,8,5"/>
-                <DatePicker x:Name="dpStartDate" 
-                            Grid.Row="0" 
-                            Grid.Column="1" 
-                            Width="140" 
-                            Margin="0,0,16,5"/>
+                    <TextBlock Text="Đến ngày:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <DatePicker x:Name="dpEndDate" 
+                                Width="140" 
+                                Margin="0,0,16,0" 
+                                FontSize="14"/>
 
-                <TextBlock Grid.Row="0" 
-                           Grid.Column="2" 
-                           Text="Đến ngày:" 
-                           VerticalAlignment="Center" 
-                           Margin="0,0,8,5"/>
-                <DatePicker x:Name="dpEndDate" 
-                            Grid.Row="0" 
-                            Grid.Column="3" 
-                            Width="140" 
-                            Margin="0,0,16,5"/>
+                    <!-- Status Filter -->
+                    <TextBlock Text="Trạng thái:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cmbStatus" 
+                              Width="150" 
+                              Margin="0,0,16,0"
+                              FontSize="14">
+                        <ComboBoxItem Content="Tất cả" Tag="" IsSelected="True"/>
+                        <ComboBoxItem Content="Active" Tag="Active"/>
+                        <ComboBoxItem Content="Paid" Tag="Paid"/>
+                        <ComboBoxItem Content="Cancelled" Tag="Cancelled"/>
+                    </ComboBox>
 
-                <!-- Status Filter -->
-                <TextBlock Grid.Row="0" 
-                           Grid.Column="4" 
-                           Text="Trạng thái:" 
-                           VerticalAlignment="Center" 
-                           Margin="0,0,8,5"/>
-                <ComboBox x:Name="cmbStatus" 
-                          Grid.Row="0" 
-                          Grid.Column="5" 
-                          Width="150" 
-                          Margin="0,0,16,5">
-                    <ComboBoxItem Content="Tất cả" Tag="" IsSelected="True"/>
-                    <ComboBoxItem Content="Active" Tag="Active"/>
-                    <ComboBoxItem Content="Paid" Tag="Paid"/>
-                    <ComboBoxItem Content="Cancelled" Tag="Cancelled"/>
-                </ComboBox>
+                    <!-- Table Filter -->
+                    <TextBlock Text="Bàn:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cmbTableFilter" 
+                              Width="160" 
+                              Margin="0,0,16,0" 
+                              FontSize="14"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="ID"/>
 
-                <!-- Buttons -->
-                <Button x:Name="btnSearch" 
-                        Grid.Row="0" 
-                        Grid.Column="6" 
-                        Content="Tìm kiếm" 
-                        Click="btnSearch_Click" 
-                        Padding="15,5" 
-                        Margin="0,0,0,5"/>
+                    <!-- Buttons -->
+                    <Button x:Name="btnSearch" 
+                            Content="Tìm kiếm" 
+                            Click="btnSearch_Click" 
+                            Padding="15,5" 
+                            FontSize="14"
+                            Height="38"
+                            Margin="0,0,10,0"/>
+                    <Button x:Name="btnResetFilters" 
+                            Content="Xóa bộ lọc" 
+                            Click="btnResetFilters_Click" 
+                            Padding="15,5"
+                            FontSize="14"
+                            Height="38"
+                            Background="#F44336"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Margin="0,0,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#F44336"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#D32F2F"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </WrapPanel>
 
-                <!-- Search by ID -->
-                <TextBlock Grid.Row="1" 
-                           Grid.Column="0" 
-                           Text="Tìm theo ID:" 
-                           VerticalAlignment="Center" 
-                           Margin="0,5,8,0"/>
-                <TextBox x:Name="txtSearchId" 
-                         Grid.Row="1" 
-                         Grid.Column="1" 
-                         Width="140" 
-                         Margin="0,5,16,0"
-                         KeyDown="txtSearchId_KeyDown"/>
-            </Grid>
+                <!-- Second Row: Customer, Employee -->
+                <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <!-- Customer Filter -->
+                    <TextBlock Text="Khách hàng:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cmbCustomerFilter" 
+                              Width="180" 
+                              Margin="0,0,16,0" 
+                              FontSize="14"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="ID"/>
+
+                    <!-- Employee Filter -->
+                    <TextBlock Text="Nhân viên:" 
+                               VerticalAlignment="Center" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,8,0"/>
+                    <ComboBox x:Name="cmbEmployeeFilter" 
+                              Width="180" 
+                              Margin="0,0,16,0" 
+                              FontSize="14"
+                              DisplayMemberPath="DisplayName"
+                              SelectedValuePath="ID"/>
+                </WrapPanel>
+            </StackPanel>
         </Border>
 
         <!-- DataGrid -->

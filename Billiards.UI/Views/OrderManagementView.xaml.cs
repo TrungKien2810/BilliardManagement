@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,14 +10,28 @@ using Billiards.UI.Windows;
 
 namespace Billiards.UI.Views;
 
+// Helper class for "All" option in ComboBox (duplicate definition for OrderManagementView)
+public class OrderFilterItem
+{
+    public int ID { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public bool IsAll { get; set; }
+}
+
 public partial class OrderManagementView : UserControl
 {
     private readonly OrderManagementService _orderManagementService;
+    private readonly CustomerService _customerService;
+    private readonly EmployeeService _employeeService;
+    private readonly TableManagementService _tableService;
 
     public OrderManagementView()
     {
         InitializeComponent();
         _orderManagementService = new OrderManagementService();
+        _customerService = new CustomerService();
+        _employeeService = new EmployeeService();
+        _tableService = new TableManagementService();
         Loaded += OrderManagementView_Loaded;
     }
 
@@ -26,7 +41,62 @@ public partial class OrderManagementView : UserControl
         dpEndDate.SelectedDate = DateTime.Now;
         dpStartDate.SelectedDate = DateTime.Now.AddDays(-7);
 
+        // Load filter data
+        LoadFilterData();
+
         LoadOrders();
+    }
+
+    private void LoadFilterData()
+    {
+        try
+        {
+            // Load Tables
+            var tables = _tableService.GetAllTables();
+            var tableList = new List<OrderFilterItem>
+            {
+                new OrderFilterItem { ID = 0, DisplayName = "Tất cả", IsAll = true }
+            };
+            foreach (var table in tables)
+            {
+                tableList.Add(new OrderFilterItem { ID = table.ID, DisplayName = table.TableName, IsAll = false });
+            }
+            cmbTableFilter.ItemsSource = tableList;
+            cmbTableFilter.SelectedIndex = 0;
+
+            // Load Customers
+            var customers = _customerService.GetAllCustomers();
+            var customerList = new List<OrderFilterItem>
+            {
+                new OrderFilterItem { ID = 0, DisplayName = "Tất cả", IsAll = true }
+            };
+            foreach (var customer in customers)
+            {
+                var displayName = string.IsNullOrWhiteSpace(customer.FullName) 
+                    ? $"Khách hàng #{customer.ID}" 
+                    : customer.FullName;
+                customerList.Add(new OrderFilterItem { ID = customer.ID, DisplayName = displayName, IsAll = false });
+            }
+            cmbCustomerFilter.ItemsSource = customerList;
+            cmbCustomerFilter.SelectedIndex = 0;
+
+            // Load Employees
+            var employees = _employeeService.GetAllEmployees();
+            var employeeList = new List<OrderFilterItem>
+            {
+                new OrderFilterItem { ID = 0, DisplayName = "Tất cả", IsAll = true }
+            };
+            foreach (var employee in employees)
+            {
+                employeeList.Add(new OrderFilterItem { ID = employee.ID, DisplayName = employee.FullName, IsAll = false });
+            }
+            cmbEmployeeFilter.ItemsSource = employeeList;
+            cmbEmployeeFilter.SelectedIndex = 0;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi tải dữ liệu bộ lọc: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void LoadOrders()
@@ -37,10 +107,32 @@ public partial class OrderManagementView : UserControl
             var endDate = dpEndDate.SelectedDate?.AddDays(1).AddTicks(-1); // End of day
             var status = (cmbStatus.SelectedItem as ComboBoxItem)?.Tag?.ToString();
 
+            // Get selected IDs from ComboBox (null if "Tất cả" is selected)
+            int? tableId = null;
+            if (cmbTableFilter.SelectedItem is OrderFilterItem tableFilter && !tableFilter.IsAll)
+            {
+                tableId = tableFilter.ID;
+            }
+
+            int? customerId = null;
+            if (cmbCustomerFilter.SelectedItem is OrderFilterItem customerFilter && !customerFilter.IsAll)
+            {
+                customerId = customerFilter.ID;
+            }
+
+            int? employeeId = null;
+            if (cmbEmployeeFilter.SelectedItem is OrderFilterItem employeeFilter && !employeeFilter.IsAll)
+            {
+                employeeId = employeeFilter.ID;
+            }
+
             var orders = _orderManagementService.GetAllInvoices(
                 startDate: startDate,
                 endDate: endDate,
-                status: string.IsNullOrWhiteSpace(status) ? null : status
+                status: string.IsNullOrWhiteSpace(status) ? null : status,
+                tableId: tableId,
+                employeeId: employeeId,
+                customerId: customerId
             );
 
             dgOrders.ItemsSource = orders;
@@ -72,13 +164,33 @@ public partial class OrderManagementView : UserControl
 
     private void btnRefresh_Click(object sender, RoutedEventArgs e)
     {
-        // Reset filters
-        dpEndDate.SelectedDate = DateTime.Now;
-        dpStartDate.SelectedDate = DateTime.Now.AddDays(-7);
-        cmbStatus.SelectedIndex = 0;
-        txtSearchId.Text = string.Empty;
-
+        // Reload orders with current filters
         LoadOrders();
+    }
+
+    private void btnResetFilters_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            // Reset date filters to last 7 days
+            dpEndDate.SelectedDate = DateTime.Now;
+            dpStartDate.SelectedDate = DateTime.Now.AddDays(-7);
+
+            // Reset Status filter to "Tất cả"
+            cmbStatus.SelectedIndex = 0;
+
+            // Reset ComboBox filters to "Tất cả"
+            cmbTableFilter.SelectedIndex = 0;
+            cmbCustomerFilter.SelectedIndex = 0;
+            cmbEmployeeFilter.SelectedIndex = 0;
+
+            // Automatically run search with default filters to refresh the display
+            btnSearch_Click(sender, e);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi xóa bộ lọc: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
     }
 
     private void dgOrders_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -162,47 +274,5 @@ public partial class OrderManagementView : UserControl
         }
     }
 
-    private void txtSearchId_KeyDown(object sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Enter)
-        {
-            if (int.TryParse(txtSearchId.Text, out int invoiceId))
-            {
-                try
-                {
-                    var invoice = _orderManagementService.GetInvoiceWithDetails(invoiceId);
-                    if (invoice != null)
-                    {
-                        // Load all invoices and select the found one
-                        LoadOrders();
-                        
-                        // Find and select the invoice
-                        var orders = dgOrders.ItemsSource as System.Collections.Generic.List<Invoice>;
-                        if (orders != null)
-                        {
-                            var found = orders.FirstOrDefault(o => o.ID == invoiceId);
-                            if (found != null)
-                            {
-                                dgOrders.SelectedItem = found;
-                                dgOrders.ScrollIntoView(found);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Không tìm thấy đơn hàng với ID {invoiceId}.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Lỗi khi tìm kiếm đơn hàng: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else if (!string.IsNullOrWhiteSpace(txtSearchId.Text))
-            {
-                MessageBox.Show("Vui lòng nhập ID hợp lệ.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-    }
 }
 

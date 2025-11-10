@@ -19,9 +19,10 @@ public class ReportService
         _reportRepository = reportRepository;
     }
 
-    public List<Invoice> GetRevenueReport(DateTime startDate, DateTime endDate, string? customerName = null, string? employeeName = null)
+    public List<Invoice> GetRevenueReport(DateTime startDate, DateTime endDate, 
+        int? customerId = null, int? employeeId = null, int? tableId = null)
     {
-        return _reportRepository.GetPaidInvoices(startDate, endDate, customerName, employeeName);
+        return _reportRepository.GetPaidInvoices(startDate, endDate, customerId, employeeId, tableId);
     }
 }
 

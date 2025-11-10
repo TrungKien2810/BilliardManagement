@@ -20,7 +20,8 @@ public class ReportRepository
         _context = context;
     }
 
-    public List<Invoice> GetPaidInvoices(DateTime startDate, DateTime endDate, string? customerName = null, string? employeeName = null)
+    public List<Invoice> GetPaidInvoices(DateTime startDate, DateTime endDate, 
+        int? customerId = null, int? employeeId = null, int? tableId = null)
     {
         // Ensure we don't return stale entities
         _context.ChangeTracker.Clear();
@@ -37,18 +38,22 @@ public class ReportRepository
                         && i.EndTime.Value >= startDate
                         && i.EndTime.Value <= endDate);
 
-        if (!string.IsNullOrWhiteSpace(customerName))
+        // Filter by CustomerID (performance: uses index)
+        if (customerId.HasValue)
         {
-            query = query.Where(i => i.Customer != null
-                                     && i.Customer.FullName != null
-                                     && EF.Functions.Like(i.Customer.FullName, $"%{customerName}%"));
+            query = query.Where(i => i.CustomerID == customerId.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(employeeName))
+        // Filter by EmployeeID (performance: uses index)
+        if (employeeId.HasValue)
         {
-            query = query.Where(i => i.CreatedByEmployee != null
-                                     && i.CreatedByEmployee.FullName != null
-                                     && EF.Functions.Like(i.CreatedByEmployee.FullName, $"%{employeeName}%"));
+            query = query.Where(i => i.CreatedByEmployeeID == employeeId.Value);
+        }
+
+        // Filter by TableID (performance: uses index)
+        if (tableId.HasValue)
+        {
+            query = query.Where(i => i.TableID == tableId.Value);
         }
 
         return query

@@ -64,7 +64,8 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Margin="0,0,0,10">
@@ -77,7 +78,7 @@
                                 <TextBox x:Name="txtPhoneNumber" Height="30"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="2" Margin="0,0,0,20">
+                            <StackPanel Grid.Row="2" Margin="0,0,0,10">
                                 <TextBlock Text="Địa chỉ:" Margin="0,0,0,5"/>
                                 <TextBox x:Name="txtAddress" Height="30"/>
                             </StackPanel>
@@ -111,10 +112,33 @@
                                 </Grid>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                <Button x:Name="btnAddNewEmployee" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewEmployee_Click" FontSize="14"/>
-                                <Button x:Name="btnSaveEmployee" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveEmployee_Click" FontSize="14"/>
-                                <Button x:Name="btnDeleteEmployee" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteEmployee_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                                <Button x:Name="btnAddNewEmployee" 
+                                        Content="Thêm mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnAddNewEmployee_Click" 
+                                        FontSize="14"
+                                        ToolTip="Tạo nhân viên mới"/>
+                                <Button x:Name="btnSaveEmployee" 
+                                        Content="Lưu mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnSaveEmployee_Click" 
+                                        FontSize="14"
+                                        ToolTip="Lưu thông tin nhân viên"/>
+                                <Button x:Name="btnDeleteEmployee" 
+                                        Content="Xóa" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnDeleteEmployee_Click" 
+                                        Style="{StaticResource DangerButton}" 
+                                        FontSize="14"
+                                        Visibility="Collapsed"
+                                        ToolTip="Xóa nhân viên đã chọn"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -213,9 +237,32 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewAccount" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewAccount_Click" FontSize="14"/>
-                                <Button x:Name="btnSaveAccount" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveAccount_Click" FontSize="14"/>
-                                <Button x:Name="btnDeleteAccount" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteAccount_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
+                                <Button x:Name="btnAddNewAccount" 
+                                        Content="Thêm mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnAddNewAccount_Click" 
+                                        FontSize="14"
+                                        ToolTip="Tạo tài khoản mới"/>
+                                <Button x:Name="btnSaveAccount" 
+                                        Content="Lưu mới" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnSaveAccount_Click" 
+                                        FontSize="14"
+                                        ToolTip="Lưu thông tin tài khoản"/>
+                                <Button x:Name="btnDeleteAccount" 
+                                        Content="Xóa" 
+                                        Width="110" 
+                                        Height="38" 
+                                        Margin="5,0" 
+                                        Click="btnDeleteAccount_Click" 
+                                        Style="{StaticResource DangerButton}" 
+                                        FontSize="14"
+                                        Visibility="Collapsed"
+                                        ToolTip="Xóa tài khoản đã chọn"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
