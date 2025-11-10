@@ -28,6 +28,20 @@ public class OrderService
         return _productRepository.GetProductsByCategory(categoryId);
     }
 
+    public int GetAvailableStock(int invoiceId, int productId)
+    {
+        // Get current stock
+        // Note: Stock is already reduced when items are added to invoice,
+        // so we just return the current stock quantity
+        var product = _productRepository.GetById(productId);
+        if (product == null)
+        {
+            return 0;
+        }
+
+        return product.StockQuantity;
+    }
+
     public void AddProductToInvoice(int invoiceId, int productId, int quantity)
     {
         // Get product to check stock
@@ -35,12 +49,6 @@ public class OrderService
         if (product == null)
         {
             throw new Exception("Sản phẩm không tồn tại!");
-        }
-
-        // Check stock
-        if (product.StockQuantity < quantity)
-        {
-            throw new Exception($"Không đủ hàng trong kho! Hiện tại chỉ còn {product.StockQuantity} sản phẩm.");
         }
 
         // Get invoice
@@ -53,6 +61,13 @@ public class OrderService
         // Check if product already exists in invoice
         var existingDetail = _context.InvoiceDetails
             .FirstOrDefault(id => id.InvoiceID == invoiceId && id.ProductID == productId);
+
+        // Check available stock (stock was already reduced when items were added to invoice)
+        // So we just check if current stock is sufficient for the quantity we want to add
+        if (product.StockQuantity < quantity)
+        {
+            throw new Exception($"Không đủ hàng trong kho! Hiện tại chỉ còn {product.StockQuantity} sản phẩm.");
+        }
 
         if (existingDetail != null)
         {
