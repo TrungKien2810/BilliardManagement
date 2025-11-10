@@ -5,133 +5,358 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Billiards.UI.Windows"
         mc:Ignorable="d"
-        Title="Thanh toán" Height="800" Width="800"
+        Title="Thanh toán"
+        Height="850"
+        Width="900"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded">
-    <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Window.Resources>
+        <Style x:Key="InfoCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Thông tin thời gian -->
-        <GroupBox Grid.Row="0" Header="Thông tin thời gian" Margin="0,0,0,10">
-            <Grid Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Giờ vào:" FontWeight="Bold"/>
-                    <TextBlock x:Name="txtStartTime" Margin="0,5,0,0"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                    <TextBlock Text="Giờ ra:" FontWeight="Bold"/>
-                    <TextBlock x:Name="txtEndTime" Margin="0,5,0,0"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2">
-                    <TextBlock Text="Tổng thời gian:" FontWeight="Bold"/>
-                    <TextBlock x:Name="txtTotalTime" Margin="0,5,0,0"/>
-                </StackPanel>
-            </Grid>
-        </GroupBox>
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource PrimaryColor}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
 
-        <!-- Tiền giờ -->
-        <GroupBox Grid.Row="1" Header="Tiền giờ" Margin="0,0,0,10">
-            <StackPanel Margin="5">
-                <TextBlock x:Name="txtTableFee" FontSize="18" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}"/>
+        <Style x:Key="AmountTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                  Background="{StaticResource BackgroundColor}">
+        <Grid Margin="30,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource PrimaryColor}"
+                    CornerRadius="10,10,0,0"
+                    Padding="25,20"
+                    Margin="0,0,0,20">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="💳" FontSize="32" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                    <TextBlock Text="THANH TOÁN" 
+                               FontSize="24" 
+                               FontWeight="Bold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Content -->
+            <StackPanel Grid.Row="1">
+
+                <!-- Thông tin thời gian -->
+                <Border Style="{StaticResource InfoCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Text="⏰ THÔNG TIN THỜI GIAN"
+                                   Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Giờ vào" 
+                                           FontSize="12" 
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,5"/>
+                                <Border Background="{StaticResource PrimaryLightColor}"
+                                        CornerRadius="5"
+                                        Padding="10,8">
+                                    <TextBlock x:Name="txtStartTime" 
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource PrimaryDarkColor}"
+                                               TextAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="5,0">
+                                <TextBlock Text="Giờ ra" 
+                                           FontSize="12" 
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,5"/>
+                                <Border Background="{StaticResource WarningColor}"
+                                        CornerRadius="5"
+                                        Padding="10,8">
+                                    <TextBlock x:Name="txtEndTime" 
+                                               FontWeight="SemiBold"
+                                               Foreground="White"
+                                               TextAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                                <TextBlock Text="Tổng thời gian" 
+                                           FontSize="12" 
+                                           Foreground="{StaticResource TextSecondaryColor}"
+                                           Margin="0,0,0,5"/>
+                                <Border Background="{StaticResource SecondaryColor}"
+                                        CornerRadius="5"
+                                        Padding="10,8">
+                                    <TextBlock x:Name="txtTotalTime" 
+                                               FontWeight="SemiBold"
+                                               Foreground="White"
+                                               TextAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Tiền giờ -->
+                <Border Style="{StaticResource InfoCardStyle}"
+                        Background="#E8F5E9">
+                    <StackPanel>
+                        <TextBlock Text="💵 TIỀN GIỜ CHƠI"
+                                   Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock x:Name="txtTableFee" 
+                                   Style="{StaticResource AmountTextStyle}"
+                                   Foreground="{StaticResource SuccessColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Danh sách sản phẩm -->
+                <Border Style="{StaticResource InfoCardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="🍹 DANH SÁCH SẢN PHẨM"
+                                   Style="{StaticResource SectionHeaderStyle}"/>
+                        <DataGrid x:Name="dgProducts" 
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  HeadersVisibility="Column"
+                                  Height="200"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0"
+                                  RowBackground="White"
+                                  AlternatingRowBackground="#F9F9F9">
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="{StaticResource PrimaryLightColor}"/>
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryDarkColor}"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Padding" Value="10,8"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding Product.ProductName}" Width="*">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="SL" Binding="{Binding Quantity}" Width="60">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="TextAlignment" Value="Center"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice, StringFormat='{}{0:N0}'}" Width="100">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="TextAlignment" Value="Right"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                                <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total, StringFormat='{}{0:N0}'}" Width="120">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Padding" Value="10,5"/>
+                                            <Setter Property="TextAlignment" Value="Right"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="Foreground" Value="{StaticResource SecondaryColor}"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tổng tiền dịch vụ -->
+                <Border Style="{StaticResource InfoCardStyle}"
+                        Background="#FFF3E0">
+                    <StackPanel>
+                        <TextBlock Text="💰 TỔNG TIỀN DỊCH VỤ"
+                                   Style="{StaticResource SectionHeaderStyle}"
+                                   Foreground="{StaticResource WarningColor}"/>
+                        <TextBlock x:Name="txtProductFee" 
+                                   Style="{StaticResource AmountTextStyle}"
+                                   Foreground="{StaticResource WarningColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tổng cộng -->
+                <Border Style="{StaticResource InfoCardStyle}"
+                        Background="#E3F2FD">
+                    <StackPanel>
+                        <TextBlock Text="📊 TỔNG CỘNG (Chưa giảm giá)"
+                                   Style="{StaticResource SectionHeaderStyle}"
+                                   Foreground="{StaticResource SecondaryColor}"/>
+                        <TextBlock x:Name="txtSubTotal" 
+                                   Style="{StaticResource AmountTextStyle}"
+                                   Foreground="{StaticResource SecondaryColor}"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Giảm giá và Khách hàng -->
+                <Border Style="{StaticResource InfoCardStyle}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0"
+                                   Text="🎁 GIẢM GIÁ &amp; KHÁCH HÀNG"
+                                   Style="{StaticResource SectionHeaderStyle}"/>
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Giảm giá (VNĐ)" 
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <TextBox x:Name="txtDiscount" 
+                                         Text="0"
+                                         FontSize="16"
+                                         FontWeight="Bold"
+                                         Padding="12,10"
+                                         TextChanged="txtDiscount_TextChanged"
+                                         LostFocus="txtDiscount_LostFocus"
+                                         PreviewTextInput="txtDiscount_PreviewTextInput"
+                                         PreviewKeyDown="txtDiscount_PreviewKeyDown"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="Số điện thoại khách hàng" 
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8"/>
+                                <TextBox x:Name="txtCustomerPhone" 
+                                         FontSize="16"
+                                         Padding="12,10"
+                                         TextChanged="txtCustomerPhone_TextChanged"/>
+                                <TextBlock x:Name="txtCustomerName" 
+                                           Margin="0,8,0,0" 
+                                           FontSize="12"
+                                           FontStyle="Italic"
+                                           Foreground="{StaticResource SuccessColor}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Tổng thanh toán -->
+                <Border Style="{StaticResource InfoCardStyle}"
+                        Background="{StaticResource ErrorColor}">
+                    <StackPanel>
+                        <TextBlock Text="💳 TỔNG THANH TOÁN" 
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,10"/>
+                        <TextBlock x:Name="txtTotalAmount" 
+                                   FontSize="36" 
+                                   FontWeight="Bold" 
+                                   Foreground="White"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Nút hành động -->
+                <Grid Margin="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Grid.Column="0"
+                            x:Name="btnCheckout" 
+                            Height="60" 
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Margin="0,0,10,0"
+                            Click="btnCheckout_Click">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                <Setter Property="Background" Value="{StaticResource SuccessColor}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    CornerRadius="8"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#388E3C"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="✓ " FontSize="20" VerticalAlignment="Center"/>
+                            <TextBlock Text="XÁC NHẬN &amp; IN HÓA ĐƠN" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Content="✕ HỦY" 
+                            Width="150" 
+                            Height="60"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Style="{StaticResource DangerButton}"
+                            Click="btnCancel_Click"/>
+                </Grid>
             </StackPanel>
-        </GroupBox>
-
-        <!-- Danh sách sản phẩm -->
-        <GroupBox Grid.Row="2" Header="Danh sách sản phẩm" Margin="0,0,0,10">
-            <DataGrid x:Name="dgProducts" 
-                      AutoGenerateColumns="False"
-                      IsReadOnly="True"
-                      HeadersVisibility="Column"
-                      Height="200">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding Product.ProductName}" Width="*"/>
-                    <DataGridTextColumn Header="SL" Binding="{Binding Quantity}" Width="50"/>
-                    <DataGridTextColumn Header="Đơn giá" Binding="{Binding UnitPrice, StringFormat='{}{0:N0}'}" Width="100"/>
-                    <DataGridTextColumn Header="Thành tiền" Binding="{Binding Total, StringFormat='{}{0:N0}'}" Width="120"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </GroupBox>
-
-        <!-- Tổng tiền dịch vụ -->
-        <GroupBox Grid.Row="3" Header="Tổng tiền dịch vụ" Margin="0,0,0,10">
-            <StackPanel Margin="5">
-                <TextBlock x:Name="txtProductFee" FontSize="18" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}"/>
-            </StackPanel>
-        </GroupBox>
-
-        <!-- Tổng cộng -->
-        <GroupBox Grid.Row="4" Header="Tổng cộng" Margin="0,0,0,10">
-            <StackPanel Margin="5">
-                <TextBlock x:Name="txtSubTotal" FontSize="18" FontWeight="Bold" Foreground="{StaticResource PrimaryColor}"/>
-            </StackPanel>
-        </GroupBox>
-
-        <!-- Giảm giá và Khách hàng -->
-        <GroupBox Grid.Row="5" Header="Giảm giá &amp; Khách hàng" Margin="0,0,0,10">
-            <Grid Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                    <TextBlock Text="Giảm giá (VNĐ):" Margin="0,0,0,5"/>
-                    <TextBox x:Name="txtDiscount" 
-                             Text="0" 
-                             TextChanged="txtDiscount_TextChanged"
-                             LostFocus="txtDiscount_LostFocus"
-                             PreviewTextInput="txtDiscount_PreviewTextInput"
-                             PreviewKeyDown="txtDiscount_PreviewKeyDown"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
-                    <TextBlock Text="Số điện thoại khách hàng:" Margin="0,0,0,5"/>
-                    <TextBox x:Name="txtCustomerPhone" TextChanged="txtCustomerPhone_TextChanged"/>
-                    <TextBlock x:Name="txtCustomerName" Margin="0,5,0,0" Foreground="Gray"/>
-                </StackPanel>
-            </Grid>
-        </GroupBox>
-
-        <!-- Tổng thanh toán -->
-        <GroupBox Grid.Row="6" Header="TỔNG THANH TOÁN" Margin="0,0,0,10">
-            <StackPanel Margin="5">
-                <TextBlock x:Name="txtTotalAmount" 
-                           FontSize="28" 
-                           FontWeight="Bold" 
-                           Foreground="{StaticResource ErrorColor}"
-                           HorizontalAlignment="Center"/>
-            </StackPanel>
-        </GroupBox>
-
-        <!-- Nút hành động -->
-        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button x:Name="btnCheckout" 
-                    Content="Xác nhận &amp; In Hóa đơn" 
-                    Width="200" 
-                    Height="45" 
-                    FontSize="15"
-                    FontWeight="Bold"
-                    Margin="5,0"
-                    Click="btnCheckout_Click"/>
-            <Button Content="Hủy" 
-                    Width="110" 
-                    Height="45" 
-                    Margin="5,0"
-                    Style="{StaticResource SecondaryButton}"
-                    Click="btnCancel_Click"/>
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Window>

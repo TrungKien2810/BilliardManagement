@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using Billiards.BLL.Services;
 using Billiards.DAL.Models;
 
@@ -11,15 +13,18 @@ public partial class OrderWindow : Window
 {
     private Invoice _currentInvoice;
     private OrderService _orderService;
-    private List<CartItem> _cartItems;
+    private ObservableCollection<CartItem> _cartItems;
 
     public OrderWindow(Invoice invoice)
     {
         InitializeComponent();
         _currentInvoice = invoice;
         _orderService = new OrderService();
-        _cartItems = new List<CartItem>();
+        _cartItems = new ObservableCollection<CartItem>();
         dgCart.ItemsSource = _cartItems;
+
+        // Set window title with table info
+        this.Title = $"Đặt hàng - {invoice.Table?.TableName ?? "Bàn không xác định"}";
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -33,35 +38,74 @@ public partial class OrderWindow : Window
         {
             var categories = _orderService.GetMenuCategories();
             lbCategories.ItemsSource = categories;
+
+            // Auto-select first category if available
+            if (categories.Any())
+            {
+                lbCategories.SelectedIndex = 0;
+                // Đảm bảo load sản phẩm của category đầu tiên
+                var firstCategory = categories.First();
+                LoadProductsForCategory(firstCategory.ID);
+            }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi khi tải danh mục: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"Lỗi khi tải danh mục: {ex.Message}",
+                "Lỗi",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
     }
 
-    private void lbCategories_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    private void LoadProductsForCategory(int categoryId)
     {
-        if (lbCategories.SelectedValue != null && lbCategories.SelectedValue is int categoryId)
+        try
         {
-            try
-            {
-                var products = _orderService.GetMenuProducts(categoryId);
-                icProducts.ItemsSource = products;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi khi tải sản phẩm: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var products = _orderService.GetMenuProducts(categoryId);
+            icProducts.ItemsSource = products;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi tải sản phẩm: {ex.Message}",
+                "Lỗi",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void lbCategories_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Sửa lại: dùng SelectedItem thay vì SelectedValue
+        if (lbCategories.SelectedItem != null && lbCategories.SelectedItem is ProductCategory selectedCategory)
+        {
+            LoadProductsForCategory(selectedCategory.ID);
+        }
+        else
+        {
+            icProducts.ItemsSource = null;
         }
     }
 
     private void Product_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is System.Windows.Controls.Button button && button.Tag is Product product)
+        if (sender is Button button && button.Tag is Product product)
         {
+            // Check if product has stock
+            if (product.StockQuantity <= 0)
+            {
+                MessageBox.Show($"Sản phẩm '{product.ProductName}' đã hết hàng!",
+                    "Thông báo",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
             // Ask for quantity using a simple input dialog
-            var inputDialog = new InputDialog($"Nhập số lượng cho {product.ProductName}:", "Nhập số lượng", "1");
+            var inputDialog = new InputDialog(
+                $"Nhập số lượng cho {product.ProductName}:\n(Còn lại: {product.StockQuantity})",
+                "Nhập số lượng",
+                "1");
+
             if (inputDialog.ShowDialog() == true)
             {
                 if (int.TryParse(inputDialog.Answer, out int quantity) && quantity > 0)
@@ -75,20 +119,24 @@ public partial class OrderWindow : Window
 
                         // Get available stock (accounting for items already in invoice)
                         int availableStock = _orderService.GetAvailableStock(_currentInvoice.ID, product.ID);
-                        
-                        // Check if we have enough stock for the total quantity (existing in cart + new quantity)
+
+                        // Check if we have enough stock for the total quantity
                         if (availableStock < totalQuantity)
                         {
                             // Calculate how many can still be added
                             int canAdd = Math.Max(0, availableStock - quantityInCart);
                             string message = canAdd > 0
-                                ? $"Không đủ hàng trong kho! Hiện tại chỉ còn {availableStock} sản phẩm. " +
-                                  (quantityInCart > 0 
-                                      ? $"Bạn đã có {quantityInCart} sản phẩm trong giỏ, chỉ có thể thêm tối đa {canAdd} sản phẩm nữa."
-                                      : $"Bạn có thể thêm tối đa {canAdd} sản phẩm.")
-                                : $"Không đủ hàng trong kho! Hiện tại chỉ còn {availableStock} sản phẩm.";
-                            
-                            MessageBox.Show(message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                                ? $"⚠️ Không đủ hàng trong kho!\n\n" +
+                                  $"Hiện tại chỉ còn: {availableStock} sản phẩm\n" +
+                                  (quantityInCart > 0
+                                      ? $"Trong giỏ: {quantityInCart} sản phẩm\n" +
+                                        $"Có thể thêm tối đa: {canAdd} sản phẩm"
+                                      : $"Có thể thêm tối đa: {canAdd} sản phẩm")
+                                : $"⚠️ Không đủ hàng trong kho!\n\n" +
+                                  $"Hiện tại chỉ còn: {availableStock} sản phẩm\n" +
+                                  $"Trong giỏ: {quantityInCart} sản phẩm";
+
+                            MessageBox.Show(message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                             return;
                         }
 
@@ -96,6 +144,9 @@ public partial class OrderWindow : Window
                         if (existingItem != null)
                         {
                             existingItem.Quantity += quantity;
+                            // Force update binding
+                            var index = _cartItems.IndexOf(existingItem);
+                            _cartItems[index] = existingItem;
                         }
                         else
                         {
@@ -107,7 +158,9 @@ public partial class OrderWindow : Window
                                 UnitPrice = product.SalePrice
                             });
                         }
-                        dgCart.Items.Refresh();
+
+                        // Show success notification
+                        ShowTemporaryNotification($"✓ Đã thêm {quantity} x {product.ProductName} vào giỏ hàng");
                     }
                     catch (Exception ex)
                     {
@@ -116,22 +169,56 @@ public partial class OrderWindow : Window
                 }
                 else
                 {
-                    MessageBox.Show("Số lượng không hợp lệ!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("⚠️ Số lượng không hợp lệ!\n\nVui lòng nhập số nguyên dương.",
+                        "Lỗi",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
                 }
             }
         }
+    }
+
+    private void ShowTemporaryNotification(string message)
+    {
+        // Simple notification using MessageBox with auto-close after short time
+        // You can replace this with a custom toast notification if needed
+        var result = MessageBox.Show(message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
     private void btnConfirm_Click(object sender, RoutedEventArgs e)
     {
         if (_cartItems.Count == 0)
         {
-            MessageBox.Show("Giỏ hàng trống!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show("⚠️ Giỏ hàng trống!\n\nVui lòng chọn ít nhất một sản phẩm.",
+                "Thông báo",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            return;
+        }
+
+        // Show confirmation dialog with cart summary
+        var totalItems = _cartItems.Sum(x => x.Quantity);
+        var totalAmount = _cartItems.Sum(x => x.Total);
+        var confirmMessage = $"📋 XÁC NHẬN ĐẶT HÀNG\n\n" +
+                           $"Tổng số sản phẩm: {totalItems}\n" +
+                           $"Tổng tiền: {totalAmount:N0} VNĐ\n\n" +
+                           $"Bạn có chắc chắn muốn xác nhận?";
+
+        var confirmResult = MessageBox.Show(confirmMessage,
+            "Xác nhận",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirmResult != MessageBoxResult.Yes)
+        {
             return;
         }
 
         try
         {
+            // Disable button to prevent double-click
+            btnConfirm.IsEnabled = false;
+
             // Validate all items first and remove invalid ones
             var itemsToRemove = new List<CartItem>();
             var errorMessages = new List<string>();
@@ -145,13 +232,13 @@ public partial class OrderWindow : Window
                     if (availableStock < item.Quantity)
                     {
                         itemsToRemove.Add(item);
-                        errorMessages.Add($"{item.ProductName}: Chỉ còn {availableStock} sản phẩm (yêu cầu {item.Quantity})");
+                        errorMessages.Add($"• {item.ProductName}: Chỉ còn {availableStock} (yêu cầu {item.Quantity})");
                     }
                 }
                 catch (Exception ex)
                 {
                     itemsToRemove.Add(item);
-                    errorMessages.Add($"{item.ProductName}: {ex.Message}");
+                    errorMessages.Add($"• {item.ProductName}: {ex.Message}");
                 }
             }
 
@@ -162,14 +249,15 @@ public partial class OrderWindow : Window
                 {
                     _cartItems.Remove(item);
                 }
-                dgCart.Items.Refresh();
 
                 // If all items were removed, show error and return
                 if (_cartItems.Count == 0)
                 {
-                    string errorMessage = "Tất cả sản phẩm đã bị xóa khỏi giỏ hàng do không đủ tồn kho:\n" +
+                    string errorMessage = "❌ TẤT CẢ SẢN PHẨM BỊ XÓA\n\n" +
+                                        "Không đủ tồn kho cho các sản phẩm:\n\n" +
                                         string.Join("\n", errorMessages);
                     MessageBox.Show(errorMessage, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    btnConfirm.IsEnabled = true;
                     return;
                 }
             }
@@ -189,40 +277,33 @@ public partial class OrderWindow : Window
                 {
                     // If processing fails (e.g., race condition), remove from cart
                     _cartItems.Remove(item);
-                    processingErrors.Add($"{item.ProductName}: {ex.Message}");
+                    processingErrors.Add($"• {item.ProductName}: {ex.Message}");
                 }
-            }
-
-            // Refresh cart to reflect any removed items
-            if (processingErrors.Count > 0)
-            {
-                dgCart.Items.Refresh();
             }
 
             // Show combined result message
             if (processedItems.Count > 0)
             {
-                string message = "Đặt hàng thành công!";
-                if (itemsToRemove.Count > 0 || processingErrors.Count > 0)
+                string message = "✅ ĐẶT HÀNG THÀNH CÔNG!\n\n";
+                message += $"Đã thêm {processedItems.Count} sản phẩm vào hóa đơn.";
+
+                int totalRemoved = itemsToRemove.Count + processingErrors.Count;
+                if (totalRemoved > 0)
                 {
-                    int totalRemoved = itemsToRemove.Count + processingErrors.Count;
-                    message = $"Đã thêm {processedItems.Count} sản phẩm vào hóa đơn.";
-                    if (totalRemoved > 0)
-                    {
-                        message += $"\n{totalRemoved} sản phẩm đã bị xóa do không đủ tồn kho.";
-                    }
+                    message += $"\n\n⚠️ {totalRemoved} sản phẩm đã bị xóa do không đủ tồn kho.";
                 }
-                MessageBox.Show(message, "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                MessageBox.Show(message, "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                 this.DialogResult = true;
                 this.Close();
             }
             else
             {
                 // All items were invalid or failed to process
-                string errorMsg = "Không có sản phẩm nào được thêm vào hóa đơn.\n\n";
+                string errorMsg = "❌ KHÔNG CÓ SẢN PHẨM NÀO ĐƯỢC THÊM\n\n";
                 if (itemsToRemove.Count > 0)
                 {
-                    errorMsg += "Các sản phẩm đã bị xóa:\n" + string.Join("\n", errorMessages);
+                    errorMsg += "Các sản phẩm bị xóa:\n" + string.Join("\n", errorMessages);
                 }
                 if (processingErrors.Count > 0)
                 {
@@ -230,28 +311,66 @@ public partial class OrderWindow : Window
                     errorMsg += "Lỗi khi xử lý:\n" + string.Join("\n", processingErrors);
                 }
                 MessageBox.Show(errorMsg, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                btnConfirm.IsEnabled = true;
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show($"❌ LỖI\n\n{ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            btnConfirm.IsEnabled = true;
         }
     }
 
     private void btnCancel_Click(object sender, RoutedEventArgs e)
     {
+        if (_cartItems.Count > 0)
+        {
+            var result = MessageBox.Show(
+                "⚠️ Bạn có chắc chắn muốn hủy?\n\nGiỏ hàng sẽ bị xóa.",
+                "Xác nhận",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+        }
+
         this.DialogResult = false;
         this.Close();
     }
 }
 
 // Helper class for cart items
-public class CartItem
+public class CartItem : System.ComponentModel.INotifyPropertyChanged
 {
+    private int _quantity;
+
     public int ProductID { get; set; }
     public string ProductName { get; set; } = string.Empty;
-    public int Quantity { get; set; }
+
+    public int Quantity
+    {
+        get => _quantity;
+        set
+        {
+            if (_quantity != value)
+            {
+                _quantity = value;
+                OnPropertyChanged(nameof(Quantity));
+                OnPropertyChanged(nameof(Total));
+            }
+        }
+    }
+
     public decimal UnitPrice { get; set; }
     public decimal Total => Quantity * UnitPrice;
-}
 
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+    }
+}

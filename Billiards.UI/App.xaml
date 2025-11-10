@@ -14,16 +14,17 @@
         <SolidColorBrush x:Key="BackgroundColor" Color="#F5F5F5"/>
         <SolidColorBrush x:Key="SurfaceColor" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="TextColor" Color="#212121"/>
+        <SolidColorBrush x:Key="TextPrimaryColor" Color="#212121"/>
         <SolidColorBrush x:Key="TextSecondaryColor" Color="#757575"/>
         <SolidColorBrush x:Key="BorderColor" Color="#E0E0E0"/>
         <SolidColorBrush x:Key="SuccessColor" Color="#4CAF50"/>
         <SolidColorBrush x:Key="WarningColor" Color="#FF9800"/>
         <SolidColorBrush x:Key="ErrorColor" Color="#F44336"/>
         <SolidColorBrush x:Key="InfoColor" Color="#2196F3"/>
-        
+
         <!-- Font Settings -->
         <FontFamily x:Key="DefaultFont">Segoe UI</FontFamily>
-        
+
         <!-- Global Styles -->
         <Style TargetType="Window">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
@@ -31,19 +32,19 @@
             <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         </Style>
-        
+
         <Style TargetType="UserControl">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="{StaticResource BackgroundColor}"/>
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         </Style>
-        
+
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Foreground" Value="{StaticResource TextColor}"/>
         </Style>
-        
+
         <Style TargetType="TextBox">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -53,7 +54,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="MinHeight" Value="32"/>
         </Style>
-        
+
         <Style TargetType="PasswordBox">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -63,7 +64,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="MinHeight" Value="32"/>
         </Style>
-        
+
         <Style TargetType="ComboBox">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -73,7 +74,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="MinHeight" Value="32"/>
         </Style>
-        
+
         <Style TargetType="Button">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -104,7 +105,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{StaticResource SecondaryColor}"/>
             <Style.Triggers>
@@ -113,7 +114,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{StaticResource ErrorColor}"/>
             <Style.Triggers>
@@ -122,7 +123,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style TargetType="DataGrid">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontSize" Value="14"/>
@@ -139,7 +140,7 @@
             <Setter Property="CanUserDeleteRows" Value="False"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
         </Style>
-        
+
         <Style TargetType="DataGridColumnHeader">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -149,7 +150,7 @@
             <Setter Property="Padding" Value="10,8"/>
             <Setter Property="BorderThickness" Value="0,0,0,0"/>
         </Style>
-        
+
         <Style TargetType="GroupBox">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -161,29 +162,29 @@
             <Setter Property="Padding" Value="10"/>
             <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
-        
+
         <Style TargetType="Menu">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryColor}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-        
+
         <Style TargetType="MenuItem">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-        
+
         <Style TargetType="StatusBar">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryLightColor}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
-        
+
         <Style TargetType="TabControl">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Background" Value="{StaticResource SurfaceColor}"/>
         </Style>
-        
+
         <Style TargetType="TabItem">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -197,14 +198,14 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style TargetType="ListBox">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Background" Value="{StaticResource SurfaceColor}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
-        
+
         <Style TargetType="ListBoxItem">
             <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"/>
             <Setter Property="Padding" Value="8,6"/>
