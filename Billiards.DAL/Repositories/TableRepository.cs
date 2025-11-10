@@ -69,14 +69,34 @@ public class TableRepository
             .FirstOrDefault(t => t.ID == tableId);
     }
 
+    public bool IsTableNameExists(string tableName, int? excludeTableId = null)
+    {
+        var query = _context.Tables.Where(t => t.TableName.Trim().ToLower() == tableName.Trim().ToLower());
+        if (excludeTableId.HasValue)
+        {
+            query = query.Where(t => t.ID != excludeTableId.Value);
+        }
+        return query.Any();
+    }
+
     public void Add(Table table)
     {
+        if (IsTableNameExists(table.TableName))
+        {
+            throw new InvalidOperationException($"Tên bàn \"{table.TableName}\" đã tồn tại!");
+        }
         _context.Tables.Add(table);
         _context.SaveChanges();
     }
 
     public void Update(Table table)
     {
+        // Check for duplicate table name (excluding current table)
+        if (IsTableNameExists(table.TableName, table.ID))
+        {
+            throw new InvalidOperationException($"Tên bàn \"{table.TableName}\" đã tồn tại!");
+        }
+
         // Find the existing table in the current context
         var existingTable = _context.Tables.FirstOrDefault(t => t.ID == table.ID);
         if (existingTable != null)
@@ -96,13 +116,44 @@ public class TableRepository
         }
     }
 
+    public bool HasActiveInvoice(int tableId)
+    {
+        // Clear change tracker to ensure fresh data
+        _context.ChangeTracker.Clear();
+        
+        return _context.Invoices
+            .AsNoTracking()
+            .Any(i => i.TableID == tableId && i.Status == "Active");
+    }
+
     public void Delete(int tableId)
     {
-        var table = _context.Tables.FirstOrDefault(t => t.ID == tableId);
+        // Clear change tracker to ensure fresh data
+        _context.ChangeTracker.Clear();
+        
+        var table = _context.Tables
+            .AsNoTracking()
+            .FirstOrDefault(t => t.ID == tableId);
+        
         if (table != null)
         {
-            _context.Tables.Remove(table);
-            _context.SaveChanges();
+            // Only prevent deletion if table status is InUse
+            // If table is Free, allow deletion even if there might be orphaned Active invoices
+            // (This handles cases where checkout didn't properly close invoices)
+            if (table.Status == "InUse")
+            {
+                throw new InvalidOperationException($"Không thể xóa bàn \"{table.TableName}\" vì bàn đang được sử dụng (Status: InUse)! Vui lòng đảm bảo bàn đã được giải phóng trước khi xóa.");
+            }
+
+            // If table status is not InUse, proceed with deletion
+            // Note: Any orphaned Active invoices will have their TableID set to NULL by FK constraint
+            _context.ChangeTracker.Clear();
+            var tableToDelete = _context.Tables.FirstOrDefault(t => t.ID == tableId);
+            if (tableToDelete != null)
+            {
+                _context.Tables.Remove(tableToDelete);
+                _context.SaveChanges();
+            }
         }
     }
 }

@@ -44,6 +44,28 @@ public class AreaRepository
         _context.SaveChanges();
     }
 
+    public List<Table> GetTablesByArea(int areaId)
+    {
+        // Clear change tracker to ensure fresh data
+        _context.ChangeTracker.Clear();
+        
+        return _context.Tables
+            .AsNoTracking()
+            .Where(t => t.AreaID == areaId)
+            .ToList();
+    }
+
+    public List<Table> GetInUseTablesByArea(int areaId)
+    {
+        // Clear change tracker to ensure fresh data
+        _context.ChangeTracker.Clear();
+        
+        return _context.Tables
+            .AsNoTracking()
+            .Where(t => t.AreaID == areaId && t.Status == "InUse")
+            .ToList();
+    }
+
     public void Delete(int areaId)
     {
         var area = _context.Areas.FirstOrDefault(a => a.ID == areaId);

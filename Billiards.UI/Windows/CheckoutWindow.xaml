@@ -93,7 +93,9 @@
                     <TextBox x:Name="txtDiscount" 
                              Text="0" 
                              TextChanged="txtDiscount_TextChanged"
-                             LostFocus="txtDiscount_LostFocus"/>
+                             LostFocus="txtDiscount_LostFocus"
+                             PreviewTextInput="txtDiscount_PreviewTextInput"
+                             PreviewKeyDown="txtDiscount_PreviewKeyDown"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
                     <TextBlock Text="Số điện thoại khách hàng:" Margin="0,0,0,5"/>

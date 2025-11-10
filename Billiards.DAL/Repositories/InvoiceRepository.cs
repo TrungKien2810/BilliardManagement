@@ -93,5 +93,118 @@ public class InvoiceRepository
             .Where(id => id.InvoiceID == invoiceId)
             .ToList();
     }
+
+    /// <summary>
+    /// Lấy tất cả invoices với filter
+    /// </summary>
+    public List<Invoice> GetAllInvoices(DateTime? startDate = null, DateTime? endDate = null, string? status = null, int? tableId = null, int? employeeId = null)
+    {
+        _context.ChangeTracker.Clear();
+
+        var query = _context.Invoices
+            .AsNoTracking()
+            .Include(i => i.Table)
+            .Include(i => i.CreatedByEmployee)
+            .Include(i => i.Customer)
+            .Include(i => i.InvoiceDetails)
+                .ThenInclude(id => id.Product)
+            .AsQueryable();
+
+        if (startDate.HasValue)
+        {
+            query = query.Where(i => i.StartTime >= startDate.Value);
+        }
+
+        if (endDate.HasValue)
+        {
+            query = query.Where(i => i.StartTime <= endDate.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = query.Where(i => i.Status == status);
+        }
+
+        if (tableId.HasValue)
+        {
+            query = query.Where(i => i.TableID == tableId.Value);
+        }
+
+        if (employeeId.HasValue)
+        {
+            query = query.Where(i => i.CreatedByEmployeeID == employeeId.Value);
+        }
+
+        return query
+            .OrderByDescending(i => i.StartTime)
+            .ToList();
+    }
+
+    /// <summary>
+    /// Hủy invoice (chuyển status thành Cancelled)
+    /// </summary>
+    public bool CancelInvoice(int invoiceId)
+    {
+        var invoice = _context.Invoices
+            .Include(i => i.InvoiceDetails)
+                .ThenInclude(id => id.Product)
+            .FirstOrDefault(i => i.ID == invoiceId);
+
+        if (invoice == null)
+        {
+            return false;
+        }
+
+        if (invoice.Status == "Paid")
+        {
+            throw new InvalidOperationException("Không thể hủy hóa đơn đã thanh toán.");
+        }
+
+        // Hoàn trả lại số lượng sản phẩm vào kho
+        foreach (var detail in invoice.InvoiceDetails)
+        {
+            if (detail.Product != null)
+            {
+                detail.Product.StockQuantity += detail.Quantity;
+            }
+        }
+
+        // Cập nhật status
+        invoice.Status = "Cancelled";
+        invoice.EndTime = DateTime.Now;
+
+        // Nếu có TableID, đặt bàn về Free
+        if (invoice.TableID.HasValue)
+        {
+            var table = _context.Tables.Find(invoice.TableID.Value);
+            if (table != null && table.Status == "InUse")
+            {
+                table.Status = "Free";
+            }
+        }
+
+        _context.SaveChanges();
+        return true;
+    }
+
+    /// <summary>
+    /// Lấy invoice by ID với đầy đủ thông tin
+    /// </summary>
+    public Invoice? GetInvoiceWithDetails(int invoiceId)
+    {
+        _context.ChangeTracker.Clear();
+
+        return _context.Invoices
+            .AsNoTracking()
+            .Include(i => i.Table)
+                .ThenInclude(t => t!.Area)
+            .Include(i => i.Table)
+                .ThenInclude(t => t!.TableType)
+            .Include(i => i.CreatedByEmployee)
+            .Include(i => i.Customer)
+            .Include(i => i.InvoiceDetails)
+                .ThenInclude(id => id.Product)
+            .FirstOrDefault(i => i.ID == invoiceId);
+    }
 }
 

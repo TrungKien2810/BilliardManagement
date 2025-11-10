@@ -21,6 +21,14 @@ public class BillingService
 
     public decimal CalculateTableFee(int invoiceId)
     {
+        return CalculateTableFee(invoiceId, DateTime.Now);
+    }
+
+    /// <summary>
+    /// Tính TableFee với EndTime cụ thể
+    /// </summary>
+    private decimal CalculateTableFee(int invoiceId, DateTime endTime)
+    {
         var invoice = _invoiceRepository.GetById(invoiceId);
         if (invoice == null || invoice.TableID == null)
         {
@@ -33,7 +41,6 @@ public class BillingService
             return 0;
         }
 
-        var endTime = DateTime.Now;
         var startTime = invoice.StartTime;
         var totalTime = endTime - startTime;
 
@@ -49,8 +56,22 @@ public class BillingService
             return 0;
         }
 
+        return CalculateTableFeeInternal(startTime, endTime, rules);
+    }
+
+    /// <summary>
+    /// Tính TableFee với StartTime, EndTime và Rules cụ thể (internal method)
+    /// </summary>
+    private decimal CalculateTableFeeInternal(DateTime startTime, DateTime endTime, List<HourlyPricingRule> rules)
+    {
+        var totalTime = endTime - startTime;
+
+        if (totalTime.TotalMinutes <= 0)
+        {
+            return 0;
+        }
+
         // Tính tiền theo thời gian thực tế (tính theo phút, không làm tròn lên)
-        // Ví dụ: 30 phút với giá 50k/giờ = (30/60) * 50000 = 25000 VNĐ
         decimal totalFee = 0;
         var totalMinutes = totalTime.TotalMinutes;
 
@@ -152,19 +173,35 @@ public class BillingService
                 return false;
             }
 
+            // Kiểm tra invoice phải đang Active
+            if (invoice.Status != "Active")
+            {
+                throw new Exception("Hóa đơn không ở trạng thái Active. Không thể thanh toán.");
+            }
+
             // Lưu TableID trước khi cập nhật
             var tableId = invoice.TableID;
+
+            // Set EndTime trước khi tính TableFee
+            invoice.EndTime = DateTime.Now;
+
+            // Tính lại TableFee với EndTime mới (quan trọng: phải tính lại trước khi lưu vào DB)
+            if (invoice.TableID.HasValue)
+            {
+                // Tính TableFee dựa trên StartTime và EndTime
+                invoice.TableFee = CalculateTableFee(invoice.ID, invoice.EndTime.Value);
+            }
 
             // Cập nhật thông tin thanh toán
             invoice.Discount = discount;
             invoice.CustomerID = customerId;
             invoice.Status = "Paid";
-            invoice.EndTime = DateTime.Now;
             
-            // Tính lại TotalAmount
+            // Tính lại TotalAmount (sau khi đã cập nhật TableFee)
             invoice.TotalAmount = invoice.TableFee + invoice.ProductFee - invoice.Discount;
+            if (invoice.TotalAmount < 0) invoice.TotalAmount = 0;
 
-            // Cập nhật invoice
+            // Cập nhật invoice vào database
             _invoiceRepository.Update(invoice);
 
             // Cập nhật trạng thái bàn về Free (sau khi đã cập nhật invoice)
@@ -181,6 +218,7 @@ public class BillingService
             throw new Exception($"Lỗi khi thanh toán: {ex.Message}", ex);
         }
     }
+
 
     public List<InvoiceDetail> GetInvoiceDetails(int invoiceId)
     {

@@ -63,8 +63,27 @@ public class TableManagementService
         _areaRepository.Update(area);
     }
 
-    public void DeleteArea(int areaId)
+    public List<Table> GetTablesByArea(int areaId)
     {
+        return _areaRepository.GetTablesByArea(areaId);
+    }
+
+    public List<Table> GetInUseTablesByArea(int areaId)
+    {
+        return _areaRepository.GetInUseTablesByArea(areaId);
+    }
+
+    public void DeleteArea(int areaId, bool deleteTables = false)
+    {
+        if (deleteTables)
+        {
+            // Delete all tables in this area first
+            var tables = _areaRepository.GetTablesByArea(areaId);
+            foreach (var table in tables)
+            {
+                _tableRepository.Delete(table.ID);
+            }
+        }
         _areaRepository.Delete(areaId);
     }
 

@@ -48,7 +48,6 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
 
@@ -62,7 +61,7 @@
                                 <TextBox x:Name="txtPhoneNumber" Height="30"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="2" Margin="0,0,0,10">
+                            <StackPanel Grid.Row="2" Margin="0,0,0,20">
                                 <TextBlock Text="Địa chỉ:" Margin="0,0,0,5"/>
                                 <TextBox x:Name="txtAddress" Height="30"/>
                             </StackPanel>
@@ -126,9 +125,10 @@
                                   IsReadOnly="True"
                                   Height="550">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="*"/>
+                                <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="150"/>
+                                <DataGridTextColumn Header="Password" Binding="{Binding Password}" Width="150"/>
                                 <DataGridTextColumn Header="Nhân viên" Binding="{Binding Employee.FullName}" Width="200"/>
-                                <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="150"/>
+                                <DataGridTextColumn Header="Vai trò" Binding="{Binding Role}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                     </StackPanel>
@@ -141,6 +141,7 @@
                                    Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
@@ -162,16 +163,20 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="2" Margin="0,0,0,10">
-                                <TextBlock Text="Mật khẩu:" Margin="0,0,0,5"/>
+                                <TextBlock Text="Mật khẩu (từ DB):" Margin="0,0,0,5"/>
+                                <TextBox x:Name="txtAccountPasswordDisplay" Height="30" IsReadOnly="True"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3" Margin="0,0,0,10">
+                                <TextBlock Text="Mật khẩu mới (để trống nếu không đổi):" Margin="0,0,0,5"/>
                                 <PasswordBox x:Name="txtAccountPassword" Height="30"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="3" Margin="0,0,0,20">
+                            <StackPanel Grid.Row="4" Margin="0,0,0,20">
                                 <TextBlock Text="Vai trò:" Margin="0,0,0,5"/>
                                 <ComboBox x:Name="cmbAccountRole" Height="30">
                                     <ComboBoxItem Content="Admin" Tag="Admin"/>
                                     <ComboBoxItem Content="Cashier" Tag="Cashier"/>
-                                    <ComboBoxItem Content="Staff" Tag="Staff"/>
                                 </ComboBox>
                             </StackPanel>
 

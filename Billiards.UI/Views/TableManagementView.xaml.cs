@@ -264,26 +264,76 @@ public partial class TableManagementView : UserControl
             return;
         }
 
-        var result = MessageBox.Show(
-            $"Bạn có chắc chắn muốn xóa khu vực \"{_selectedArea.AreaName}\"?\n\nLưu ý: Nếu khu vực này đang được sử dụng bởi các bàn, việc xóa có thể gây lỗi.",
-            "Xác nhận xóa",
-            MessageBoxButton.YesNo,
-            MessageBoxImage.Warning);
-
-        if (result == MessageBoxResult.Yes)
+        try
         {
-            try
+            // Check if area has tables in use
+            var inUseTables = _tableService.GetInUseTablesByArea(_selectedArea.ID);
+            var allTables = _tableService.GetTablesByArea(_selectedArea.ID);
+
+            if (inUseTables.Any())
             {
-                _tableService.DeleteArea(_selectedArea.ID);
-                MessageBox.Show("Xóa khu vực thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                LoadAreas();
-                LoadAreasForCombo(); // Reload combo box
-                btnAddNewArea_Click(sender, e);
+                var result = MessageBox.Show(
+                    $"Khu vực \"{_selectedArea.AreaName}\" có {inUseTables.Count} bàn đang được sử dụng.\n\n" +
+                    $"Bạn muốn:\n" +
+                    $"• Có - Xóa luôn tất cả {allTables.Count} bàn thuộc khu vực này và xóa khu vực\n" +
+                    $"• Không - Hủy thao tác xóa\n\n" +
+                    $"Lưu ý: Nếu chọn 'Có', tất cả các bàn (kể cả bàn đang sử dụng) sẽ bị xóa vĩnh viễn!",
+                    "Cảnh báo",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _tableService.DeleteArea(_selectedArea.ID, deleteTables: true);
+                    MessageBox.Show($"Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadAreas();
+                    LoadAreasForCombo();
+                    LoadTables(); // Reload tables
+                    btnAddNewArea_Click(sender, e);
+                }
             }
-            catch (Exception ex)
+            else if (allTables.Any())
             {
-                MessageBox.Show($"Lỗi khi xóa khu vực: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                var result = MessageBox.Show(
+                    $"Khu vực \"{_selectedArea.AreaName}\" có {allTables.Count} bàn.\n\n" +
+                    $"Bạn muốn:\n" +
+                    $"• Có - Xóa luôn tất cả {allTables.Count} bàn thuộc khu vực này và xóa khu vực\n" +
+                    $"• Không - Hủy thao tác xóa",
+                    "Xác nhận xóa",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _tableService.DeleteArea(_selectedArea.ID, deleteTables: true);
+                    MessageBox.Show($"Đã xóa khu vực \"{_selectedArea.AreaName}\" và {allTables.Count} bàn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadAreas();
+                    LoadAreasForCombo();
+                    LoadTables(); // Reload tables
+                    btnAddNewArea_Click(sender, e);
+                }
             }
+            else
+            {
+                var result = MessageBox.Show(
+                    $"Bạn có chắc chắn muốn xóa khu vực \"{_selectedArea.AreaName}\"?",
+                    "Xác nhận xóa",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _tableService.DeleteArea(_selectedArea.ID);
+                    MessageBox.Show("Xóa khu vực thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadAreas();
+                    LoadAreasForCombo();
+                    btnAddNewArea_Click(sender, e);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi xóa khu vực: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
