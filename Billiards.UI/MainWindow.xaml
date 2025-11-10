@@ -30,6 +30,9 @@
                 <MenuItem Header="Thoát" Click="MenuItem_Exit_Click"/>
             </MenuItem>
             <MenuItem Header="Quản lý" x:Name="mnuAdmin" Visibility="Collapsed">
+                <MenuItem Header="Dashboard" Click="MenuItem_Dashboard_Click"/>
+                <MenuItem Header="Quản lý Đơn hàng" Click="MenuItem_OrderManagement_Click"/>
+                <Separator/>
                 <MenuItem Header="Quản lý Sản phẩm" Click="MenuItem_ProductManagement_Click"/>
                 <MenuItem Header="Quản lý Bàn" Click="MenuItem_TableManagement_Click"/>
                 <MenuItem Header="Quản lý Nhân viên" Click="MenuItem_EmployeeManagement_Click"/>

@@ -16,6 +16,11 @@ public static class AuthorizationHelper
         return session.IsLoggedIn && session.CurrentAccount?.Role == "Cashier";
     }
 
+    /// <summary>
+    /// [DEPRECATED] Staff role has been removed. Use IsCashier() instead.
+    /// Cashier now has all permissions (manage tables, orders, and checkout).
+    /// </summary>
+    [Obsolete("Staff role has been removed. Cashier now handles all staff and cashier responsibilities.")]
     public static bool IsStaff()
     {
         var session = SessionManager.Instance;

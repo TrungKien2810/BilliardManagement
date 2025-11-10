@@ -414,6 +414,26 @@ public partial class MainWindow : Window
         ShowAdminView(new ReportsView());
     }
 
+    private void MenuItem_Dashboard_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new DashboardView());
+    }
+
+    private void MenuItem_OrderManagement_Click(object sender, RoutedEventArgs e)
+    {
+        if (!AuthorizationHelper.IsAdmin())
+        {
+            MessageBox.Show("Bạn không có quyền truy cập!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        ShowAdminView(new OrderManagementView());
+    }
+
     private Table? _currentContextTable;
 
     private void Table_ContextMenuOpening(object sender, ContextMenuEventArgs e)
