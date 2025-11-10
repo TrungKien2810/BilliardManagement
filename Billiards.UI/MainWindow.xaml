@@ -342,6 +342,7 @@
                                         <Button.ContextMenu>
                                             <ContextMenu Background="White">
                                                 <MenuItem Header="🛒 Order thêm" Click="MenuItem_OrderMore_Click"/>
+                                                <MenuItem Header="🔄 Chuyển bàn" Click="MenuItem_TransferTable_Click"/>
                                                 <MenuItem Header="💳 Thanh toán" Click="MenuItem_Checkout_Click"/>
                                             </ContextMenu>
                                         </Button.ContextMenu>

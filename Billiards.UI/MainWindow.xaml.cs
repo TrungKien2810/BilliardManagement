@@ -537,6 +537,61 @@ public partial class MainWindow : Window
         }
     }
 
+    private void MenuItem_TransferTable_Click(object sender, RoutedEventArgs e)
+    {
+        // Ưu tiên sử dụng _currentContextTable, nếu không có thì lấy từ MenuItem
+        var fromTable = _currentContextTable ?? GetTableFromMenuItem(sender);
+        if (fromTable == null) return;
+        
+        _currentContextTable = null; // Clear sau khi sử dụng
+
+        try
+        {
+            // Kiểm tra session
+            if (!SessionManager.Instance.IsLoggedIn || SessionManager.Instance.CurrentEmployee == null)
+            {
+                MessageBox.Show("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Mở dialog chọn bàn đích
+            var transferDialog = new TransferTableDialog(fromTable.ID, fromTable.TableName);
+            if (transferDialog.ShowDialog() == true && transferDialog.SelectedTableId.HasValue)
+            {
+                var toTableId = transferDialog.SelectedTableId.Value;
+                var employeeId = SessionManager.Instance.CurrentEmployee.ID;
+
+                // Xác nhận trước khi chuyển
+                var confirmResult = MessageBox.Show(
+                    $"Bạn có chắc chắn muốn chuyển từ {fromTable.TableName} sang bàn đã chọn?\n\n" +
+                    "Lưu ý: Hóa đơn và tất cả dịch vụ đã gọi sẽ được chuyển sang bàn mới.",
+                    "Xác nhận chuyển bàn",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (confirmResult == MessageBoxResult.Yes)
+                {
+                    // Gọi service để chuyển bàn (có transaction)
+                    var tableService = new TableService();
+                    tableService.TransferTable(fromTable.ID, toTableId, employeeId);
+
+                    MessageBox.Show(
+                        $"✅ Đã chuyển bàn thành công từ {fromTable.TableName} sang bàn đã chọn.",
+                        "Thành công",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    // Reload table map để cập nhật trạng thái
+                    RefreshCurrentTableMap();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Lỗi khi chuyển bàn: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
     private void MenuItem_Checkout_Click(object sender, RoutedEventArgs e)
     {
         // Ưu tiên sử dụng _currentContextTable, nếu không có thì lấy từ MenuItem
