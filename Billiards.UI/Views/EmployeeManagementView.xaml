@@ -16,7 +16,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Nhân viên" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Danh sách Nhân viên" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <DataGrid x:Name="dgEmployees" 
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgEmployees_SelectionChanged"
@@ -34,7 +38,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Nhân viên" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Thông tin Nhân viên" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -89,9 +97,9 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewEmployee" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewEmployee_Click"/>
-                                <Button x:Name="btnSaveEmployee" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveEmployee_Click"/>
-                                <Button x:Name="btnDeleteEmployee" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteEmployee_Click"/>
+                                <Button x:Name="btnAddNewEmployee" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewEmployee_Click" FontSize="14"/>
+                                <Button x:Name="btnSaveEmployee" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveEmployee_Click" FontSize="14"/>
+                                <Button x:Name="btnDeleteEmployee" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteEmployee_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -107,7 +115,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Tài khoản" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Danh sách Tài khoản" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <DataGrid x:Name="dgAccounts" 
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgAccounts_SelectionChanged"
@@ -122,7 +134,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Tài khoản" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Thông tin Tài khoản" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -160,9 +176,9 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewAccount" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewAccount_Click"/>
-                                <Button x:Name="btnSaveAccount" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveAccount_Click"/>
-                                <Button x:Name="btnDeleteAccount" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteAccount_Click"/>
+                                <Button x:Name="btnAddNewAccount" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewAccount_Click" FontSize="14"/>
+                                <Button x:Name="btnSaveAccount" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveAccount_Click" FontSize="14"/>
+                                <Button x:Name="btnDeleteAccount" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteAccount_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

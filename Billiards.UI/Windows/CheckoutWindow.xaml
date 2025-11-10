@@ -47,7 +47,7 @@
         <!-- Tiền giờ -->
         <GroupBox Grid.Row="1" Header="Tiền giờ" Margin="0,0,0,10">
             <StackPanel Margin="5">
-                <TextBlock x:Name="txtTableFee" FontSize="16" FontWeight="Bold" Foreground="Blue"/>
+                <TextBlock x:Name="txtTableFee" FontSize="18" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}"/>
             </StackPanel>
         </GroupBox>
 
@@ -70,14 +70,14 @@
         <!-- Tổng tiền dịch vụ -->
         <GroupBox Grid.Row="3" Header="Tổng tiền dịch vụ" Margin="0,0,0,10">
             <StackPanel Margin="5">
-                <TextBlock x:Name="txtProductFee" FontSize="16" FontWeight="Bold" Foreground="Blue"/>
+                <TextBlock x:Name="txtProductFee" FontSize="18" FontWeight="Bold" Foreground="{StaticResource SecondaryColor}"/>
             </StackPanel>
         </GroupBox>
 
         <!-- Tổng cộng -->
         <GroupBox Grid.Row="4" Header="Tổng cộng" Margin="0,0,0,10">
             <StackPanel Margin="5">
-                <TextBlock x:Name="txtSubTotal" FontSize="16" FontWeight="Bold"/>
+                <TextBlock x:Name="txtSubTotal" FontSize="18" FontWeight="Bold" Foreground="{StaticResource PrimaryColor}"/>
             </StackPanel>
         </GroupBox>
 
@@ -107,27 +107,28 @@
         <GroupBox Grid.Row="6" Header="TỔNG THANH TOÁN" Margin="0,0,0,10">
             <StackPanel Margin="5">
                 <TextBlock x:Name="txtTotalAmount" 
-                           FontSize="24" 
+                           FontSize="28" 
                            FontWeight="Bold" 
-                           Foreground="Red"
+                           Foreground="{StaticResource ErrorColor}"
                            HorizontalAlignment="Center"/>
             </StackPanel>
         </GroupBox>
 
         <!-- Nút hành động -->
-        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button x:Name="btnCheckout" 
                     Content="Xác nhận &amp; In Hóa đơn" 
-                    Width="180" 
-                    Height="40" 
-                    FontSize="14"
+                    Width="200" 
+                    Height="45" 
+                    FontSize="15"
                     FontWeight="Bold"
                     Margin="5,0"
                     Click="btnCheckout_Click"/>
             <Button Content="Hủy" 
-                    Width="100" 
-                    Height="40" 
+                    Width="110" 
+                    Height="45" 
                     Margin="5,0"
+                    Style="{StaticResource SecondaryButton}"
                     Click="btnCancel_Click"/>
         </StackPanel>
     </Grid>

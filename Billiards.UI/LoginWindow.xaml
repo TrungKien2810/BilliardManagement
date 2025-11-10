@@ -4,46 +4,73 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Đăng nhập" Height="320" Width="400"
+        Title="Đăng nhập" Height="500" Width="450"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <!-- Background Gradient -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#E8F5E9" Offset="0"/>
+                <GradientStop Color="#C8E6C9" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        
+        <Border CornerRadius="10" 
+                Background="{StaticResource SurfaceColor}" 
+                BorderBrush="{StaticResource PrimaryColor}" 
+                BorderThickness="2"
+                Margin="30"
+                Padding="30"
+                VerticalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   Text="ĐĂNG NHẬP HỆ THỐNG" 
-                   FontSize="20" 
-                   FontWeight="Bold" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,0,0,30"/>
+                <TextBlock Grid.Row="0" 
+                           Text="ĐĂNG NHẬP HỆ THỐNG" 
+                           FontSize="24" 
+                           FontWeight="Bold" 
+                           HorizontalAlignment="Center" 
+                           Foreground="{StaticResource PrimaryColor}"
+                           Margin="0,0,0,25"/>
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,15">
-            <TextBlock Text="Tên đăng nhập:" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtUsername" 
-                     Height="30" 
-                     Padding="5"/>
-        </StackPanel>
+                <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                    <TextBlock Text="Tên đăng nhập:" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,8"
+                               Foreground="{StaticResource TextColor}"/>
+                    <TextBox x:Name="txtUsername" 
+                             FontSize="14"
+                             Height="35"/>
+                </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,20">
-            <TextBlock Text="Mật khẩu:" Margin="0,0,0,5"/>
-            <PasswordBox x:Name="txtPassword" 
-                         Height="30" 
-                         Padding="5"/>
-        </StackPanel>
+                <StackPanel Grid.Row="2" Margin="0,0,0,30">
+                    <TextBlock Text="Mật khẩu:" 
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,8"
+                               Foreground="{StaticResource TextColor}"/>
+                    <PasswordBox x:Name="txtPassword" 
+                                 FontSize="14"
+                                 Height="35"/>
+                </StackPanel>
 
-        <Button Grid.Row="3" 
-                x:Name="btnLogin" 
-                Content="Đăng nhập" 
-                Height="40" 
-                Click="btnLogin_Click"
-                FontSize="14"
-                FontWeight="Bold"/>
+                <Button Grid.Row="3" 
+                        x:Name="btnLogin" 
+                        Content="Đăng nhập" 
+                        Height="50" 
+                        Width="220"
+                        Click="btnLogin_Click"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
 

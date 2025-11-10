@@ -13,7 +13,11 @@
 
         <!-- Left Column: DataGrid -->
         <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Danh sách Quy tắc Giá theo Giờ" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Danh sách Quy tắc Giá theo Giờ" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryColor}"
+                       Margin="0,0,0,15"/>
             <DataGrid x:Name="dgPricingRules" 
                       AutoGenerateColumns="False"
                       SelectionChanged="dgPricingRules_SelectionChanged"
@@ -31,7 +35,11 @@
 
         <!-- Right Column: Form -->
         <StackPanel Grid.Column="1">
-            <TextBlock Text="Thông tin Quy tắc Giá" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Thông tin Quy tắc Giá" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryColor}"
+                       Margin="0,0,0,15"/>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -67,9 +75,9 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
-                    <Button x:Name="btnSave" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
-                    <Button x:Name="btnDelete" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDelete_Click"/>
+                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNew_Click" FontSize="14"/>
+                    <Button x:Name="btnSave" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSave_Click" FontSize="14"/>
+                    <Button x:Name="btnDelete" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDelete_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                 </StackPanel>
             </Grid>
         </StackPanel>

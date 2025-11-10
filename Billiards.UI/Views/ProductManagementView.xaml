@@ -13,7 +13,11 @@
 
         <!-- Left Column: DataGrid -->
         <StackPanel Grid.Column="0" Margin="0,0,10,0">
-            <TextBlock Text="Danh sách Sản phẩm" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Danh sách Sản phẩm" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryColor}"
+                       Margin="0,0,0,15"/>
             <DataGrid x:Name="dgProducts" 
                       AutoGenerateColumns="False"
                       SelectionChanged="dgProducts_SelectionChanged"
@@ -31,7 +35,11 @@
 
         <!-- Right Column: Form -->
         <StackPanel Grid.Column="1">
-            <TextBlock Text="Thông tin Sản phẩm" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Thông tin Sản phẩm" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryColor}"
+                       Margin="0,0,0,15"/>
             <Grid x:Name="formProduct">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -66,15 +74,19 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNew_Click"/>
-                    <Button x:Name="btnSave" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSave_Click"/>
-                    <Button x:Name="btnDelete" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDelete_Click"/>
+                    <Button x:Name="btnAddNew" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNew_Click" FontSize="14"/>
+                    <Button x:Name="btnSave" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSave_Click" FontSize="14"/>
+                    <Button x:Name="btnDelete" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDelete_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                 </StackPanel>
             </Grid>
 
             <!-- Category Management Section -->
-            <Separator Margin="0,20,0,10"/>
-            <TextBlock Text="Quản lý Danh mục" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Separator Margin="0,25,0,15" Background="{StaticResource PrimaryLightColor}"/>
+            <TextBlock Text="Quản lý Danh mục" 
+                       FontSize="16" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryColor}"
+                       Margin="0,0,0,15"/>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -88,8 +100,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-                    <Button x:Name="btnAddCategory" Content="Thêm danh mục" Width="120" Height="35" Margin="5,0" Click="btnAddCategory_Click"/>
-                    <Button x:Name="btnDeleteCategory" Content="Xóa danh mục" Width="120" Height="35" Margin="5,0" Click="btnDeleteCategory_Click"/>
+                    <Button x:Name="btnAddCategory" Content="Thêm danh mục" Width="130" Height="38" Margin="5,0" Click="btnAddCategory_Click" FontSize="14"/>
+                    <Button x:Name="btnDeleteCategory" Content="Xóa danh mục" Width="130" Height="38" Margin="5,0" Click="btnDeleteCategory_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                 </StackPanel>
 
                 <ListBox x:Name="lbCategories" 

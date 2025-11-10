@@ -16,7 +16,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Bàn" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Danh sách Bàn" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <DataGrid x:Name="dgTables" 
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgTables_SelectionChanged"
@@ -33,7 +37,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Bàn" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Thông tin Bàn" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -75,9 +83,9 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTable" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTable_Click"/>
-                                <Button x:Name="btnSaveTable" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveTable_Click"/>
-                                <Button x:Name="btnDeleteTable" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteTable_Click"/>
+                                <Button x:Name="btnAddNewTable" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewTable_Click" FontSize="14"/>
+                                <Button x:Name="btnSaveTable" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveTable_Click" FontSize="14"/>
+                                <Button x:Name="btnDeleteTable" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteTable_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -93,7 +101,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Khu vực" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Danh sách Khu vực" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <DataGrid x:Name="dgAreas" 
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgAreas_SelectionChanged"
@@ -107,7 +119,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Khu vực" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Thông tin Khu vực" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -120,9 +136,9 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewArea" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewArea_Click"/>
-                                <Button x:Name="btnSaveArea" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveArea_Click"/>
-                                <Button x:Name="btnDeleteArea" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteArea_Click"/>
+                                <Button x:Name="btnAddNewArea" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewArea_Click" FontSize="14"/>
+                                <Button x:Name="btnSaveArea" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveArea_Click" FontSize="14"/>
+                                <Button x:Name="btnDeleteArea" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteArea_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -138,7 +154,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="Danh sách Loại bàn" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Danh sách Loại bàn" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <DataGrid x:Name="dgTableTypes" 
                                   AutoGenerateColumns="False"
                                   SelectionChanged="dgTableTypes_SelectionChanged"
@@ -152,7 +172,11 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1">
-                        <TextBlock Text="Thông tin Loại bàn" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <TextBlock Text="Thông tin Loại bàn" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="{StaticResource PrimaryColor}"
+                                   Margin="0,0,0,15"/>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -165,9 +189,9 @@
                             </StackPanel>
 
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <Button x:Name="btnAddNewTableType" Content="Thêm mới" Width="100" Height="35" Margin="5,0" Click="btnAddNewTableType_Click"/>
-                                <Button x:Name="btnSaveTableType" Content="Lưu" Width="100" Height="35" Margin="5,0" Click="btnSaveTableType_Click"/>
-                                <Button x:Name="btnDeleteTableType" Content="Xóa" Width="100" Height="35" Margin="5,0" Click="btnDeleteTableType_Click"/>
+                                <Button x:Name="btnAddNewTableType" Content="Thêm mới" Width="110" Height="38" Margin="5,0" Click="btnAddNewTableType_Click" FontSize="14"/>
+                                <Button x:Name="btnSaveTableType" Content="Lưu" Width="110" Height="38" Margin="5,0" Click="btnSaveTableType_Click" FontSize="14"/>
+                                <Button x:Name="btnDeleteTableType" Content="Xóa" Width="110" Height="38" Margin="5,0" Click="btnDeleteTableType_Click" Style="{StaticResource DangerButton}" FontSize="14"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
